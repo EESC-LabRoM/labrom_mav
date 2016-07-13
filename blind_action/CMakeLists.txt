@@ -25,7 +25,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## Generate actions in the 'action' folder
 add_action_files(
     DIRECTORY action
-    FILES TakeOff.action
+    FILES TakeOff.action Landing.action
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -61,6 +61,8 @@ include_directories(
 add_library(${PROJECT_NAME} 
    src/take_off_server.cpp
    src/take_off_client.cpp 
+   src/landing_server.cpp
+   src/landing_client.cpp 
    src/blind.cpp
 )
 
@@ -70,4 +72,12 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_executable(blind_node nodes/blind_node.cpp)
 target_link_libraries(blind_node ${catkin_LIBRARIES} ${PROJECT_NAME} )
 add_dependencies(blind_node ${blind_action_EXPORTED_TARGETS})
+# blind_landing
+add_executable(blind_mission nodes/blind_mission.cpp)
+target_link_libraries(blind_mission ${catkin_LIBRARIES} ${PROJECT_NAME} )
+add_dependencies(blind_mission ${blind_action_EXPORTED_TARGETS})
+# blind_mission
+add_executable(blind_landing nodes/blind_landing.cpp)
+target_link_libraries(blind_landing ${catkin_LIBRARIES} ${PROJECT_NAME} )
+add_dependencies(blind_landing ${blind_action_EXPORTED_TARGETS})
 

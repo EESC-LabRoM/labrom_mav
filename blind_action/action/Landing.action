@@ -1,0 +1,10 @@
+#goal definition
+float32 landing_accel
+---
+#result definition
+int32 thrust
+int32 elapsed_time
+---
+#feedback
+int32 thrust
+float32 z_accel

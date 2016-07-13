@@ -16,9 +16,9 @@
 *   along with blind_action.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 
-// take_off libraries
-#include "blind_action/take_off_server.h"
-#include "blind_action/take_off_client.h"
+// landing libraries
+#include "blind_action/landing_server.h"
+#include "blind_action/landing_client.h"
 #include "blind_action/blind.h"
 
 // controller libriares
@@ -26,25 +26,25 @@
 
 int main(int argc, char **argv){
   // Initialize ROS within this node
-  ros::init(argc,argv,"TakeOffBlindDebug");
+  ros::init(argc,argv,"LandingBlindDebug");
   // Initialize spin thread
   boost::thread spin_thread(&blind::Spin);
-  // Controller for take off action
+  // Controller for landing action
   controllers::pid::Simple pid("Blind");
   double kp=0.2, ki=1, kd=10*0.02, windup_thresh=10;
   pid.SetParams(kp,ki,kd,windup_thresh);
 
   // Action server
-  blind::take_off::TakeOffServer server(pid);
+  blind::landing::LandingServer server(pid);
   int feedforward=40, max_thrust=50, loop_rate=20;
   server.SetParams(feedforward, max_thrust, loop_rate);
 
   // Action client
-  blind::take_off::TakeOffClient client;
-  double take_off_accel = 10.0;
-  client.SetGoal(take_off_accel);
+  blind::landing::LandingClient client;
+  double landing_accel = 9.6;
+  client.SetGoal(landing_accel);
 
-  // Perform take off attempt
+  // Perform landing attempt
   double timeout = 30;
   client.SendGoal(timeout);
   
