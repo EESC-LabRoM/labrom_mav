@@ -1,19 +1,19 @@
 /*************************************************************************
-*   Blind Node implementation for test purpose
-*   This file is part of blind_action
+*   Manager implementation 
+*   This file is part of labrom_mav_manager
 *
-*   blind_action is free software: you can redistribute it and/or modify
+*   labrom_mav_manager is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
 *   the Free Software Foundation, either version 3 of the License, or
 *   (at your option) any later version.
 *
-*   blind_action is distributed in the hope that it will be useful,
+*   labrom_mav_manager is distributed in the hope that it will be useful,
 *   but WITHOUT ANY WARRANTY; without even the implied warranty of
 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *   GNU General Public License for more details.
 *
 *   You should have received a copy of the GNU General Public License
-*   along with blind_action.  If not, see <http://www.gnu.org/licenses/>.
+*   along with labrom_mav_manager.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 
 // take_off libraries
@@ -22,11 +22,10 @@
 #include "blind_action/blind.h"
 
 // controller libriares
-#include <labrom_control/pid_simple.h>
+#include "labrom_control/pid_simple.h"
 
 int main(int argc, char **argv){
-  // Initialize ROS within this node
-  ros::init(argc,argv,"TakeOffBlindDebug");
+  // Initialize ROS within this node  ros::init(argc,argv,"TakeOffBlindDebug");
   // Initialize spin thread
   boost::thread spin_thread(&blind::Spin);
   // Controller for take off action
@@ -54,4 +53,3 @@ int main(int argc, char **argv){
 
   return 0;
 }
-

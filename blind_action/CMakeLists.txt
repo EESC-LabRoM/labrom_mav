@@ -33,14 +33,11 @@ generate_messages(
   DEPENDENCIES actionlib_msgs std_msgs
 )
 
-################################################
-## Declare ROS dynamic reconfigure parameters ##
-################################################
-
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
+  INCLUDE_DIRS include
   CATKIN_DEPENDS actionlib_msgs labrom_control #geometry_msgs message_generation roscpp rospy sensor_msgs std_msgs
 )
 
