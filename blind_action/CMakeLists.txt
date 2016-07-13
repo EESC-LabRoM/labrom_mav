@@ -25,7 +25,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## Generate actions in the 'action' folder
 add_action_files(
     DIRECTORY action
-    FILES TakeOff.action
+    FILES TakeOff.action Climb.action
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -61,6 +61,8 @@ include_directories(
 add_library(${PROJECT_NAME} 
    src/take_off_server.cpp
    src/take_off_client.cpp 
+   src/climb_client.cpp 
+   src/climb_server.cpp 
    src/blind.cpp
 )
 

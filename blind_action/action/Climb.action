@@ -1,0 +1,12 @@
+#goal definition
+float32 climb_accel
+float32 timeout
+---
+#result definition
+int32 thrust
+float32 z_accel
+---
+#feedback
+int32 thrust
+float32 z_accel
+float32 elapsed_time
