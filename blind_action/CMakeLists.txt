@@ -25,7 +25,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## Generate actions in the 'action' folder
 add_action_files(
     DIRECTORY action
-    FILES TakeOff.action Landing.action
+    FILES TakeOff.action Landing.action Climb.action
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -33,14 +33,11 @@ generate_messages(
   DEPENDENCIES actionlib_msgs std_msgs
 )
 
-################################################
-## Declare ROS dynamic reconfigure parameters ##
-################################################
-
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
+  INCLUDE_DIRS include
   CATKIN_DEPENDS actionlib_msgs labrom_control #geometry_msgs message_generation roscpp rospy sensor_msgs std_msgs
 )
 
@@ -60,9 +57,11 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME} 
    src/take_off_server.cpp
-   src/take_off_client.cpp 
+   src/take_off_client.cpp
    src/landing_server.cpp
-   src/landing_client.cpp 
+   src/landing_client.cpp
+   src/climb_client.cpp
+   src/climb_server.cpp
    src/blind.cpp
 )
 
