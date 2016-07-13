@@ -67,7 +67,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Declare a C++ executable
-#add_executable(blind_node nodes/blind_node.cpp)
-#target_link_libraries(blind_node ${catkin_LIBRARIES} ${PROJECT_NAME} )
-#add_dependencies(blind_node ${blind_action_EXPORTED_TARGETS})
+add_executable(blind_node nodes/blind_node.cpp)
+target_link_libraries(blind_node ${catkin_LIBRARIES} ${PROJECT_NAME} )
+add_dependencies(blind_node ${blind_action_EXPORTED_TARGETS})
 

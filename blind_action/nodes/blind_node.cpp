@@ -30,7 +30,7 @@ int main(int argc, char **argv){
   // Initialize spin thread
   boost::thread spin_thread(&blind::Spin);
   // Controller for take off action
-  controllers::pid::Simple pid; 
+  controllers::pid::Simple pid("Blind"); 
   double kp=0.2, ki=1, kd=10*0.02, windup_thresh=1;
   pid.SetParams(kp,ki,kd,windup_thresh);
 
