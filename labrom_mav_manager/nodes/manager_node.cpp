@@ -23,6 +23,8 @@
 #include "blind_action/take_off_client.h"
 #include "blind_action/climb_server.h"
 #include "blind_action/climb_client.h"
+#include "blind_action/landing_server.h"
+#include "blind_action/landing_client.h"
 #include "blind_action/blind.h"
 // labrom_control libriares
 #include "labrom_control/pid_simple.h"
@@ -35,17 +37,17 @@ int main(int argc, char **argv){
   boost::thread spin_thread(&manager::Spin);
   // PID Controller for blind action
   controllers::pid::Simple pid("Blind"); 
-  double kp=0.2, ki=1, kd=10*0.02, windup_thresh=10;
+  double kp=0.2, ki=2.5, kd=10*0.02, windup_thresh=10;
   pid.SetParams(kp,ki,kd,windup_thresh);
 
   // Manager state machine
   manager::ManagerState state= manager::WAIT_MOTORS_ON;
   
   // Action servers
-  int feedforward=40, max_thrust=50, loop_rate=20;
+  int feedforward=42, max_thrust=50, loop_rate=20;
   blind::take_off::TakeOffServer take_off_server(pid);
   blind::climb::ClimbServer climb_server(pid);
- // blind::land::LandServer land_server(pid);
+  blind::landing::LandingServer landing_server(pid);
 
   while(ros::ok()){
     // Spin thread
@@ -63,7 +65,7 @@ int main(int argc, char **argv){
         // Setting takeoff server parameters                                    
         take_off_server.SetParams(feedforward, max_thrust, loop_rate);
         // Setting takeoff client parameters
-        double take_off_accel = 10.0;
+        double take_off_accel = 9.9;
         client.SetGoal(take_off_accel);
         // Perform take off attempt
         double timeout = 30;
@@ -80,7 +82,7 @@ int main(int argc, char **argv){
         // Setting climb server parameters                                    
         climb_server.SetParams(feedforward, max_thrust, loop_rate);
         // Setting clim client parameters
-        double climb_accel = 9.9, timeout = 2;
+        double climb_accel = 10.2, timeout = 2;
         client.SetGoal(climb_accel, timeout);
         // Perform climb
         client.SendGoal(timeout+0.5);
@@ -89,14 +91,14 @@ int main(int argc, char **argv){
         break;
       }
 
-      // Land action
-/*      case manager::LAND: {
+      // Landing action
+      case manager::LAND: {
         // action client
-        blind::land::LandClient client;
+        blind::landing::LandingClient client;
         // Setting land server parameters                                    
-        land_server.SetParams(feedforward, max_thrust, loop_rate);
+        landing_server.SetParams(feedforward, max_thrust, loop_rate);
         // Setting land client parameters
-        double descend_accel = 9.5, land_accel = 12.0;
+        double descend_accel = 9.2, land_accel = 12.0;
         client.SetGoal(descend_accel);
         // Perform land attempt
         double timeout = 30;
@@ -105,7 +107,7 @@ int main(int argc, char **argv){
         state = manager::WAIT_MOTORS_OFF;
         break;
       }
-*/
+
       // Wait motors off (user)
       case manager::WAIT_MOTORS_OFF: {
         ROS_INFO("TURN MOTORS OFF..");

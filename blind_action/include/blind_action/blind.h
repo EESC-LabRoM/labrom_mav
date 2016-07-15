@@ -23,7 +23,6 @@
 
 //! Top-level namespace
 namespace blind{
-void Spin(void);
 } // blind namespace
 
 #endif //BLIND_H_   

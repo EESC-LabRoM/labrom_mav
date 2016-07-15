@@ -53,9 +53,7 @@ void LandingServer::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
   // Action is ready to be executed
   if (!is_reading_imu_)
     is_reading_imu_ = true;
-    
-  std::cout << imu->linear_acceleration.z << std::endl; 
-  
+
   // Check if landing succeed
   if( imu->linear_acceleration.z >= (goal_.landing_accel + 2)){
     // Success!

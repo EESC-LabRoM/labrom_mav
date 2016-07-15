@@ -24,6 +24,12 @@
 // controller libriares
 #include <labrom_control/pid_simple.h>
 
+namespace blind{
+void Spin(void){
+	ros::spin();
+}
+}
+
 int main(int argc, char **argv){
   // Initialize ROS within this node
   ros::init(argc,argv,"LandingBlindDebug");

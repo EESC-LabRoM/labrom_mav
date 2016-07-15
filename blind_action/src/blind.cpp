@@ -17,12 +17,5 @@
 ***************************************************************************/
 #include "blind_action/blind.h"
 
-namespace blind{
-/*
-* Spin
-* ros spin callback. Use this for threads
-*/
-void Spin(void){
-  ros::spin();
-}
-}
+namespace blind{}
+

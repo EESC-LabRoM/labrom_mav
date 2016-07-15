@@ -38,7 +38,8 @@ generate_messages(
 ###################################
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS actionlib_msgs labrom_control #geometry_msgs message_generation roscpp rospy sensor_msgs std_msgs
+  CATKIN_DEPENDS actionlib_msgs labrom_control
+  LIBRARIES  ${PROJECT_NAME}
 )
 
 ###########
@@ -68,13 +69,6 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Declare a C++ executable
-add_executable(blind_node nodes/blind_node.cpp)
-target_link_libraries(blind_node ${catkin_LIBRARIES} ${PROJECT_NAME} )
-add_dependencies(blind_node ${blind_action_EXPORTED_TARGETS})
-# blind_landing
-add_executable(blind_mission nodes/blind_mission.cpp)
-target_link_libraries(blind_mission ${catkin_LIBRARIES} ${PROJECT_NAME} )
-add_dependencies(blind_mission ${blind_action_EXPORTED_TARGETS})
 # blind_mission
 add_executable(blind_landing nodes/blind_landing.cpp)
 target_link_libraries(blind_landing ${catkin_LIBRARIES} ${PROJECT_NAME} )
