@@ -16,8 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   labrom_control
 )
 
-## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
 ################################################
 ## Declare ROS messages, services and actions ##
 ################################################
@@ -39,19 +37,16 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS actionlib_msgs labrom_control #geometry_msgs message_generation roscpp rospy sensor_msgs std_msgs
+  LIBRARIES  ${PROJECT_NAME}
 )
 
 ###########
 ## Build ##
 ###########
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-# include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
   include
+  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -64,9 +59,4 @@ add_library(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
-
-## Declare a C++ executable
-add_executable(blind_node nodes/blind_node.cpp)
-target_link_libraries(blind_node ${catkin_LIBRARIES} ${PROJECT_NAME} )
-add_dependencies(blind_node ${blind_action_EXPORTED_TARGETS})
 

@@ -1,0 +1,17 @@
+actions: []
+authors: ''
+brief: ''
+bugtracker: ''
+depends:
+- labrom_control
+- blind_action
+- catkin
+- roscpp
+description: The labrom_mav_manager package
+license: TODO
+maintainers: art <art@todo.todo>
+msgs: []
+package_type: package
+repo_url: ''
+srvs: []
+url: ''
