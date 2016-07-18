@@ -71,6 +71,7 @@ class LandingServer{
     int max_thrust_;                      //!< Maximum thrust 0..100    
     bool is_reading_imu_;                 //!< Indicates imu data reception
 
+
 };
 
 } // landing namespace

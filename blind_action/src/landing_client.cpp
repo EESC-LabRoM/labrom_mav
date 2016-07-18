@@ -20,9 +20,10 @@ LandingClient::~LandingClient(void){};
 * Set Goal
 * @param landing_accel landing acceleration [DEFAULT 10 m/s/s]
 */
-void LandingClient::SetGoal(double landing_accel){
+void LandingClient::SetGoal(double landing_accel, double hit_ground_accel){
   // Update goal
-  goal_.landing_accel = landing_accel;
+  goal_.landing_accel    = landing_accel;
+  goal_.hit_ground_accel = hit_ground_accel;
   // Log
   ROS_INFO("Blind Landing CLIENT: Updating goal parameters. [landing_accel]=[%.2f]", goal_.landing_accel);
 }

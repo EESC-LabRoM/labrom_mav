@@ -33,7 +33,7 @@ TakeOffServer::TakeOffServer(controllers::Controller &controller) :as_(nh_,"blin
 //  as_.registerGoalCallback(boost::bind(&TakeOffServer::GoalCallback, this));   
   as_.registerPreemptCallback(boost::bind(&TakeOffServer::PreemptCallback, this));
   // ROS subscribers and publishers
-  imu_sub_      = nh_.subscribe("/imu", 1, &TakeOffServer::ImuCallback, this);
+  imu_sub_      = nh_.subscribe("/fcu/imu", 1, &TakeOffServer::ImuCallback, this);
   thrust_pub_   = nh_.advertise<std_msgs::Int32>("/cmd_thrust",1);
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
 
@@ -73,14 +73,11 @@ void TakeOffServer::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
   
   // Check if take off succeed
   if( imu->linear_acceleration.z >= goal_.take_off_accel){
-    // Success!
+    result_.elapsed_time = ros::Time::now().toSec();
     result_.thrust       = feedback_.thrust;
-    result_.elapsed_time = ros::Time::now().toSec() - start_time_;
-    // Set the action state to succeeded
-    as_.setSucceeded(result_);
+    take_off_detected_   = true;
     // Log
-   
-    ROS_INFO("Blind Take Off SERVER: Succeeded!");
+    ROS_INFO("Blind Take Off SERVER: Take off detected!");
   }
 
   // Update value
@@ -112,25 +109,38 @@ void TakeOffServer::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
   attitude_msg.z   = 0;
   // Sampling time
   double dt = 1.0/loop_rate_;
+
+  // Make sure take_off_detection variable is set to false prior take off attempt
+  take_off_detected_ = false;            
+  
+  //ROS Loop
   // Log
   ROS_INFO("Blind Take Off SERVER: Trying to take off. [take_off_accel]=[%f m/s/s] ", goal_.take_off_accel);
-
-  // ROS Loop
   while( ros::ok() && as_.isActive()){
     // Wait until imu is receiving messages
     if (!is_reading_imu_)
       continue;
-    // Compute controller iteration
-    double u =  controller_->LoopOnce(goal_.take_off_accel, feedback_.z_accel, dt);
-    // Assemble message
-    thrust_msg.data = std::min((int) (u + 0.5 + feedforward_) , max_thrust_);
+    // Increase thrust until take off has been detected
+    else if (!take_off_detected_){
+      // Compute controller iteration
+      double u =  controller_->LoopOnce(goal_.take_off_accel, feedback_.z_accel, dt);
+      // Assemble message
+      thrust_msg.data = std::min((int) (u + 0.5 + feedforward_) , max_thrust_);
+
+    } else {
+      if ( (ros::Time::now().toSec() - result_.elapsed_time) > 1) 
+        // Set the action state to succeeded
+        as_.setSucceeded(result_);
+    }
+
     // Publish
     thrust_pub_.publish(thrust_msg); 
     attitude_pub_.publish(attitude_msg); 
     // Feedback
     feedback_.thrust  = thrust_msg.data; 
     as_.publishFeedback(feedback_);
- 
+
+
     // Loop rate
     ros_rate.sleep();
   }

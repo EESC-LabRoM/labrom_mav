@@ -33,7 +33,7 @@ ClimbServer::ClimbServer(controllers::Controller &controller) :as_(nh_,"blindcli
 //  as_.registerGoalCallback(boost::bind(&ClimbServer::GoalCallback, this));   
   as_.registerPreemptCallback(boost::bind(&ClimbServer::PreemptCallback, this));
   // ROS subscribers and publishers
-  imu_sub_      = nh_.subscribe("/imu", 1, &ClimbServer::ImuCallback, this);
+  imu_sub_      = nh_.subscribe("/fcu/imu", 1, &ClimbServer::ImuCallback, this);
   thrust_pub_   = nh_.advertise<std_msgs::Int32>("/cmd_thrust",1);
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
 

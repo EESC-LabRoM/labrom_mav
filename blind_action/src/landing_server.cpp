@@ -16,7 +16,7 @@ LandingServer::LandingServer(controllers::Controller &controller) :as_(nh_,"blin
 //  as_.registerGoalCallback(boost::bind(&LandingServer::GoalCallback, this));   
   as_.registerPreemptCallback(boost::bind(&LandingServer::PreemptCallback, this));
   // ROS subscribers and publishers
-  imu_sub_      = nh_.subscribe("/imu", 1, &LandingServer::ImuCallback, this);
+  imu_sub_      = nh_.subscribe("/fcu/imu", 1, &LandingServer::ImuCallback, this);
   thrust_pub_   = nh_.advertise<std_msgs::Int32>("/cmd_thrust",1);
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
 
@@ -55,7 +55,7 @@ void LandingServer::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     is_reading_imu_ = true;
 
   // Check if landing succeed
-  if( imu->linear_acceleration.z >= (goal_.landing_accel + 2)){
+  if( imu->linear_acceleration.z >= goal_.hit_ground_accel ){
     // Success!
     result_.thrust       = feedback_.thrust;
     result_.elapsed_time = ros::Time::now().toSec() - start_time_;
@@ -82,6 +82,7 @@ void LandingServer::GoalCallback(const blind_action::LandingGoalConstPtr &goal){
   // Saving goal parameters
   //goal_.landing_accel = as_.acceptNewGoal()->landing_accel;
   goal_.landing_accel = goal->landing_accel;
+  goal_.hit_ground_accel = goal->hit_ground_accel;
   // Ros sleep time
   ros::Rate ros_rate(loop_rate_);
 

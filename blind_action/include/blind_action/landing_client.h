@@ -19,7 +19,7 @@ class LandingClient{
     //! Empty Destructor 
     ~LandingClient(void);
     //! Set Goal
-    void SetGoal(double landing_accel = 10.0);
+    void SetGoal(double landing_accel = 9.0, double hit_ground_accel = 12);
     //! Send Goal
     bool SendGoal(double timeout = 2.0);
     

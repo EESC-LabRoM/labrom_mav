@@ -70,7 +70,7 @@ class TakeOffServer{
     int feedforward_;                     //!< Feedforward thrust 0..100
     int max_thrust_;                      //!< Maximum thrust 0..100    
     bool is_reading_imu_;                 //!< Indicates imu data reception
-
+    bool take_off_detected_;             //!< Indicates a take off has been detected
 };
 
 } // take_off namespace

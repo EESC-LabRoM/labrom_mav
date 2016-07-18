@@ -1,5 +1,6 @@
 #goal definition
 float32 landing_accel
+float32 hit_ground_accel
 ---
 #result definition
 int32 thrust
