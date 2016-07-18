@@ -1,0 +1,7 @@
+<launch>
+  <node name="pelican_driver_1" pkg="labrom_asctec_commands" type="node">
+    <remap from="/thrust_cmd" to="/cmd_thrust" />
+    <remap from="/attitude_cmd" to="/cmd_attitude" />
+    <remap from="/mav_ctrl" to="/fcu/control" />
+  </node>
+</launch>
