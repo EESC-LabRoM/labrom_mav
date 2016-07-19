@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   ros::Subscriber sub_attitude = node.subscribe("/cmd_attitude", 1, attitudeCallback);
   
   // Start publishers
-  ros::Publisher pub_mav_ctrl = node.advertise<asctec_hl_comm::mav_ctrl>("/fcu/control", 1);
+  ros::Publisher pub_mav_ctrl = node.advertise<asctec_hl_comm::mav_ctrl>("/mav_ctrl", 1);
 
   while(ros::ok()) {
     // Publishers
@@ -43,6 +43,7 @@ int main(int argc, char **argv)
     int8 velocity_body = 4
     int8 position_body = 5
     */
+
     msg_mav_ctrl.type = 1;
     /*
     Currently x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw

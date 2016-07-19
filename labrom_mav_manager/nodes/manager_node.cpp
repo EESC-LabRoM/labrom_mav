@@ -65,7 +65,7 @@ int main(int argc, char **argv){
         // Setting takeoff server parameters                                    
         take_off_server.SetParams(feedforward, max_thrust, loop_rate);
         // Setting takeoff client parameters
-        double take_off_accel = 14.0;
+        double take_off_accel = 13.0;
         client.SetGoal(take_off_accel);
         // Perform take off attempt
         double timeout = 10;

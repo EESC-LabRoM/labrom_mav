@@ -77,7 +77,7 @@ void TakeOffServer::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     result_.thrust       = feedback_.thrust;
     take_off_detected_   = true;
     // Log
-    ROS_INFO("Blind Take Off SERVER: Take off detected!");
+    ROS_INFO("Blind Take Off SERVER: Take off detected! %d", result_.thrust);
   }
 
   // Update value
@@ -97,6 +97,7 @@ void TakeOffServer::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
   //goal_.take_off_accel = as_.acceptNewGoal()->take_off_accel;
   goal_.take_off_accel = goal->take_off_accel;
   // Ros sleep time
+  loop_rate_ = 10;
   ros::Rate ros_rate(loop_rate_);
 
   // Messages
@@ -126,9 +127,9 @@ void TakeOffServer::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
       double u =  controller_->LoopOnce(goal_.take_off_accel, feedback_.z_accel, dt);
       // Assemble message
       thrust_msg.data = std::min((int) (u + 0.5 + feedforward_) , max_thrust_);
-
+      feedback_.thrust  = thrust_msg.data; 
     } else {
-      if ( (ros::Time::now().toSec() - result_.elapsed_time) > 1) 
+      if ( (ros::Time::now().toSec() - result_.elapsed_time) > 2) 
         // Set the action state to succeeded
         as_.setSucceeded(result_);
     }
