@@ -40,9 +40,11 @@ class ClimbClient{
     void SetGoal(double climb_accel = 10.0, double timeout = 1);
     //! Send Goal
     bool SendGoal(double timeout = 2.0);
-    
+    //! Get result thrust
+    int getResultThrust(void); 
   private:
     blind_action::ClimbGoal goal_;           //!< Goal
+    blind_action::ClimbResult result_;     //!< Result
 };
 
 } // climb namespace

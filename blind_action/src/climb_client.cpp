@@ -70,10 +70,21 @@ bool ClimbClient::SendGoal(double timeout){
   // Check result
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
     ROS_INFO("Blind Climb CLIENT: Action finished - %s", ac.getState().toString().c_str());
+    result_.thrust       = ac.getResult()->thrust;
+    return true;
   }else{
     ROS_INFO("Blind Climb CLIENT: Action did not finish before the time out." );
+    return false;
   }
-  return 0;
+
+}
+
+/**
+* Get result thrust
+* This function returns the thrust achieved in the last successful take off
+*/
+int ClimbClient::getResultThrust(void){
+  return result_.thrust;
 }
 
 } // climb namespace

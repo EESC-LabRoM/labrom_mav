@@ -40,9 +40,12 @@ class TakeOffClient{
     void SetGoal(double take_off_accel = 10.0);
     //! Send Goal
     bool SendGoal(double timeout = 2.0);
-    
+    //! Get result thrust
+    int getResultThrust(void);
+
   private:
     blind_action::TakeOffGoal goal_;           //!< Goal
+    blind_action::TakeOffResult result_;        //!< Result
 };
 
 } // take_off namespace

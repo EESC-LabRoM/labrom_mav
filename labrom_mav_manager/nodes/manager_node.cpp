@@ -44,7 +44,7 @@ int main(int argc, char **argv){
   manager::ManagerState state= manager::WAIT_MOTORS_ON;
   
   // Action servers
-  int feedforward=45, max_thrust=60, loop_rate=20;
+  int feedforward=35, max_thrust=65, loop_rate=10;
   blind::take_off::TakeOffServer take_off_server(pid);
   blind::climb::ClimbServer climb_server(pid);
   blind::landing::LandingServer landing_server(pid);
@@ -65,12 +65,14 @@ int main(int argc, char **argv){
         // Setting takeoff server parameters                                    
         take_off_server.SetParams(feedforward, max_thrust, loop_rate);
         // Setting takeoff client parameters
-        double take_off_accel = 13.0;
+        double take_off_accel = 10.5;
         client.SetGoal(take_off_accel);
         // Perform take off attempt
         double timeout = 10;
-        client.SendGoal(timeout);
+        bool result = client.SendGoal(timeout);
         //! \todo verify if suceeded (MODIFY CLENT SENDGOAL return value)
+        if (result)
+          feedforward = client.getResultThrust();
         state = manager::CLIMB;
         break;
       }                                 
@@ -82,10 +84,10 @@ int main(int argc, char **argv){
         // Setting climb server parameters                                    
         climb_server.SetParams(feedforward, max_thrust, loop_rate);
         // Setting clim client parameters
-        double climb_accel = 11.0, timeout = 5;
+        double climb_accel = 11.0, timeout = 0.3;
         client.SetGoal(climb_accel, timeout);
         // Perform climb
-        client.SendGoal(timeout+0.5);
+        client.SendGoal(timeout+0.2);
         //! \todo verify if suceeded (MODIFY CLENT SENDGOAL return value)
         state = manager::LAND;
         break;
@@ -96,7 +98,7 @@ int main(int argc, char **argv){
         // action client
         blind::landing::LandingClient client;
         // Setting land server parameters                                    
-        landing_server.SetParams(feedforward, max_thrust, loop_rate);
+        landing_server.SetParams(feedforward-5, max_thrust, loop_rate);
         // Setting land client parameters
         double descend_accel = 7.0, hit_ground_accel = 12.0;
         client.SetGoal(descend_accel, hit_ground_accel);
@@ -110,7 +112,8 @@ int main(int argc, char **argv){
 
       // Wait motors off (user)
       case manager::WAIT_MOTORS_OFF: {
-        ROS_INFO("TURN MOTORS OFF..");
+        //ROS_INFO("TURN MOTORS OFF..");
+        break;
       }
     } // switch
 

@@ -22,9 +22,13 @@ class LandingClient{
     void SetGoal(double landing_accel = 9.0, double hit_ground_accel = 12);
     //! Send Goal
     bool SendGoal(double timeout = 2.0);
-    
+     //! Get result thrust
+    int getResultThrust(void);
+       
   private:
     blind_action::LandingGoal goal_;           //!< Goal
+    blind_action::LandingResult result_;        //!< Result
+
 };
 
 } // landing namespace

@@ -75,7 +75,7 @@ void TakeOffServer::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
   if( imu->linear_acceleration.z >= goal_.take_off_accel){
     result_.elapsed_time = ros::Time::now().toSec();
     result_.thrust       = feedback_.thrust;
-    take_off_detected_   = true;
+    as_.setSucceeded(result_);
     // Log
     ROS_INFO("Blind Take Off SERVER: Take off detected! %d", result_.thrust);
   }
@@ -104,16 +104,13 @@ void TakeOffServer::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
   std_msgs::Int32 thrust_msg;
   geometry_msgs::Vector3 attitude_msg;
   // Define initial values for messages
-  thrust_msg.data  = 0;
+  thrust_msg.data  = feedforward_;
   attitude_msg.x   = 0;
   attitude_msg.y   = 0;
   attitude_msg.z   = 0;
   // Sampling time
   double dt = 1.0/loop_rate_;
 
-  // Make sure take_off_detection variable is set to false prior take off attempt
-  take_off_detected_ = false;            
-  
   //ROS Loop
   // Log
   ROS_INFO("Blind Take Off SERVER: Trying to take off. [take_off_accel]=[%f m/s/s] ", goal_.take_off_accel);
@@ -121,26 +118,16 @@ void TakeOffServer::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
     // Wait until imu is receiving messages
     if (!is_reading_imu_)
       continue;
-    // Increase thrust until take off has been detected
-    else if (!take_off_detected_){
-      // Compute controller iteration
-      double u =  controller_->LoopOnce(goal_.take_off_accel, feedback_.z_accel, dt);
-      // Assemble message
-      thrust_msg.data = std::min((int) (u + 0.5 + feedforward_) , max_thrust_);
-      feedback_.thrust  = thrust_msg.data; 
-    } else {
-      if ( (ros::Time::now().toSec() - result_.elapsed_time) > 2) 
-        // Set the action state to succeeded
-        as_.setSucceeded(result_);
-    }
-
+    // Increase thrust
+    thrust_msg.data = std::min(thrust_msg.data + 1 , max_thrust_);
+    feedback_.thrust  = thrust_msg.data; 
+    
     // Publish
     thrust_pub_.publish(thrust_msg); 
     attitude_pub_.publish(attitude_msg); 
     // Feedback
     feedback_.thrust  = thrust_msg.data; 
     as_.publishFeedback(feedback_);
-
 
     // Loop rate
     ros_rate.sleep();

@@ -90,7 +90,7 @@ void LandingServer::GoalCallback(const blind_action::LandingGoalConstPtr &goal){
   std_msgs::Int32 thrust_msg;
   geometry_msgs::Vector3 attitude_msg;
   // Define initial values for messages
-  thrust_msg.data  = 0;
+  thrust_msg.data  = std::min(feedforward_ , max_thrust_);
   attitude_msg.x   = 0;
   attitude_msg.y   = 0;
   attitude_msg.z   = 0;
@@ -104,10 +104,7 @@ void LandingServer::GoalCallback(const blind_action::LandingGoalConstPtr &goal){
     // Wait until imu is receiving messages
     if (!is_reading_imu_)
       continue;
-    // Compute controller iteration
-    double u =  controller_->LoopOnce(goal_.landing_accel, feedback_.z_accel, dt);
-    // Assemble message
-    thrust_msg.data = std::min((int) (u + 0.5 + feedforward_) , max_thrust_);
+
     // Publish
     thrust_pub_.publish(thrust_msg); 
     attitude_pub_.publish(attitude_msg); 

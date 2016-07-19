@@ -94,25 +94,22 @@ void ClimbServer::GoalCallback(const blind_action::ClimbGoalConstPtr &goal){
   std_msgs::Int32 thrust_msg;
   geometry_msgs::Vector3 attitude_msg;
   // Define initial values for messages
-  thrust_msg.data  = 0;
+  thrust_msg.data  = std::min(feedforward_ , max_thrust_);
   attitude_msg.x   = 0;
   attitude_msg.y   = 0;
   attitude_msg.z   = 0;
   // Sampling time
   double dt = 1.0/loop_rate_;
+  
   // Log
-  ROS_INFO("Blind Take Off SERVER: Climb actiove active. [climb_accel]=[%f m/s/s] ", goal_.climb_accel);
+  ROS_INFO("Blind CLIMB SERVER: Climb active. [climb_accel]=[%f m/s/s] ", goal_.climb_accel);
 
   // ROS Loop
   while( ros::ok() && as_.isActive()){   
     // Wait until imu is receiving messages
     if (!is_reading_imu_)
       continue;
-    
-    // Compute controller iteration
-    double u =  controller_->LoopOnce(goal_.climb_accel, feedback_.z_accel, dt);
-    // Assemble message
-    thrust_msg.data = std::min((int) (u + 0.5 + feedforward_) , max_thrust_);
+     
     // Publish
     thrust_pub_.publish(thrust_msg); 
     attitude_pub_.publish(attitude_msg); 

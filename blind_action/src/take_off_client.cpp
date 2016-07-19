@@ -21,20 +21,20 @@
 
 namespace blind{
 namespace take_off{
-/*
+/**
 * Empty constructor
 */
 TakeOffClient::TakeOffClient(void){
   SetGoal();
 };
 
-/*
+/**
 * Empty destructor
 */
 TakeOffClient::~TakeOffClient(void){};
 
 
-/*
+/**
 * Set Goal
 * @param take_off_accel take off acceleration [DEFAULT 10 m/s/s]
 */
@@ -45,7 +45,7 @@ void TakeOffClient::SetGoal(double take_off_accel){
   ROS_INFO("Blind Take off CLIENT: Updating goal parameters. [take_off_accel]=[%.2f]", goal_.take_off_accel);
 }
 
-/*
+/**
 * Send Goal
 * This function sends the goal to take off blind action server.
 * It returns true - succeed or false - failed
@@ -60,7 +60,7 @@ bool TakeOffClient::SendGoal(double timeout){
 
   // Wait for the action server to start
   ac.waitForServer(); 
-  ROS_INFO("Blind Take Off CLIENT: Action server started, sending goal. [take_off_accel]=[%.2f]. Timeout = %.2f secs", goal_.take_off_accel, timeout);
+  ROS_INFO("Blind Take Off CLIENT: Action server ready, sending goal. [take_off_accel]=[%.2f]. Timeout = %.2f secs", goal_.take_off_accel, timeout);
 
   // Send goal
   ac.sendGoalAndWait(goal_,ros::Duration(timeout),ros::Duration(0.1));
@@ -68,10 +68,22 @@ bool TakeOffClient::SendGoal(double timeout){
   // Check result
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
     ROS_INFO("Blind Take Off CLIENT: Action finished - %s", ac.getState().toString().c_str());
+    result_.thrust       = ac.getResult()->thrust;
+    result_.elapsed_time = ac.getResult()->elapsed_time;
+    return true;
   }else{
     ROS_INFO("Blind Take Off CLIENT: Action did not finish before the time out." );
+    return false;
   }
-  return 0;
+  
+}
+
+/**
+* Get result thrust
+* This function returns the thrust achieved in the last successful take off
+*/
+int TakeOffClient::getResultThrust(void){
+  return result_.thrust;
 }
 
 } // take_off namespace
