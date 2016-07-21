@@ -35,13 +35,15 @@
 namespace blind{
 //! Take off namespace
 namespace take_off{
-//! Class TakeOffServer scope
-class TakeOffServer{
+//! Possible states for take off action
+enum State{IDLE=0, ACTIVE, TAKE_OFF_DETECTED, CLIMB, FINISHED};
+//! Class BlindTakeOffServer scope
+class Server{
   public:
     //! Constructor
-    TakeOffServer(controllers::Controller &controller);
+    Server(void);
     //! Empty Destructor
-    ~TakeOffServer(void);
+    ~Server(void);
     //! Imu callback
     void ImuCallback(const sensor_msgs::Imu::ConstPtr &imu);
     //! Goal Callback
@@ -54,9 +56,7 @@ class TakeOffServer{
   private:
     ros::NodeHandle nh_;                //!< ROS node handle
     // ROS publishers and subscribers
-    ros::Subscriber imu_sub_;           //!< ROS IMU subscriber
-    ros::Publisher thrust_pub_;         //!< ROS Thrust publisher
-    ros::Publisher attitude_pub_;       //!< ROS Attitude(RPY) publisher          
+    ros::Subscriber imu_sub_;           //!< ROS IMU subscriber     
     // Take off blind action server (as)
     actionlib::SimpleActionServer<blind_action::TakeOffAction> as_;          //!< Action server
      // Take off blind messages defined within actionlib
@@ -64,12 +64,11 @@ class TakeOffServer{
     blind_action::TakeOffResult result_;      //!< Result message
     blind_action::TakeOffGoal goal_;          //!< Goal message
     // Take off rotine variables
-    controllers::Controller* controller_; //!< Controller specified by user
     int start_time_;                      //!< Time current goal was received
     int loop_rate_;                       //!< Actuation loop rate
     int feedforward_;                     //!< Feedforward thrust 0..100
     int max_thrust_;                      //!< Maximum thrust 0..100    
-    bool is_reading_imu_;                 //!< Indicates imu data reception
+    State state_;                         //!< Indicates action state
 };
 
 } // take_off namespace

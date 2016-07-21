@@ -24,25 +24,18 @@
 
 namespace blind{
 namespace take_off{
-/*
+
+/**
 * Constructor
 * @param loop_rate actuation publishing frequency.
 */
-TakeOffServer::TakeOffServer(controllers::Controller &controller) :as_(nh_,"blindtakeoff", boost::bind(&TakeOffServer::GoalCallback, this, _1), false){
-  // Action server callbacks
-//  as_.registerGoalCallback(boost::bind(&TakeOffServer::GoalCallback, this));   
-  as_.registerPreemptCallback(boost::bind(&TakeOffServer::PreemptCallback, this));
-  // ROS subscribers and publishers
-  imu_sub_      = nh_.subscribe("/fcu/imu", 1, &TakeOffServer::ImuCallback, this);
-  thrust_pub_   = nh_.advertise<std_msgs::Int32>("/cmd_thrust",1);
-  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
+Server::Server(void) :as_(nh_,"blindtakeoff", boost::bind(&Server::GoalCallback, this, _1), false){
+  // Action server callback
+  as_.registerPreemptCallback(boost::bind(&Server::PreemptCallback, this));
 
-  // Copying controller
-  controller_ = &controller;
-
-  // Setting parameter with default values
+  // Setting parameters with default values
   this->SetParams();
-  is_reading_imu_ = false;
+
   // Start action server
   as_.start();
 
@@ -51,82 +44,96 @@ TakeOffServer::TakeOffServer(controllers::Controller &controller) :as_(nh_,"blin
   
 }
 
-/*
+/**
 * Empty destructor
 */
-TakeOffServer::~TakeOffServer(void){};
+Server::~Server(void){};
 
-/*
+/**
 * Imu Callback.
 * Based on the current z-axis acceleration and the goal acceleration checks if 
 * take off has succeeded.
 * @param imu ros message
 */
-void TakeOffServer::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
+void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
   // Make sure action is active
   if (!as_.isActive())
     return;
- 
-  // Action is ready to be executed
-  if (!is_reading_imu_)
-    is_reading_imu_ = true;
   
+  if (state_ == IDLE)
+    state_ = ACTIVE;
+    
   // Check if take off succeed
   if( imu->linear_acceleration.z >= goal_.take_off_accel){
-    result_.elapsed_time = ros::Time::now().toSec();
-    result_.thrust       = feedback_.thrust;
-    as_.setSucceeded(result_);
+    // Save take off thrust
+    result_.thrust = feedback_.thrust;
+    // Update action state_
+    state_ = TAKE_OFF_DETECTED;
     // Log
     ROS_INFO("Blind Take Off SERVER: Take off detected! %d", result_.thrust);
   }
 
-  // Update value
-  feedback_.z_accel = imu->linear_acceleration.z;
-
 }
 
-/*
+/**
 * Goal callback. 
 * This function is called upon acceptance of a new goal.
 * @param goal current goal specifying take off acceleration (m/s/s) 
 */
-void TakeOffServer::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
-  // Take off starting time
-  start_time_ = ros::Time::now().toSec();
+void Server::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
   // Saving goal parameters
-  //goal_.take_off_accel = as_.acceptNewGoal()->take_off_accel;
   goal_.take_off_accel = goal->take_off_accel;
+  goal_.climb_time     = goal->climb_time;
+
+  // ROS subscribers and publishers
+  imu_sub_      = nh_.subscribe("/fcu/imu", 1, &Server::ImuCallback, this);
+
   // Ros sleep time
-  loop_rate_ = 10;
   ros::Rate ros_rate(loop_rate_);
 
-  // Messages
-  std_msgs::Int32 thrust_msg;
-  geometry_msgs::Vector3 attitude_msg;
-  // Define initial values for messages
-  thrust_msg.data  = feedforward_;
-  attitude_msg.x   = 0;
-  attitude_msg.y   = 0;
-  attitude_msg.z   = 0;
-  // Sampling time
+  // Define and set inital values for take off attemp
+  double time;
   double dt = 1.0/loop_rate_;
+  double increment = 0;
+  feedback_.thrust  = feedforward_;
+  state_ = IDLE;
 
-  //ROS Loop
-  // Log
+  // Log and ROS Loop 
   ROS_INFO("Blind Take Off SERVER: Trying to take off. [take_off_accel]=[%f m/s/s] ", goal_.take_off_accel);
   while( ros::ok() && as_.isActive()){
-    // Wait until imu is receiving messages
-    if (!is_reading_imu_)
-      continue;
-    // Increase thrust
-    thrust_msg.data = std::min(thrust_msg.data + 1 , max_thrust_);
-    feedback_.thrust  = thrust_msg.data; 
+    /* State table list
+      IDLE: Although action has been called by a client, wait until imu callback has received a message.
+      ACTIVE: Increment thrust value until a take off has been detected.
+    */  
+    switch (state_){
+      case (IDLE):  
+        // Wait for imu messages
+        break;
+
+      case (ACTIVE):  
+        // Increase thrust
+        increment += 1*dt;
+        feedback_.thrust  = std::min(feedback_.thrust + ((int) increment), max_thrust_);
+        break; 
+
+      case (TAKE_OFF_DETECTED): 
+        // Shut down imu subscriber
+        time = ros::Time::now().toSec();
+        // Save time and change state
+        imu_sub_.shutdown(); 
+        state_ = CLIMB;
+        break;
+                              
+      case(CLIMB): 
+        // Remain in this state until climb_time reached 
+        if ( (ros::Time::now().toSec() - time) >= goal_.climb_time) {
+          as_.setSucceeded(result_);
+          state_ = FINISHED;
+        }
+        break;
+    }
     
-    // Publish
-    thrust_pub_.publish(thrust_msg); 
-    attitude_pub_.publish(attitude_msg); 
-    // Feedback
-    feedback_.thrust  = thrust_msg.data; 
+    // Publish feedback  
     as_.publishFeedback(feedback_);
 
     // Loop rate
@@ -134,24 +141,24 @@ void TakeOffServer::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
   }
 }
 
-/*
+/**
 * Preemption callback
 * Modify action server to aborted
 */
-void TakeOffServer::PreemptCallback(void){
+void Server::PreemptCallback(void){
   // Modify server status to aborted
   as_.setAborted();
   // Log
   ROS_INFO("Take Off Blind SERVER: Aborted");
 }
  
-/*
+/**
 * Set actuation parameters.
 * @param feedforward feedforward thrust value (0 to 100) [DEFAULT = 0] 
 * @param max_thrust maximium thrust value (0 to 100) [DEFAULT = 10]
 * @param loop_rate actuation loop rate [DEFAULT = 10 Hz]
 */
-void TakeOffServer::SetParams(int feedforward, int max_thrust, int loop_rate){
+void Server::SetParams(int feedforward, int max_thrust, int loop_rate){
   // Update values..
   feedforward_ = std::min(feedforward, 100);
   max_thrust_  = std::min(max_thrust,100);

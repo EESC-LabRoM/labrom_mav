@@ -30,14 +30,14 @@
 namespace blind{
 namespace take_off{
 //! Class TakeOffClient scope
-class TakeOffClient{
+class Client{
   public:
     //! Constructor
-    TakeOffClient(void);
+    Client(void);
     //! Empty Destructor 
-    ~TakeOffClient(void);
+    ~Client(void);
     //! Set Goal
-    void SetGoal(double take_off_accel = 10.0);
+    void SetGoal(double take_off_accel = 10.0, double climb_time = 0);
     //! Send Goal
     bool SendGoal(double timeout = 2.0);
     //! Get result thrust

@@ -1,5 +1,5 @@
 /*************************************************************************
-*   Blind::TakeOffClient implementation
+*   Blind::Client implementation
 *   This file is part of blind_action
 *
 *   blind_action is free software: you can redistribute it and/or modify
@@ -24,25 +24,28 @@ namespace take_off{
 /**
 * Empty constructor
 */
-TakeOffClient::TakeOffClient(void){
+Client::Client(void){
   SetGoal();
 };
 
 /**
 * Empty destructor
 */
-TakeOffClient::~TakeOffClient(void){};
+Client::~Client(void){};
 
 
 /**
 * Set Goal
 * @param take_off_accel take off acceleration [DEFAULT 10 m/s/s]
 */
-void TakeOffClient::SetGoal(double take_off_accel){
+void Client::SetGoal(double take_off_accel, double climb_time){
   // Update goal
   goal_.take_off_accel = take_off_accel;
+  goal_.climb_time     = climb_time;
   // Log
-  ROS_INFO("Blind Take off CLIENT: Updating goal parameters. [take_off_accel]=[%.2f]", goal_.take_off_accel);
+  ROS_INFO("Blind Take off CLIENT: Updating goal parameters. [take_off_accel, climb_time]=[%.2f, %.2f]", 
+              goal_.take_off_accel,
+              goal_.climb_time);
 }
 
 /**
@@ -51,7 +54,7 @@ void TakeOffClient::SetGoal(double take_off_accel){
 * It returns true - succeed or false - failed
 * @param timeout time for cancelling take off attempt  [DEFAULT = 2.0 s]
 */
-bool TakeOffClient::SendGoal(double timeout){
+bool Client::SendGoal(double timeout){
   // Starting action client
   actionlib::SimpleActionClient<blind_action::TakeOffAction> ac("blindtakeoff", true);
 
@@ -69,7 +72,6 @@ bool TakeOffClient::SendGoal(double timeout){
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
     ROS_INFO("Blind Take Off CLIENT: Action finished - %s", ac.getState().toString().c_str());
     result_.thrust       = ac.getResult()->thrust;
-    result_.elapsed_time = ac.getResult()->elapsed_time;
     return true;
   }else{
     ROS_INFO("Blind Take Off CLIENT: Action did not finish before the time out." );
@@ -82,7 +84,7 @@ bool TakeOffClient::SendGoal(double timeout){
 * Get result thrust
 * This function returns the thrust achieved in the last successful take off
 */
-int TakeOffClient::getResultThrust(void){
+int Client::getResultThrust(void){
   return result_.thrust;
 }
 
