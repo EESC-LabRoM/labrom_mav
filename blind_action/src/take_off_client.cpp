@@ -25,7 +25,9 @@ namespace take_off{
 * Empty constructor
 */
 Client::Client(void){
-  SetGoal();
+  // Setting goal to zero
+  goal_.take_off_accel = 0;
+  goal_.climb_time     = 0;
 };
 
 /**
@@ -58,26 +60,15 @@ bool Client::SendGoal(double timeout){
   // Starting action client
   actionlib::SimpleActionClient<blind_action::TakeOffAction> ac("blindtakeoff", true);
 
-  // Log
-  ROS_INFO("Blind Take Off CLIENT: Waiting foraction server to start.");
-
   // Wait for the action server to start
   ac.waitForServer(); 
-  ROS_INFO("Blind Take Off CLIENT: Action server ready, sending goal. [take_off_accel]=[%.2f]. Timeout = %.2f secs", goal_.take_off_accel, timeout);
+  ROS_INFO("Blind Take Off CLIENT: Action server ready, sending goal. [take_off_accel, climb_time]=[%.2f, %.2f]. Timeout = %.2f secs", 
+            goal_.take_off_accel, 
+            goal_.climb_time,
+            timeout);
 
   // Send goal
-  ac.sendGoalAndWait(goal_,ros::Duration(timeout),ros::Duration(0.1));
- 
-  // Check result
-  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
-    ROS_INFO("Blind Take Off CLIENT: Action finished - %s", ac.getState().toString().c_str());
-    result_.thrust       = ac.getResult()->thrust;
-    return true;
-  }else{
-    ROS_INFO("Blind Take Off CLIENT: Action did not finish before the time out." );
-    return false;
-  }
-  
+  ac.sendGoal(goal_);  
 }
 
 /**

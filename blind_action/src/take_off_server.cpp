@@ -65,8 +65,6 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     
   // Check if take off succeed
   if( imu->linear_acceleration.z >= goal_.take_off_accel){
-    // Save take off thrust
-    result_.thrust = feedback_.thrust;
     // Update action state_
     state_ = TAKE_OFF_DETECTED;
     // Log
@@ -104,6 +102,10 @@ void Server::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
     /* State table list
       IDLE: Although action has been called by a client, wait until imu callback has received a message.
       ACTIVE: Increment thrust value until a take off has been detected.
+      TAKE_OFF_DETECTED: Transition state. Save take off thrust, time take off is detected.
+      CLIMB: Climb for time interval defined in goal.
+      FINISHED: Set action succeed. Then, nothing to do.
+      default: set thrust to feedfoward value (should be safe!!!)
     */  
     switch (state_){
       case (IDLE):  
@@ -117,19 +119,31 @@ void Server::GoalCallback(const blind_action::TakeOffGoalConstPtr &goal){
         break; 
 
       case (TAKE_OFF_DETECTED): 
+        // Save take off thrust
+        result_.thrust = feedback_.thrust;
         // Shut down imu subscriber
-        time = ros::Time::now().toSec();
-        // Save time and change state
         imu_sub_.shutdown(); 
+        // Save time and change state
+        time = ros::Time::now().toSec();
         state_ = CLIMB;
         break;
                               
       case(CLIMB): 
         // Remain in this state until climb_time reached 
         if ( (ros::Time::now().toSec() - time) >= goal_.climb_time) {
-          as_.setSucceeded(result_);
           state_ = FINISHED;
         }
+        break;
+
+      case (FINISHED): 
+        // nothing to do..
+        as_.setSucceeded(result_);
+        break;
+
+      default:
+        // code should not enter here. just in case.. 
+        feedback_.thrust = feedforward_;
+        ROS_WARN("Take off SERVER: Bug detected");
         break;
     }
     

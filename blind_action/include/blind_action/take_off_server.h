@@ -19,9 +19,6 @@
 #ifndef BLIND_TAKE_OFF_SERVER_H_
 #define BLIND_TAKE_OFF_SERVER_H_
 
-// take_off libraires
-#include "blind_action/blind.h"
-
 // laberom_control libraries
 #include "labrom_control/controllers.h"
 
@@ -64,7 +61,6 @@ class Server{
     blind_action::TakeOffResult result_;      //!< Result message
     blind_action::TakeOffGoal goal_;          //!< Goal message
     // Take off rotine variables
-    int start_time_;                      //!< Time current goal was received
     int loop_rate_;                       //!< Actuation loop rate
     int feedforward_;                     //!< Feedforward thrust 0..100
     int max_thrust_;                      //!< Maximum thrust 0..100    

@@ -20,7 +20,6 @@
 #define BLIND_TAKE_OFF_CLIENT_H_
 
 // take_off libraries
-#include <blind_action/blind.h>
 #include <blind_action/TakeOffAction.h>
 
 // Actionlib libraries
@@ -45,7 +44,7 @@ class Client{
 
   private:
     blind_action::TakeOffGoal goal_;           //!< Goal
-    blind_action::TakeOffResult result_;        //!< Result
+    blind_action::TakeOffResult result_;       //!< Result
 };
 
 } // take_off namespace

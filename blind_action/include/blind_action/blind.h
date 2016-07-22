@@ -19,8 +19,12 @@
 #ifndef BLIND_H_
 #define BLIND_H_
 
-#include "ros/ros.h"
 
+// take_off libraries
+#include "blind_action/take_off_server.h"
+#include "blind_action/take_off_client.h"
+
+#include "ros/ros.h"
 //! Top-level namespace
 namespace blind{
 } // blind namespace
