@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package>
+  <name>labrom_mav_blind_action</name>
+  <version>0.0.0</version>
+  <description>The blind_action package</description>
+
+ <maintainer email="romulortr@gmail.com">Rômulo T. Rodrigues</maintainer>
+
+ <license>GPLv3</license>
+
+ <author email="romulortr@gmail.com">Rômulo T. Rodrigues</author> -->
+
+ <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <run_depend>actionlib</run_depend>
+  <run_depend>actionlib_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
