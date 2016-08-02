@@ -35,7 +35,7 @@ enum State{IDLE=0, DESCEND, WAIT_HIT_GROUND, FINISHED};
 class Server{
   public:
     //! Constructor
-    Server(void);
+    Server(std::string name);
     //! Empty Destructor
     ~Server(void);
     //! Imu callback

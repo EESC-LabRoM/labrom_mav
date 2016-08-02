@@ -19,102 +19,95 @@
 // labrom_mav_manager libraries
 #include "labrom_mav_manager/manager.h"
 // labrom_mav_blind_action libraries
-#include "blind_action/take_off_server.h"
-#include "blind_action/take_off_client.h"
-#include "blind_action/climb_server.h"
-#include "blind_action/climb_client.h"
-#include "blind_action/landing_server.h"
-#include "blind_action/landing_client.h"
-#include "blind_action/blind.h"
-// labrom_control libriares
-#include "labrom_control/pid_simple.h"
+#include "labrom_mav_blind_action/blind.h"
+
+// ROS message libraries
+#include "std_msgs/Int32.h"
+#include "geometry_msgs/Vector3.h"
+
+// ROS messages
+std_msgs::Int32 thrust;
+geometry_msgs::Vector3 attitude;
+
+void TakeOffFeedback(const labrom_mav_blind_action::TakeOffFeedback::ConstPtr& feedback);
 
 int main(int argc, char **argv){
   // Initialize ROS within this node 
   ros::init(argc,argv,"MAVManager");
   ros::NodeHandle nh;
-  // ROS Spin thread
+
+  // Publishers
+  ros::Publisher attitude_pub = nh.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
+  ros::Publisher thrust_pub   = nh.advertise<std_msgs::Int32>("/cmd_thrust",1);
+
+  blind::take_off::Client takeoff("/blind/takeoff");
+
+  // @todo is ROS Spin thread necessary? REMEMBER TO CLOSE THE THREAD AT THE VERY END!!!!!
   boost::thread spin_thread(&manager::Spin);
-  // PID Controller for blind action
-  controllers::pid::Simple pid("Blind"); 
-  double kp=0.2, ki=0.5, kd=10*0.02, windup_thresh=15;
-  pid.SetParams(kp,ki,kd,windup_thresh);
+
+  // Action clients
+  actionlib::SimpleActionClient<labrom_mav_blind_action::TakeOffAction> ac("/blind/takeoff", true);
+  ac.waitForServer();
 
   // Manager state machine
-  manager::ManagerState state= manager::WAIT_MOTORS_ON;
-  
-  // Action servers
-  int feedforward=35, max_thrust=65, loop_rate=10;
-  blind::take_off::TakeOffServer take_off_server(pid);
-  blind::climb::ClimbServer climb_server(pid);
-  blind::landing::LandingServer landing_server(pid);
+  manager::ManagerState state= manager::TAKE_OFF;
 
   while(ros::ok()){
     // Spin thread
     switch (state){
-      //! \todo Wait until quad motors are on (GET THIS INFORMATION)
-      case manager::WAIT_MOTORS_ON:{
-        state = manager::TAKE_OFF;
-        break;
-      } 
-
-      // Take off action
-      case manager::TAKE_OFF: {
-        // action client
-        blind::take_off::TakeOffClient client;
-        // Setting takeoff server parameters                                    
-        take_off_server.SetParams(feedforward, max_thrust, loop_rate);
-        // Setting takeoff client parameters
-        double take_off_accel = 10.5;
-        client.SetGoal(take_off_accel);
-        // Perform take off attempt
-        double timeout = 10;
-        bool result = client.SendGoal(timeout);
-        //! \todo verify if suceeded (MODIFY CLENT SENDGOAL return value)
-        if (result)
-          feedforward = client.getResultThrust();
-        state = manager::CLIMB;
-        break;
-      }                                 
-
-      // Climb action
-      case manager::CLIMB: {
-        // action client
-        blind::climb::ClimbClient client;
-        // Setting climb server parameters                                    
-        climb_server.SetParams(feedforward, max_thrust, loop_rate);
-        // Setting clim client parameters
-        double climb_accel = 11.0, timeout = 0.3;
-        client.SetGoal(climb_accel, timeout);
-        // Perform climb
-        client.SendGoal(timeout+0.2);
-        //! \todo verify if suceeded (MODIFY CLENT SENDGOAL return value)
-        state = manager::LAND;
+      case (manager::IDLE):{
+        //! @todo Switching condition (turn motors on?)
+       
         break;
       }
 
-      // Landing action
-      case manager::LAND: {
-        // action client
-        blind::landing::LandingClient client;
-        // Setting land server parameters                                    
-        landing_server.SetParams(feedforward-5, max_thrust, loop_rate);
-        // Setting land client parameters
-        double descend_accel = 7.0, hit_ground_accel = 12.0;
-        client.SetGoal(descend_accel, hit_ground_accel);
-        // Perform land attempt
-        double timeout = 30;
-        client.SendGoal(timeout);
-        //! \todo verify if suceeded (MODIFY CLENT SENDGOAL return value)
-        state = manager::WAIT_MOTORS_OFF;
+      case (manager::TURN_MOTORS_ON):{
+        //! @todo turn motors on
+
+        break;     
+      }
+
+      // Call take off server
+      case (manager::TAKE_OFF):{
+        // Assemble blind take off goal
+        takeoff.SendGoal(10.5,1);
+        /*labrom_mav_blind_action::TakeOffGoal goal;
+        goal.take_off_accel = 10.5;
+        goal.climb_time = 1;
+        // Send goal
+        ac.sendGoal(goal, NULL, NULL, &TakeOffFeedback);
+        */
+        // Change for supervisionary state
+        state = manager::WAIT_TAKE_OFF;
+        
         break;
       }
 
-      // Wait motors off (user)
-      case manager::WAIT_MOTORS_OFF: {
-        //ROS_INFO("TURN MOTORS OFF..");
+      // Blind take off supervisionary state
+      case (manager::WAIT_TAKE_OFF):{
+        thrust.data = 0;
+        std::cout << "Waiting take off: " << takeoff.GetThrust() << std::endl;
         break;
       }
+
+      case (manager::FREE_MODE):
+        //! @todo call user action server  
+        
+        break;
+      case (manager::LAND):
+        //! @todo call land server
+
+        break;
+      case (manager::TURN_MOTORS_OFF):
+        //! @todo turn motors off
+
+        break;
+
+      default:
+        ROS_INFO("[unknown state]");
+
+        break;
+    
     } // switch
 
   }
@@ -123,6 +116,12 @@ int main(int argc, char **argv){
   // Shutdown ros and spin thread
   ros::shutdown();
   
-
   return 0;
+}
+
+// Called every time feedback is received for the goal
+void TakeOffFeedback(const labrom_mav_blind_action::TakeOffFeedback::ConstPtr& feedback)
+{
+  thrust.data = (int) feedback->thrust;
+  std::cout << "thrust: " << thrust.data << std::endl;
 }

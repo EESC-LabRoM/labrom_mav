@@ -5,9 +5,10 @@ project(labrom_mav_manager)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  blind_action
+  labrom_mav_blind_action
   labrom_control
   roscpp
+  actionlib
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -15,7 +16,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  CATKIN_DEPENDS blind_action labrom_control roscpp
+  CATKIN_DEPENDS labrom_mav_blind_action labrom_control roscpp
 )
 
 ###########

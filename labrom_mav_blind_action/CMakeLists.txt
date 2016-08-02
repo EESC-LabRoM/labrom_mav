@@ -54,8 +54,7 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME} 
- #  src/take_off_server.cpp
- # src/landing_server.cpp
+   src/take_off_client.cpp
    src/blind.cpp
 )
 

@@ -23,12 +23,14 @@ namespace landing{
 /**
 * Constructor
 */
-Server::Server(void) :as_(nh_,"blind_landing", boost::bind(&Server::GoalCallback, this, _1), false){
+Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false){
   // Action server callbacks 
   as_.registerPreemptCallback(boost::bind(&Server::PreemptCallback, this));
 
   // Setting parameter with default values
-  this->SetParams();
+  nh_.param<int>("feedforward", feedforward_, 0);
+  nh_.param<int>("max_thrust", max_thrust_, 10);
+  nh_.param<int>("loop_rate", loop_rate_, 10);
 
   // Start action server
   as_.start();
@@ -137,7 +139,7 @@ void Server::GoalCallback(const labrom_mav_blind_action::LandingGoalConstPtr &go
   imu_sub_.shutdown();
 }
 
-/*
+/**
 * Preemption callback
 * Modify action server to aborted
 */
@@ -148,7 +150,7 @@ void Server::PreemptCallback(void){
   ROS_INFO("Blind Landing SERVER: Aborted");
 }
  
-/*
+/**
 * Set actuation parameters.
 * @param feedforward feedforward thrust value (0 to 100) [DEFAULT = 0] 
 * @param max_thrust maximium thrust value (0 to 100) [DEFAULT = 10]
@@ -167,3 +169,13 @@ void Server::SetParams(int feedforward, int max_thrust, int loop_rate){
 } //landing namespace
 } //blind namespace
 
+int main(int argc, char **argv){
+  // Initialize ROS within this node
+  ros::init(argc,argv,"BlindLanding");
+
+  // Call landing server
+  blind::landing::Server server(ros::this_node::getName()); 
+
+  // Spin
+  ros::spin();
+}

@@ -22,7 +22,12 @@
 
 // labrom_mav_blind_action libraries
 #include "labrom_mav_blind_action/take_off_server.h"
+#include "labrom_mav_blind_action/take_off_client.h"
 #include "labrom_mav_blind_action/landing_server.h"
+#include <actionlib/server/simple_action_server.h>
+
+// actionlib libraries
+#include <actionlib/client/simple_action_client.h>
 
 //! Top-level namespace
 namespace blind{

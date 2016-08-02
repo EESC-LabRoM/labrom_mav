@@ -1,0 +1,21 @@
+<launch>
+  <group ns="blind">
+    <node name="takeoff" pkg="labrom_mav_blind_action" type="take_off_node" output="screen">
+      <!-- Remaps-->
+      <remap from="/imu" to="/imu"/>
+      <!-- parameters -->
+      <param name="feedforward" value="35" />
+      <param name="max_thrust" value="60" />
+      <param name="loop_rate" value="20" />
+    </node>
+    <node name="landing" pkg="labrom_mav_blind_action" type="landing_node" output="screen">
+      <!-- Remaps-->
+      <remap from="/imu" to="/imu"/>
+      <!-- parameters -->
+      <param name="feedforward" value="35" />
+      <param name="max_thrust" value="60" />
+      <param name="loop_rate" value="20" />
+    </node>
+  </group>
+  <!--<group ns="blind">  </group>-->
+</launch>

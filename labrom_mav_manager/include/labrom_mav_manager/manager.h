@@ -22,10 +22,8 @@
 // top-level namespace
 namespace manager{
 
-enum ManagerState{WAIT_MOTORS_ON=0, TAKE_OFF, CLIMB, HOVER, LAND, WAIT_MOTORS_OFF};
-/*#define WAIT_MOTORS_ON 0
-#define TAKE_OFF 1
-#define CLIMB 2*/
+enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, FREE_MODE, LAND, TURN_MOTORS_OFF};
+
 //! ROS spin function 
 void Spin();
 

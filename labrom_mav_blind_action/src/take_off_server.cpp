@@ -61,6 +61,7 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     FINISHED: Set action succeed. Then, nothing to do.
     default: set thrust to feedfoward value (should be safe!!!)
   */  
+  std::cout << "TAKE OFF STATE: " << state_ << std::endl;
   switch (state_){
     case (IDLE):
       previous_time_ = time;
@@ -170,6 +171,7 @@ int main(int argc, char **argv){
 
   // Call take off server
   blind::take_off::Server server(ros::this_node::getName()); 
+
 
   // Spin
   ros::spin();
