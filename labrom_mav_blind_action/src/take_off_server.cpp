@@ -53,19 +53,51 @@ Server::~Server(void){};
 * @param imu ros message
 */
 void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
-  // Make sure action is active
-  if (!as_.isActive())
-    return;
-  
-  if (state_ == IDLE)
-    state_ = ACTIVE;
+  int time = ros::Time::now().toSec();
+  /* State table list
+    IDLE: Although action has been called by a client, wait until imu callback has received a message.
+    TRYING_TO_TAKE_OFF: Increment thrust value until a take off has been detected.
+    CLIMB: Climb for time interval defined in goal.
+    FINISHED: Set action succeed. Then, nothing to do.
+    default: set thrust to feedfoward value (should be safe!!!)
+  */  
+  switch (state_){
+    case (IDLE):
+      previous_time_ = time;
+      state_ = TRYING_TO_TAKE_OFF;
+      break;
     
-  // Check if take off succeed
-  if( imu->linear_acceleration.z >= goal_.take_off_accel){
-    // Update action state_
-    state_ = TAKE_OFF_DETECTED;
-    // Log
-    ROS_INFO("Blind Take Off SERVER: Take off detected! %d", result_.thrust);
+    case (TRYING_TO_TAKE_OFF):
+      // Check if take off acceleration has been detected 
+      if ( imu->linear_acceleration.z < goal_.take_off_accel){
+        // No.. then increase thrust
+        feedback_.thrust  = std::min(feedback_.thrust + 1*(time - previous_time_), (float) max_thrust_);
+        previous_time_ = time;
+      // yes.. save current thust and time
+      } else {  
+        result_.thrust = feedback_.thrust;
+        ROS_INFO("Blind Take Off SERVER: Take off detected! %f", result_.thrust);
+        previous_time_ = time;
+        state_ = CLIMB;
+      }
+      break;
+  
+    case (CLIMB): 
+      // Remain in this state until climb_time reached 
+      if ( (ros::Time::now().toSec() - previous_time_) >= goal_.climb_time) {
+        state_ = FINISHED;
+      }
+      break;
+    
+    case (FINISHED):
+      as_.setSucceeded(result_);
+      break;
+
+    default:
+     // code should not enter here. just in case.. 
+     feedback_.thrust = feedforward_;
+     ROS_WARN("Take off SERVER: Bug detected [unknown state]");
+     break;    
   }
 
 }
@@ -80,76 +112,26 @@ void Server::GoalCallback(const labrom_mav_blind_action::TakeOffGoalConstPtr &go
   goal_.take_off_accel = goal->take_off_accel;
   goal_.climb_time     = goal->climb_time;
 
-  // ROS subscribers and publishers
-  imu_sub_      = nh_.subscribe("//imu", 1, &Server::ImuCallback, this);
-
   // Ros sleep time
   ros::Rate ros_rate(loop_rate_);
 
   // Define and set inital values for take off attemp
-  double time;
-  double dt = 1.0/loop_rate_;
-  double increment = 0;
   feedback_.thrust  = feedforward_;
   state_ = IDLE;
 
+  // Turn imu ROS subscriber on
+  imu_sub_  = nh_.subscribe("/imu", 1, &Server::ImuCallback, this);
+
   // Log and ROS Loop 
-  ROS_INFO("Blind Take Off SERVER: Trying to take off. [take_off_accel]=[%f m/s/s] ", goal_.take_off_accel);
+  ROS_INFO("Blind Take Off SERVER: Trying to take off. [take_off_accel, climb_time]:=[%.2f, %d]", goal_.take_off_accel, goal_.climb_time);
   while( ros::ok() && as_.isActive()){
-    /* State table list
-      IDLE: Although action has been called by a client, wait until imu callback has received a message.
-      ACTIVE: Increment thrust value until a take off has been detected.
-      TAKE_OFF_DETECTED: Transition state. Save take off thrust, time take off is detected.
-      CLIMB: Climb for time interval defined in goal.
-      FINISHED: Set action succeed. Then, nothing to do.
-      default: set thrust to feedfoward value (should be safe!!!)
-    */  
-    switch (state_){
-      case (IDLE):  
-        // Wait for imu messages
-        break;
-
-      case (ACTIVE):  
-        // Increase thrust
-        increment += 1*dt;
-        feedback_.thrust  = std::min(feedback_.thrust + ((int) increment), max_thrust_);
-        break; 
-
-      case (TAKE_OFF_DETECTED): 
-        // Save take off thrust
-        result_.thrust = feedback_.thrust;
-        // Shut down imu subscriber
-        imu_sub_.shutdown(); 
-        // Save time and change state
-        time = ros::Time::now().toSec();
-        state_ = CLIMB;
-        break;
-                              
-      case(CLIMB): 
-        // Remain in this state until climb_time reached 
-        if ( (ros::Time::now().toSec() - time) >= goal_.climb_time) {
-          state_ = FINISHED;
-        }
-        break;
-
-      case (FINISHED): 
-        // nothing to do..
-        as_.setSucceeded(result_);
-        break;
-
-      default:
-        // code should not enter here. just in case.. 
-        feedback_.thrust = feedforward_;
-        ROS_WARN("Take off SERVER: Bug detected");
-        break;
-    }
-    
     // Publish feedback  
     as_.publishFeedback(feedback_);
-
     // Loop rate
     ros_rate.sleep();
   }
+
+  imu_sub_.shutdown();
 }
 
 /**
@@ -171,7 +153,9 @@ void Server::PreemptCallback(void){
 */
 void Server::SetParams(int feedforward, int max_thrust, int loop_rate){
   // Update values..
-
+  feedforward_ = feedforward;
+  max_thrust_  = max_thrust;
+  loop_rate_   = loop_rate;
   // Log        
   ROS_INFO("Blind  Take Off SERVER: Actuation parameters updated. [feedforward, max_thrust, loop_rate] := [%d, %d, %d]", feedforward_, max_thrust_, loop_rate_);
 

@@ -30,7 +30,7 @@ namespace blind{
 //! Landing namespace
 namespace landing{
 //! Possible states for take off action
-enum State{IDLE=0, ACTIVE, DESCEND, LANDING_ACCEL_DETECTED, FINISHED};
+enum State{IDLE=0, DESCEND, WAIT_HIT_GROUND, FINISHED};
 //! Class  Blind Landing Server scope
 class Server{
   public:
@@ -61,7 +61,7 @@ class Server{
     int loop_rate_;                       //!< Actuation loop rate
     int feedforward_;                     //!< Feedforward thrust 0..100
     int max_thrust_;                      //!< Maximum thrust 0..100    
-    double z_accel_;                      //!< z-axis acceleration in the 
+    int previous_time_;
     State state_;                         //!< Indicates action state
 
 };

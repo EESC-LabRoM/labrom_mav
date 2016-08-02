@@ -3,8 +3,8 @@ float32 descend_accel
 float32 hit_ground_accel
 ---
 #result definition
-int32 thrust
+float32 thrust
 ---
 #feedback
-int32 thrust
+float32 thrust
 

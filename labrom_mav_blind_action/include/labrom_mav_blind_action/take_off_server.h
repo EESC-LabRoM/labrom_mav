@@ -1,5 +1,5 @@
 /*************************************************************************
-*   Blind::TakeOffServer header files
+*   blind::take_off::Server header files
 *   This file is part of blind_action
 *
 *   blind_action is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ namespace blind{
 //! Take off namespace
 namespace take_off{
 //! Possible states for take off action
-enum State{IDLE=0, ACTIVE, TAKE_OFF_DETECTED, CLIMB, FINISHED};
+enum State{IDLE=0,  TRYING_TO_TAKE_OFF, ACTIVE, TAKE_OFF_DETECTED, CLIMB, FINISHED};
 //! Class BlindTakeOffServer scope
 class Server{
   public:
@@ -61,6 +61,7 @@ class Server{
     int loop_rate_;                       //!< Actuation loop rate
     int feedforward_;                     //!< Feedforward thrust 0..100
     int max_thrust_;                      //!< Maximum thrust 0..100    
+    int previous_time_;
     State state_;                         //!< Indicates action state
 };
 

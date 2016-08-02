@@ -20,7 +20,7 @@
 
 namespace blind{
 namespace landing{
-/*
+/**
 * Constructor
 */
 Server::Server(void) :as_(nh_,"blind_landing", boost::bind(&Server::GoalCallback, this, _1), false){
@@ -38,23 +38,73 @@ Server::Server(void) :as_(nh_,"blind_landing", boost::bind(&Server::GoalCallback
   
 }
 
-/*
+/**
 * Empty destructor
 */
 Server::~Server(void){};
 
-/*
+/**
 * Imu Callback.
 * Based on the current z-axis acceleration and the goal acceleration checks if 
 * landing has succeeded.
 * @param imu ros message
 */
 void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
-  // Read z-axis acceleration
-  z_accel_ = imu->linear_acceleration.z;  
+  int time = ros::Time::now().toSec();
+
+  /* State table list
+    IDLE: Although action has been called by a client, wait until imu callback has received a message.
+    DESCEND: Decrease thrust until detecting descend_accel.
+    WAIT_HIT_GROUND: Keep thrust until ground hit detection. Once detected, send thrust to 0 (minimal value).
+    FINISHED: Set action succeed, shut down imu subscriber. Then, nothing to do.
+    default: set thrust to 0 (should be safe!!!)
+  */  
+
+
+  switch (state_){
+    case (IDLE):  
+      previous_time_ = time;
+      state_ = DESCEND;
+      break;
+  
+    case (DESCEND):
+      // Check if landing acceleration has been detected 
+      if ( imu->linear_acceleration.z >  goal_.descend_accel ){
+        // No.. then decrease thrust
+        feedback_.thrust  = std::min(feedback_.thrust - 1*(time - previous_time_), (float) max_thrust_);
+        previous_time_ = time;
+      // yes.. save current thust and time
+      } else {  
+        result_.thrust = feedback_.thrust;
+        ROS_INFO("Blind Landing SERVER: Landing detected! %f", result_.thrust);
+        previous_time_ = time;
+        state_ = WAIT_HIT_GROUND;
+      }
+      break;
+
+    case(WAIT_HIT_GROUND): 
+      // Remain in this state until ground hit detected
+      if (imu->linear_acceleration.z > goal_.hit_ground_accel){
+        feedback_.thrust = 0;
+        state_ = FINISHED;
+      }
+      break;
+
+    case (FINISHED): 
+      // Set success
+      as_.setSucceeded(result_);
+      break;
+
+    default:
+      // code should not enter here. just in case.. 
+      feedback_.thrust = 0;
+      ROS_WARN("Landing SERVER: Bug detected [unknown state]");
+      break;
+  }
+
 }
 
-/*
+/**
 * Goal callback. 
 * This function is called upon acceptance of a new goal.
 * @param goal current goal specifying landing acceleration (m/s/s) 
@@ -64,77 +114,27 @@ void Server::GoalCallback(const labrom_mav_blind_action::LandingGoalConstPtr &go
   goal_.descend_accel = goal->descend_accel;
   goal_.hit_ground_accel = goal->hit_ground_accel;
 
-  // ROS subscribers and publishers
-  imu_sub_      = nh_.subscribe("/imu", 1, &Server::ImuCallback, this);
-
   // Ros sleep time
   ros::Rate ros_rate(loop_rate_);
 
-  // Define and set inital values for take off attemp
-  double dt = 1.0/loop_rate_;
-  double decrement = 0;
+  // Define and set inital values for landing
   feedback_.thrust  = feedforward_;
-  z_accel_ = 0;
   state_ = IDLE;
+
+  // Turn imu ROS subscriber on
+  imu_sub_      = nh_.subscribe("/imu", 1, &Server::ImuCallback, this);
 
   // Log and ROS Loop 
   ROS_INFO("Blind Landing SERVER: Trying to landing. [descend_accel, hit_ground_accel]=[%.2f %.2f]m/s/s ", goal_.descend_accel, goal_.hit_ground_accel);
   while( ros::ok() && as_.isActive()){
-    /* State table list
-      IDLE: Although action has been called by a client, wait until imu callback has received a message.
-      ACTIVE: Increment thrust value until a take off has been detected.
-      DESCEND: Keep thrust until ground hit detection. Once detected, send thrus to 0 (minimal value).
-      FINISHED: Set action succeed, shut down imu subscriber. Then, nothing to do.
-      default: set thrust to 0 (should be safe!!!)
-    */  
-    switch (state_){
-      case (IDLE):  
-        // Wait for imu messages
-        if (z_accel_ > 0)
-          state_ = ACTIVE;
-        break;
-
-      case (ACTIVE):
-        // Decrease thrust until descend accel detected
-        if (z_accel_ > goal_.descend_accel){
-          // Decrease thrust
-          decrement -= 1*dt;
-          feedback_.thrust  = std::min(feedback_.thrust + ((int) decrement), max_thrust_);
-        } else{
-          // Save take off thrust    
-          result_.thrust = feedback_.thrust;
-          state_ = DESCEND;
-        }
-        break; 
-                             
-      case(DESCEND): 
-        // Remain in this state until ground hit detected
-        if (z_accel_ > goal_.hit_ground_accel){
-          feedback_.thrust = 0;
-          state_ = FINISHED;
-        }
-        break;
-
-      case (FINISHED): 
-        // Shut down imu subscriber  
-        imu_sub_.shutdown();
-        // nothing to do..
-        as_.setSucceeded(result_);
-        break;
-
-      default:
-        // code should not enter here. just in case.. 
-        feedback_.thrust = 0;
-        ROS_WARN("Landing SERVER: Bug detected");
-        break;
-    }
-    
     // Publish feedback  
     as_.publishFeedback(feedback_);
-
     // Loop rate
     ros_rate.sleep();
   }
+
+  // Shut down imu subscriber  
+  imu_sub_.shutdown();
 }
 
 /*
@@ -145,7 +145,7 @@ void Server::PreemptCallback(void){
   // Modify server status to aborted
   as_.setAborted();
   // Log
-  ROS_INFO("Landing Blind SERVER: Aborted");
+  ROS_INFO("Blind Landing SERVER: Aborted");
 }
  
 /*
