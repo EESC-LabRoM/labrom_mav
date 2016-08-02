@@ -55,7 +55,7 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME} 
  #  src/take_off_server.cpp
- src/landing_server.cpp
+ # src/landing_server.cpp
    src/blind.cpp
 )
 
@@ -64,3 +64,7 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_executable(take_off_node src/take_off_server.cpp)
 target_link_libraries(take_off_node  ${catkin_LIBRARIES})
 add_dependencies(take_off_node ${labrom_mav_blind_action_EXPORTED_TARGETS})
+
+add_executable(landing_node src/landing_server.cpp)
+target_link_libraries(landing_node  ${catkin_LIBRARIES})
+add_dependencies(landing_node ${labrom_mav_blind_action_EXPORTED_TARGETS})
