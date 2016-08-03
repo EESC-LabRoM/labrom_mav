@@ -30,7 +30,7 @@ namespace blind{
 //! Take off namespace
 namespace take_off{
 //! Possible states for take off action
-enum State{IDLE=0,  TRYING_TO_TAKE_OFF, ACTIVE, TAKE_OFF_DETECTED, CLIMB, FINISHED};
+enum State{IDLE=0,  TRYING_TO_TAKE_OFF,  CLIMB, FINISHED};
 //! Class BlindTakeOffServer scope
 class Server{
   public:

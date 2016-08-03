@@ -1,5 +1,5 @@
 /*************************************************************************
-*   blind::take_off::Client implementation
+*   blind::landing::Client implementation
 *   This file is part of blind_action
 *
 *   labrom_mav_blind_action is free software: you can redistribute it and/or modify
@@ -16,15 +16,15 @@
 *   along with labrom_mav_blind_action.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 // labrom_mav_blind_action libraries
-#include "labrom_mav_blind_action/take_off_client.h"
+#include "labrom_mav_blind_action/landing_client.h"
 
 namespace blind{
-namespace take_off{
+namespace landing{
 /**
 * Constructor
 */
 Client::Client(std::string name): ac_(name, true){
-  // Wait for blind take off server 
+  // Wait for blind landing server 
   ac_.waitForServer();
 };
 
@@ -37,13 +37,13 @@ Client::~Client(void){};
 * Send order
 */
 
-void Client::SendGoal(double take_off_accel, int climb_time){
+void Client::SendGoal(double descend_accel, int hit_ground_accel){
   // Cancel all goals
   CancelAllGoals();
   // Assemble message
-  labrom_mav_blind_action::TakeOffGoal goal;
-  goal.take_off_accel = take_off_accel;
-  goal.climb_time = climb_time;
+  labrom_mav_blind_action::LandingGoal goal;
+  goal.descend_accel = descend_accel;
+  goal.hit_ground_accel = hit_ground_accel;
   // Deactive success flags
   success_flag_ = false;
   // Send goal via actionlib client
@@ -56,7 +56,7 @@ void Client::SendGoal(double take_off_accel, int climb_time){
 * Done Callback
 * Called when the goal completes (triggered by action server)
 */
-void Client::DoneCallback(const actionlib::SimpleClientGoalState& state, const labrom_mav_blind_action::TakeOffResult::ConstPtr& result){
+void Client::DoneCallback(const actionlib::SimpleClientGoalState& state, const labrom_mav_blind_action::LandingResult::ConstPtr& result){
   // Save results
   thrust_ = result->thrust; 
   // Setting success flag
@@ -68,7 +68,7 @@ void Client::DoneCallback(const actionlib::SimpleClientGoalState& state, const l
 * Feedback Callback
 * Called when the goal is active and action client receives a feedback from action server (triggered by action server)
 */
-void Client::FeedbackCallback(const labrom_mav_blind_action::TakeOffFeedback::ConstPtr& feedback){
+void Client::FeedbackCallback(const labrom_mav_blind_action::LandingFeedback::ConstPtr& feedback){
   // Save current thrust
   thrust_ = feedback->thrust;
 };
@@ -97,5 +97,5 @@ bool Client::IsDone(void){
   return success_flag_;
 }
 
-} // take_off namespace
+} // landing namespace
 } // blind namespace

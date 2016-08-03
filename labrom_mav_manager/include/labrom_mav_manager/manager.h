@@ -22,7 +22,7 @@
 // top-level namespace
 namespace manager{
 
-enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, FREE_MODE, LAND, TURN_MOTORS_OFF};
+enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, FREE_MODE, LAND, WAIT_LANDING, TURN_MOTORS_OFF};
 
 //! ROS spin function 
 void Spin();

@@ -24,14 +24,14 @@ namespace take_off{
 /**
 * Constructor
 */
-Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false){
+Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false), nh_("~"){
   // Action server callback
   as_.registerPreemptCallback(boost::bind(&Server::PreemptCallback, this));
 
-  // Setting parameters with default values
-  nh_.param<int>("feedforward", feedforward_, 0);
-  nh_.param<int>("max_thrust", max_thrust_, 10);
-  nh_.param<int>("loop_rate", loop_rate_, 10);
+  // Get parameters from launch file
+  nh_.param("feedforward", feedforward_, 0);
+  nh_.param("max_thrust", max_thrust_, 10);
+  nh_.param("loop_rate", loop_rate_, 10);
 
   // Start action server
   as_.start();
@@ -61,9 +61,10 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     FINISHED: Set action succeed. Then, nothing to do.
     default: set thrust to feedfoward value (should be safe!!!)
   */  
-  std::cout << "TAKE OFF STATE: " << state_ << std::endl;
+
   switch (state_){
     case (IDLE):
+      feedback_.thrust = feedforward_;
       previous_time_ = time;
       state_ = TRYING_TO_TAKE_OFF;
       break;
@@ -92,6 +93,7 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     
     case (FINISHED):
       as_.setSucceeded(result_);
+        std::cout << "SAINDO!!" << std::endl;
       break;
 
     default:
@@ -117,7 +119,7 @@ void Server::GoalCallback(const labrom_mav_blind_action::TakeOffGoalConstPtr &go
   ros::Rate ros_rate(loop_rate_);
 
   // Define and set inital values for take off attemp
-  feedback_.thrust  = feedforward_;
+  feedback_.thrust  = 0;
   state_ = IDLE;
 
   // Turn imu ROS subscriber on

@@ -25,9 +25,6 @@
 #include "std_msgs/Int32.h"
 #include "geometry_msgs/Vector3.h"
 
-// ROS messages
-std_msgs::Int32 thrust;
-geometry_msgs::Vector3 attitude;
 
 void TakeOffFeedback(const labrom_mav_blind_action::TakeOffFeedback::ConstPtr& feedback);
 
@@ -40,14 +37,18 @@ int main(int argc, char **argv){
   ros::Publisher attitude_pub = nh.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
   ros::Publisher thrust_pub   = nh.advertise<std_msgs::Int32>("/cmd_thrust",1);
 
-  blind::take_off::Client takeoff("/blind/takeoff");
-
-  // @todo is ROS Spin thread necessary? REMEMBER TO CLOSE THE THREAD AT THE VERY END!!!!!
-  boost::thread spin_thread(&manager::Spin);
+  // ROS messages
+  std_msgs::Int32 thrust;
+  geometry_msgs::Vector3 attitude;
 
   // Action clients
-  actionlib::SimpleActionClient<labrom_mav_blind_action::TakeOffAction> ac("/blind/takeoff", true);
-  ac.waitForServer();
+  blind::take_off::Client blind_take_off("/blind/takeoff");
+  blind::landing::Client blind_landing("/blind/landing");
+
+  // @todo is ROS Spin thread necessary? REMEMBER TO CLOSE THE THREAD AT THE VERY END!!!!!
+  // boost::thread spin_thread(&manager::Spin);
+  // spin_thread.join(); 
+  ros::Rate rate(20);
 
   // Manager state machine
   manager::ManagerState state= manager::TAKE_OFF;
@@ -70,14 +71,10 @@ int main(int argc, char **argv){
       // Call take off server
       case (manager::TAKE_OFF):{
         // Assemble blind take off goal
-        takeoff.SendGoal(10.5,1);
-        /*labrom_mav_blind_action::TakeOffGoal goal;
-        goal.take_off_accel = 10.5;
-        goal.climb_time = 1;
-        // Send goal
-        ac.sendGoal(goal, NULL, NULL, &TakeOffFeedback);
-        */
-        // Change for supervisionary state
+        //! @todo these goals parameters should be input from variables that users can modify (e.g. dyn_reconfigure)
+        double take_off_accel = 10.5;
+        int climb_time = 1;
+        blind_take_off.SendGoal(take_off_accel, climb_time);
         state = manager::WAIT_TAKE_OFF;
         
         break;
@@ -85,19 +82,40 @@ int main(int argc, char **argv){
 
       // Blind take off supervisionary state
       case (manager::WAIT_TAKE_OFF):{
-        thrust.data = 0;
-        std::cout << "Waiting take off: " << takeoff.GetThrust() << std::endl;
+        thrust.data = blind_take_off.GetThrust();
+        thrust_pub.publish(thrust);
+        if (blind_take_off.IsDone())
+          state = manager::FREE_MODE;
         break;
       }
 
-      case (manager::FREE_MODE):
+      // Receive order from extern machine
+      case (manager::FREE_MODE):{
         //! @todo call user action server  
-        
+        state = manager::LAND;
         break;
-      case (manager::LAND):
-        //! @todo call land server
+      }
+      
+      // Call land server (blind)
+      case (manager::LAND):{
+        // Assemble landing goal
+        //! @todo these goals parameters should be input from variables that users can modify (e.g. dyn_reconfigure)
+        double descend_accel = 9.7;
+        double hit_ground_accel = 11.5;
+        blind_landing.SendGoal(descend_accel, hit_ground_accel);
+        state = manager::WAIT_LANDING;
+        break;
+      }
 
+      // Landing supervisionary state
+      case (manager::WAIT_LANDING):{
+        thrust.data = blind_landing.GetThrust();
+        thrust_pub.publish(thrust);
+        if (blind_landing.IsDone())
+          state = manager::TURN_MOTORS_OFF;
         break;
+      }
+
       case (manager::TURN_MOTORS_OFF):
         //! @todo turn motors off
 
@@ -110,8 +128,9 @@ int main(int argc, char **argv){
     
     } // switch
 
-  }
-   spin_thread.join(); 
+    // Loop delay
+    rate.sleep();
+  } // while
 
   // Shutdown ros and spin thread
   ros::shutdown();
@@ -119,9 +138,3 @@ int main(int argc, char **argv){
   return 0;
 }
 
-// Called every time feedback is received for the goal
-void TakeOffFeedback(const labrom_mav_blind_action::TakeOffFeedback::ConstPtr& feedback)
-{
-  thrust.data = (int) feedback->thrust;
-  std::cout << "thrust: " << thrust.data << std::endl;
-}

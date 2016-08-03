@@ -23,7 +23,7 @@ namespace landing{
 /**
 * Constructor
 */
-Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false){
+Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false), nh_("~"){
   // Action server callbacks 
   as_.registerPreemptCallback(boost::bind(&Server::PreemptCallback, this));
 
@@ -62,7 +62,6 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     default: set thrust to 0 (should be safe!!!)
   */  
 
-
   switch (state_){
     case (IDLE):  
       previous_time_ = time;
@@ -78,7 +77,6 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
       // yes.. save current thust and time
       } else {  
         result_.thrust = feedback_.thrust;
-        ROS_INFO("Blind Landing SERVER: Landing detected! %f", result_.thrust);
         previous_time_ = time;
         state_ = WAIT_HIT_GROUND;
       }
@@ -87,7 +85,7 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     case(WAIT_HIT_GROUND): 
       // Remain in this state until ground hit detected
       if (imu->linear_acceleration.z > goal_.hit_ground_accel){
-        feedback_.thrust = 0;
+        ROS_INFO("Blind Landing SERVER: Landing detected! %f", result_.thrust);
         state_ = FINISHED;
       }
       break;
@@ -99,7 +97,7 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
 
     default:
       // code should not enter here. just in case.. 
-      feedback_.thrust = 0;
+      feedback_.thrust =  feedforward_;
       ROS_WARN("Landing SERVER: Bug detected [unknown state]");
       break;
   }
