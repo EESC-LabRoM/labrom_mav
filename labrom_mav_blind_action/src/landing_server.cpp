@@ -114,6 +114,11 @@ void Server::GoalCallback(const labrom_mav_blind_action::LandingGoalConstPtr &go
   goal_.descend_accel = goal->descend_accel;
   goal_.hit_ground_accel = goal->hit_ground_accel;
 
+  // Retrieving values from parameters server
+  nh_.getParam("feedforward", feedforward_);
+  nh_.getParam("max_thrust", max_thrust_);
+  nh_.getParam("loop_rate", loop_rate_);
+
   // Ros sleep time
   ros::Rate ros_rate(loop_rate_);
 

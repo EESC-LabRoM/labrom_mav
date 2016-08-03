@@ -33,6 +33,7 @@ Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallbac
   nh_.param("max_thrust", max_thrust_, 10);
   nh_.param("loop_rate", loop_rate_, 10);
 
+
   // Start action server
   as_.start();
 
@@ -93,7 +94,6 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
     
     case (FINISHED):
       as_.setSucceeded(result_);
-        std::cout << "SAINDO!!" << std::endl;
       break;
 
     default:
@@ -114,6 +114,11 @@ void Server::GoalCallback(const labrom_mav_blind_action::TakeOffGoalConstPtr &go
   // Saving goal parameters
   goal_.take_off_accel = goal->take_off_accel;
   goal_.climb_time     = goal->climb_time;
+
+  // Retrieving values from parameters server
+  nh_.getParam("feedforward", feedforward_);
+  nh_.getParam("max_thrust", max_thrust_);
+  nh_.getParam("loop_rate", loop_rate_);
 
   // Ros sleep time
   ros::Rate ros_rate(loop_rate_);

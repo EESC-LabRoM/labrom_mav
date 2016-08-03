@@ -8,7 +8,7 @@
 
  <license>GPLv3</license>
 
- <author email="romulortr@gmail.com">Rômulo T. Rodrigues</author> -->
+ <author email="romulortr@gmail.com">Rômulo T. Rodrigues</author> 
 
  <buildtool_depend>catkin</buildtool_depend>
   <build_depend>actionlib</build_depend>

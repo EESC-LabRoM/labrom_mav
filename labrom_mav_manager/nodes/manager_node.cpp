@@ -72,9 +72,12 @@ int main(int argc, char **argv){
       case (manager::TAKE_OFF):{
         // Assemble blind take off goal
         //! @todo these goals parameters should be input from variables that users can modify (e.g. dyn_reconfigure)
-        double take_off_accel = 10.5;
+        double take_off_accel = 10.0;
         int climb_time = 1;
         blind_take_off.SendGoal(take_off_accel, climb_time);
+
+        // Log and change state 
+        ROS_INFO("[Manager] Trying to take off.");
         state = manager::WAIT_TAKE_OFF;
         
         break;
@@ -84,8 +87,11 @@ int main(int argc, char **argv){
       case (manager::WAIT_TAKE_OFF):{
         thrust.data = blind_take_off.GetThrust();
         thrust_pub.publish(thrust);
-        if (blind_take_off.IsDone())
+        if (blind_take_off.IsDone()){
+          // Log and change state
+          ROS_INFO("[Manager] Take off succeeded.");
           state = manager::FREE_MODE;
+        }
         break;
       }
 
@@ -100,9 +106,13 @@ int main(int argc, char **argv){
       case (manager::LAND):{
         // Assemble landing goal
         //! @todo these goals parameters should be input from variables that users can modify (e.g. dyn_reconfigure)
-        double descend_accel = 9.7;
+        double descend_accel = 9.5;
         double hit_ground_accel = 11.5;
+        nh.setParam("/blind/landing/feedforward", thrust.data);
         blind_landing.SendGoal(descend_accel, hit_ground_accel);
+        
+        // Log and change state 
+        ROS_INFO("[Manager] Trying to land.");
         state = manager::WAIT_LANDING;
         break;
       }
@@ -111,8 +121,11 @@ int main(int argc, char **argv){
       case (manager::WAIT_LANDING):{
         thrust.data = blind_landing.GetThrust();
         thrust_pub.publish(thrust);
-        if (blind_landing.IsDone())
+        if (blind_landing.IsDone()){
+          // Log and change state 
+          ROS_INFO("[Manager] Landing detected.");
           state = manager::TURN_MOTORS_OFF;
+        }
         break;
       }
 
