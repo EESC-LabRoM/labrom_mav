@@ -24,15 +24,14 @@ namespace take_off{
 /**
 * Constructor
 */
-Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false), nh_("~"){
+Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false), nh_("/mav"){
   // Action server callback
   as_.registerPreemptCallback(boost::bind(&Server::PreemptCallback, this));
 
   // Get parameters from launch file
   nh_.param("feedforward", feedforward_, 0);
-  nh_.param("max_thrust", max_thrust_, 10);
-  nh_.param("loop_rate", loop_rate_, 10);
-
+  nh_.param("max_thrust", max_thrust_, 0);
+  nh_.param("loop_rate", loop_rate_, 20);
 
   // Start action server
   as_.start();
@@ -54,15 +53,14 @@ Server::~Server(void){};
 * @param imu ros message
 */
 void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
-  int time = ros::Time::now().toSec();
+  double time = ros::Time::now().toSec();
   /* State table list
     IDLE: Although action has been called by a client, wait until imu callback has received a message.
     TRYING_TO_TAKE_OFF: Increment thrust value until a take off has been detected.
     CLIMB: Climb for time interval defined in goal.
     FINISHED: Set action succeed. Then, nothing to do.
     default: set thrust to feedfoward value (should be safe!!!)
-  */  
-
+  */   
   switch (state_){
     case (IDLE):
       feedback_.thrust = feedforward_;
@@ -74,8 +72,9 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
       // Check if take off acceleration has been detected 
       if ( imu->linear_acceleration.z < goal_.take_off_accel){
         // No.. then increase thrust
-        feedback_.thrust  = std::min(feedback_.thrust + 1*(time - previous_time_), (float) max_thrust_);
+        feedback_.thrust  = std::min(feedback_.thrust + 2*(time - previous_time_), (double) max_thrust_);
         previous_time_ = time;
+        
       // yes.. save current thust and time
       } else {  
         result_.thrust = feedback_.thrust;

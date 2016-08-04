@@ -19,13 +19,38 @@
 #ifndef LABROM_MAV_MANAGER_H_
 #define LABROM_MAV_MANAGER_H_
 
+// ROS libraries
+#include "ros/ros.h"
+
+// ROS message libraries
+#include "nav_msgs/Odometry.h"
+#include "std_msgs/Int32.h"
+#include "geometry_msgs/Vector3.h"
 // top-level namespace
 namespace manager{
-
 enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, FREE_MODE, LAND, WAIT_LANDING, TURN_MOTORS_OFF};
 
-//! ROS spin function 
-void Spin();
+class Manager{
+  public:
+    //! Constructor
+    Manager();
+    //! Destructor
+    ~Manager();
+    //! Odometry callback
+    void OdomCallback(const nav_msgs::Odometry::ConstPtr &msg);
+    //! State machine loop
+    void Loop(void);
+
+  private:
+    ros::NodeHandle nh_;                //!< ROS nodehandle
+    ros::Publisher attitude_pub_;       //!< ROS attitude publisher
+    ros::Publisher thrust_pub_;         //!< ROS thrust publisher
+    ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
+
+    nav_msgs::Odometry odom_;           //!< odometry message
+
+};
+
 
 } // manager namespace
 #endif // LABROM_MAV_MANAGER_H_

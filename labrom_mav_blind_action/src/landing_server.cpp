@@ -23,14 +23,14 @@ namespace landing{
 /**
 * Constructor
 */
-Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false), nh_("~"){
+Server::Server(std::string name) :as_(nh_,name, boost::bind(&Server::GoalCallback, this, _1), false), nh_("/mav"){
   // Action server callbacks 
   as_.registerPreemptCallback(boost::bind(&Server::PreemptCallback, this));
 
   // Setting parameter with default values
-  nh_.param<int>("feedforward", feedforward_, 0);
-  nh_.param<int>("max_thrust", max_thrust_, 10);
-  nh_.param<int>("loop_rate", loop_rate_, 10);
+  nh_.param<int>("feedforward",  feedforward_, 0);
+  nh_.param<int>("max_thrust", max_thrust_, 0);
+  nh_.param<int>("loop_rate", loop_rate_, 20);
 
   // Start action server
   as_.start();
@@ -52,7 +52,7 @@ Server::~Server(void){};
 * @param imu ros message
 */
 void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
-  int time = ros::Time::now().toSec();
+  double time = ros::Time::now().toSec();
 
   /* State table list
     IDLE: Although action has been called by a client, wait until imu callback has received a message.
@@ -72,7 +72,7 @@ void Server::ImuCallback(const sensor_msgs::Imu::ConstPtr &imu){
       // Check if landing acceleration has been detected 
       if ( imu->linear_acceleration.z >  goal_.descend_accel ){
         // No.. then decrease thrust
-        feedback_.thrust  = std::min(feedback_.thrust - 1*(time - previous_time_), (float) max_thrust_);
+        feedback_.thrust  = std::min(feedback_.thrust - 1*(time - previous_time_), (double) max_thrust_);
         previous_time_ = time;
       // yes.. save current thust and time
       } else {  

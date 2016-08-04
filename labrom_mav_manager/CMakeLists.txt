@@ -9,6 +9,9 @@ find_package(catkin REQUIRED COMPONENTS
   labrom_control
   roscpp
   actionlib
+  std_msgs
+  geometry_msgs
+  nav_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -29,10 +32,9 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME} 
-   src/manager.cpp
-)
+#add_library(${PROJECT_NAME} 
+#)
 
 # Executables
-add_executable(manager_node nodes/manager_node.cpp)
-target_link_libraries(manager_node ${catkin_LIBRARIES} ${PROJECT_NAME})
+add_executable(manager_node src/manager.cpp)
+target_link_libraries(manager_node ${catkin_LIBRARIES} )

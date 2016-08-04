@@ -16,6 +16,12 @@
   <build_depend>labrom_control</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>actionlib</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <run_depend>std_msgs</run_depend>  
+  <run_depend>geometry_msgs</run_depend>    
+  <run_depend>nav_msgs</run_depend>  
   <run_depend>actionlib</run_depend>  
   <run_depend>labrom_mav_blind_action</run_depend>
   <run_depend>labrom_control</run_depend>

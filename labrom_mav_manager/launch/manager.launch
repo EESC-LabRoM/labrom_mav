@@ -1,0 +1,14 @@
+<launch>
+<group ns="mav">
+  <node name="manager" pkg="labrom_mav_manager" type="manager_node" output="screen"/>
+  <param name="take_off_accel" value="10.0" />
+  <param name="climb_time" value="1" />
+  <param name="descend_accel" value="9.0" />
+  <param name="hit_ground_accel" value="11.5" />
+        
+  <param name="feedforward" value="35"/>
+  <param name="max_thrust" value="65"/>
+  <param name="loop_rate" value="20"/>
+
+</group>
+</launch>

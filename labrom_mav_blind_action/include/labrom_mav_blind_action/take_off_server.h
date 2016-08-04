@@ -61,7 +61,7 @@ class Server{
     int loop_rate_;                       //!< Actuation loop rate
     int feedforward_;                     //!< Feedforward thrust 0..100
     int max_thrust_;                      //!< Maximum thrust 0..100    
-    int previous_time_;
+    double previous_time_;                //!< memory for obtain time between imu reading
     State state_;                         //!< Indicates action state
 };
 

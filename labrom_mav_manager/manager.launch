@@ -1,5 +1,0 @@
-<launch>
-  <node name="manager" type="manager_node" pkg="labrom_mav_manager">
-    
-  </node>
-</launch>
