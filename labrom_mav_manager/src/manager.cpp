@@ -18,8 +18,8 @@
 
 // labrom libraries
 #include "labrom_mav_manager/manager.h"
-// labrom_mav_blind_action libraries
-#include "labrom_mav_blind_action/blind.h"
+// labrom_mav_manager libraries
+#include "labrom_mav_manager/blind.h"
 
 namespace manager{
 
@@ -165,11 +165,12 @@ void Manager::Loop(void){
 }
 } // manager namespace
 
+
 int main(int argc, char **argv){
   // Initialize ROS within this node 
   ros::init(argc,argv,"MAVManager");
 
   manager::Manager manager;      
-
   manager.Loop();
+
 }

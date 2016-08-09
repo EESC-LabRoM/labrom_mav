@@ -1,0 +1,9 @@
+#goal definition
+float32 take_off_accel
+int32 climb_time
+---
+#result definition
+float32 thrust
+---
+#feedback
+float32 thrust
