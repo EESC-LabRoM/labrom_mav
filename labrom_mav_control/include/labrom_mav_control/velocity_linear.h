@@ -28,7 +28,7 @@
 // ROS message libraries
 #include "nav_msgs/Odometry.h"
 #include "trajectory_msgs/JointTrajectoryPoint.h"
-#include "std_msgs/Int32.h"
+#include "std_msgs/Float32.h"
 #include "geometry_msgs/Vector3.h"
 
 #include <vector>
@@ -61,8 +61,6 @@ class Controller{
     ros::Publisher attitude_pub_;                           //!< Attitude publisher
 
     trajectory_msgs::JointTrajectoryPoint traj_des_;        //!< Desired trajectory message
-    std_msgs::Int32 thrust_;                                //!< thrust Newtons message
-    geometry_msgs::Vector3 attitude_;                      //!< Attitude (roll, pitch, yaw) message
 
     controllers::pid::Simple pid_ddx_;
     controllers::pid::Simple pid_ddy_;

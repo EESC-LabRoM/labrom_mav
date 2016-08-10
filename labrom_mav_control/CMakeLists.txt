@@ -27,7 +27,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
-add_library(${PROJECT_NAME} 
-   nodes/velocity_linear.cpp
-)
+#executables
+add_executable(velocity_linear_node nodes/velocity_linear.cpp)
+target_link_libraries(velocity_linear_node ${catkin_LIBRARIES})

@@ -29,18 +29,21 @@ Controller::Controller(void): nh_("~"){
   // Publishers and subscribers
   traj_sub_     = nh_.subscribe("/trajectory",1, & Controller::TrajCallback,this);
   odom_sub_     = nh_.subscribe("/odometry",1, &Controller::OdometryCallback,this);
-  thrust_pub_   = nh_.advertise<std_msgs::Int32>("/cmd_thrust",1);
+  thrust_pub_   = nh_.advertise<std_msgs::Float32>("/cmd_thrust",1);
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
 
   // Controllers
   std::vector<double> kp, ki, kd, anti_windup;
   for(int i=0;i<3;++i){
-    kp.push_back(0);
-    ki.push_back(0);
-    kd.push_back(0);
-    anti_windup.push_back(0);
+    kp.push_back(5);
+    ki.push_back(.05);
+    kd.push_back(.1);
+    anti_windup.push_back(5);
+    traj_des_.velocities.push_back(0);// = new double[3];
   }
-
+  traj_des_.velocities[2] = 0.0;
+    traj_des_.velocities[1] = 0.05;
+    kp[1] = 1;
   nh_.getParam("Kp_xyz", kp);
   nh_.getParam("Ki_xyz", ki);
   nh_.getParam("Kd_xyz", kd);
@@ -51,7 +54,7 @@ Controller::Controller(void): nh_("~"){
   pid_ddz_ = controllers::pid::Simple("PID_ddz", kp[2], ki[2],  kd[2],  anti_windup[2]);
 
   // parameters
-  nh_.param("mass", params_.mass, 1.0);
+  nh_.param("mass", params_.mass, 1.2);
   nh_.param("gravity", params_.gravity, 9.81);
 };
 
@@ -89,25 +92,49 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   double vx = cos(pitch)* msg->twist.twist.linear.x + sin(roll)*sin(pitch)* msg->twist.twist.linear.y + cos(roll)*sin(pitch)* msg->twist.twist.linear.z;
   double vy = cos(roll) * msg->twist.twist.linear.y - sin(roll)* msg->twist.twist.linear.z;
   double vz = -sin(pitch) * msg->twist.twist.linear.x + cos(pitch)*sin(roll)*msg->twist.twist.linear.y + cos(roll)*cos(pitch)*msg->twist.twist.linear.z;
-  
+
   // Command accelerations
   double dt = now - prev_time;
-  double ddx_c = pid_ddx_.LoopOnce(traj_des_.velocities[0], vx, dt);
+
+  double ddx_c = pid_ddx_.LoopOnce(traj_des_.velocities[0], vy, dt);
   double ddy_c = pid_ddy_.LoopOnce(traj_des_.velocities[1], vy, dt);
   double ddz_c = pid_ddz_.LoopOnce(traj_des_.velocities[2], vz, dt);
 
   // Quadrotor input commands
-  double T_d     = (params_.gravity - ddz_c)/params_.mass;
+  double T_d     = (params_.gravity - ddz_c)*params_.mass;
   double roll_d  = (params_.mass)/T_d * ddy_c;
   double pitch_d = (params_.mass)/T_d * ddx_c;
- 
-  //! @todo FINISH controller
+
+  // Assemble command message
+  std_msgs::Float32 thrust;
+  thrust.data = T_d;                                
+  geometry_msgs::Vector3 attitude;
+  attitude.x = roll_d ;                    
+  attitude.y = pitch_d;
+  attitude.z = 0;
+
+  thrust_pub_.publish(thrust);   
+  attitude_pub_.publish(attitude); 
+
   prev_time = now;
 }
 
-//! Loop
-void Controller::Loop(void){};
+/**
+* ROS loop
+*/
+void Controller::Loop(void){
+  ros::spin();
+}
 
-} // pid namespace
 } // linear namespace
+} // velocity namespace
 } // mav_control namespace
+
+int main(int argc, char**argv){
+  ros::init(argc, argv,"VelocityControl");
+
+  mav_control::velocity::linear::Controller controller;
+
+  controller.Loop();
+
+}
