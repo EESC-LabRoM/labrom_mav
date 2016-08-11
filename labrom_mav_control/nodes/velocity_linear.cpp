@@ -34,16 +34,20 @@ Controller::Controller(void): nh_("~"){
 
   // Controllers
   std::vector<double> kp, ki, kd, anti_windup;
-  for(int i=0;i<3;++i){
-    kp.push_back(5);
-    ki.push_back(.05);
-    kd.push_back(.1);
-    anti_windup.push_back(5);
-    traj_des_.velocities.push_back(0);// = new double[3];
+  for(int i=0;i<2;++i){
+    kp.push_back(1);
+    ki.push_back(0.1);
+    kd.push_back(0.1);
+    anti_windup.push_back(0.1);
+    traj_des_.velocities.push_back(0);
   }
-  traj_des_.velocities[2] = 0.0;
-    traj_des_.velocities[1] = 0.05;
-    kp[1] = 1;
+ 
+  kp.push_back(1);
+  ki.push_back(0.1);
+  kd.push_back(0.1);
+  anti_windup.push_back(5);
+  traj_des_.velocities.push_back(0);
+
   nh_.getParam("Kp_xyz", kp);
   nh_.getParam("Ki_xyz", ki);
   nh_.getParam("Kd_xyz", kd);
@@ -95,10 +99,11 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
 
   // Command accelerations
   double dt = now - prev_time;
-
-  double ddx_c = pid_ddx_.LoopOnce(traj_des_.velocities[0], vy, dt);
+  
+  double ddx_c = pid_ddx_.LoopOnce(traj_des_.velocities[0], vx, dt);
   double ddy_c = pid_ddy_.LoopOnce(traj_des_.velocities[1], vy, dt);
   double ddz_c = pid_ddz_.LoopOnce(traj_des_.velocities[2], vz, dt);
+
 
   // Quadrotor input commands
   double T_d     = (params_.gravity - ddz_c)*params_.mass;
@@ -117,6 +122,7 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   attitude_pub_.publish(attitude); 
 
   prev_time = now;
+
 }
 
 /**
