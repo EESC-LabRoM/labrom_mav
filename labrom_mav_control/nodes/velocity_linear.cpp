@@ -18,7 +18,7 @@
 
 // labrom_mav_control libraries
 #include <labrom_mav_control/velocity_linear.h>
-
+#include <vector>
 namespace mav_control{
 namespace velocity{
 namespace linear{
@@ -29,29 +29,23 @@ Controller::Controller(void): nh_("~"){
   // Publishers and subscribers
   traj_sub_     = nh_.subscribe("/trajectory",1, & Controller::TrajCallback,this);
   odom_sub_     = nh_.subscribe("/odometry",1, &Controller::OdometryCallback,this);
-  thrust_pub_   = nh_.advertise<std_msgs::Float32>("/cmd_thrust",1);
-  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
+  thrust_pub_   = nh_.advertise<std_msgs::Float32>("/controller/velocity/cmd_thrust",1);
+  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/controller/velocity/cmd_attitude",1);
 
   // Controllers
   std::vector<double> kp, ki, kd, anti_windup;
-  for(int i=0;i<2;++i){
-    kp.push_back(1);
-    ki.push_back(0.1);
-    kd.push_back(0.1);
-    anti_windup.push_back(0.1);
+  for(int i=0;i<3;++i){
+    kp.push_back(0);
+    ki.push_back(0);
+    kd.push_back(0);
+    anti_windup.push_back(0);
     traj_des_.velocities.push_back(0);
   }
- 
-  kp.push_back(1);
-  ki.push_back(0.1);
-  kd.push_back(0.1);
-  anti_windup.push_back(5);
-  traj_des_.velocities.push_back(0);
 
   nh_.getParam("Kp_xyz", kp);
   nh_.getParam("Ki_xyz", ki);
   nh_.getParam("Kd_xyz", kd);
-  nh_.getParam("anti_windup_xyz", kd);
+  nh_.getParam("anti_windup_xyz", anti_windup);
 
   pid_ddx_ = controllers::pid::Simple("PID_ddx", kp[0], ki[0],  kd[0],  anti_windup[0]);
   pid_ddy_ = controllers::pid::Simple("PID_ddy", kp[1], ki[1],  kd[1],  anti_windup[1]);
@@ -93,9 +87,9 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   R.getRPY(roll, pitch, yaw);
 
   // Transform velocities from body-fixed frame to speed frame
-  double vx = cos(pitch)* msg->twist.twist.linear.x + sin(roll)*sin(pitch)* msg->twist.twist.linear.y + cos(roll)*sin(pitch)* msg->twist.twist.linear.z;
-  double vy = cos(roll) * msg->twist.twist.linear.y - sin(roll)* msg->twist.twist.linear.z;
-  double vz = -sin(pitch) * msg->twist.twist.linear.x + cos(pitch)*sin(roll)*msg->twist.twist.linear.y + cos(roll)*cos(pitch)*msg->twist.twist.linear.z;
+  double vx = cos(pitch) *msg->twist.twist.linear.x + sin(roll)*sin(pitch)*msg->twist.twist.linear.y  + cos(roll)*sin(pitch)*msg->twist.twist.linear.z;
+  double vy = cos(roll)  *msg->twist.twist.linear.y - sin(roll)* msg->twist.twist.linear.z;
+  double vz = -sin(pitch)*msg->twist.twist.linear.x + cos(pitch)*sin(roll)*msg->twist.twist.linear.y  + cos(roll)*cos(pitch)*msg->twist.twist.linear.z;
 
   // Command accelerations
   double dt = now - prev_time;
@@ -108,7 +102,7 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   // Quadrotor input commands
   double T_d     = (params_.gravity - ddz_c)*params_.mass;
   double roll_d  = (params_.mass)/T_d * ddy_c;
-  double pitch_d = (params_.mass)/T_d * ddx_c;
+  double pitch_d = -(params_.mass)/T_d * ddx_c;
 
   // Assemble command message
   std_msgs::Float32 thrust;
@@ -137,10 +131,11 @@ void Controller::Loop(void){
 } // mav_control namespace
 
 int main(int argc, char**argv){
+  // Initialize ROS within this node
   ros::init(argc, argv,"VelocityControl");
-
+  // Controller
   mav_control::velocity::linear::Controller controller;
-
+  // Run controller
   controller.Loop();
 
 }

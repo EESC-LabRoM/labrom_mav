@@ -1,0 +1,5 @@
+# Controller gains
+Kp_xyz: [1.5, 1.5, 5.0]
+Ki_xyz: [0.2, 0.2, 1]
+Kd_xyz: [0.1, 0.1, 0.1]
+anti_windup_xyz: [0.15,0.15,5.0]
