@@ -112,7 +112,7 @@ void Manager::Loop(void){
       case (manager::FREE_MODE):{
         //! @todo call user action server 
         // Check if disconnected from higher level controller 
-        if(  (ros::Time::now() - odom_.header.stamp).toSec() > 1.0)
+        if(  (ros::Time::now() - odom_.header.stamp).toSec() > 1) //_free_mode_estimation_timeout
             state = manager::LAND;
         
         break;

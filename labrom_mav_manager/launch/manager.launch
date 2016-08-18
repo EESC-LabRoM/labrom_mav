@@ -9,6 +9,8 @@
   <param name="feedforward" value="35"/>
   <param name="max_thrust" value="65"/>
   <param name="loop_rate" value="20"/>
+
+  <remap from="/odometry" to="/odometry/filtered">
 </group>
 
 <group ns="blind">
