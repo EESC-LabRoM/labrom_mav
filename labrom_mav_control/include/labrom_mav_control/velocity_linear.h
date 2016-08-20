@@ -43,13 +43,17 @@ namespace linear{
 class Controller{
   public:
     //! Empty constructor
-    Controller(void);
+    Controller(std::string name);
     //! Empty destructor
     ~Controller(void);
     //! Trajectory message callback
     void TrajCallback(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg);
     //! Odometry message callback
     void OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg);
+    //! Shutdown controller
+    void Shutdown(void);
+    //! Turn controller on
+    void TurnControllerOn(void);
     //! Loop
     void Loop(void);
 
@@ -65,7 +69,7 @@ class Controller{
     controllers::pid::Simple pid_ddx_;
     controllers::pid::Simple pid_ddy_;
     controllers::pid::Simple pid_ddz_;
-
+    std::string name_;
     struct{
       double mass;
       double gravity;

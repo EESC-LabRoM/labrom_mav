@@ -25,12 +25,12 @@ namespace linear{
 /**
 * Empty constructor
 */
-Controller::Controller(void): nh_("~"){
+Controller::Controller(std::string name): name_(name), nh_("~"){
   // Publishers and subscribers
   traj_sub_     = nh_.subscribe("/trajectory",1, & Controller::TrajCallback,this);
   odom_sub_     = nh_.subscribe("/odometry",1, &Controller::OdometryCallback,this);
-  thrust_pub_   = nh_.advertise<std_msgs::Float32>("/controller/velocity/cmd_thrust",1);
-  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/controller/velocity/cmd_attitude",1);
+  thrust_pub_   = nh_.advertise<std_msgs::Float32>("/"+name_+"/velocity/cmd_thrust",1);
+  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/"+name_+"/velocity/cmd_attitude",1);
 
   // Controllers
   std::vector<double> kp, ki, kd, anti_windup;
@@ -101,7 +101,7 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
 
   // Quadrotor input commands
   double T_d     = (params_.gravity - ddz_c)*params_.mass;
-  double roll_d  = (params_.mass)/T_d * ddy_c;
+  double roll_d  = (params_.mass)/T_d  * ddy_c;
   double pitch_d = -(params_.mass)/T_d * ddx_c;
 
   // Assemble command message
@@ -134,8 +134,9 @@ int main(int argc, char**argv){
   // Initialize ROS within this node
   ros::init(argc, argv,"VelocityControl");
   // Controller
-  mav_control::velocity::linear::Controller controller;
+  mav_control::velocity::linear::Controller controller1("c1");
+    mav_control::velocity::linear::Controller controller2("c2");
   // Run controller
-  controller.Loop();
-
+  //controller.Loop();
+  ros::spin();
 }

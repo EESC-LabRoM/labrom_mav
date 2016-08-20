@@ -1,0 +1,11 @@
+<launch>
+	<node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
+    <remap from="/tag_detections_pose_covariance" to="/apriltag/pose"/>
+    <remap from="/image_rect" to="/image"/>
+    <param name="image_transport" type="str" value="raw" />
+    <!-- Describe the tags -->
+    <rosparam param="tag_descriptions">[
+      {id: 0, size: 0.16351}]
+    </rosparam>
+	</node>
+</launch>
