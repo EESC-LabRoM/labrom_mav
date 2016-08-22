@@ -1,0 +1,9 @@
+# Frame ids
+odom_frame_id  : odom
+base_frame_id  : base_link
+# Camera parameters
+fx: 305
+fy: 305
+u0: 256
+v0: 256
+

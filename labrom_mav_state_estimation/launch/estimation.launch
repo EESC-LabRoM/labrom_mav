@@ -1,27 +1,52 @@
 <launch>
-	<!-- STATIC TRANSFORMS 	-->
-  <node pkg="tf" type="static_transform_publisher" name="base_imu_transform" args="0 0 0 0 0 3.1416 base_link imu_link 1000"/>
-  <node pkg="tf" type="static_transform_publisher" name="base_camera_transform" args="0 0 0 -1.5708 0 3.1416 base_link camera_link 1000"/>
+	<!-- ############ STATIC TRANSFORMS ##############	-->
+  <node pkg="tf" type="static_transform_publisher" name="base_imu_transform" args="0 0 0 0 0 3.1416 base_link imu_link 500"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_camera_transform" args="0 0 -0.06 -1.5708 0 3.1416 base_link camera_link 500"/>
+  <node pkg="tf" type="static_transform_publisher" name="world_tag_0_transform" args="0 0 0 0 0 0 tag_0 world 500"/>
 
+	<!-- VREP heartbeat message -->
+  <node name="vrep" type="heartbeat_node" pkg="vrep" output="screen"/>
 
-	<!-- PERCEPTION NODES -->
+	<!-- ############ PERCEPTION NODES ############ -->
   <node name="OpticalFlow" type="continuous_homography_node" pkg="labrom_optical_flow" output="screen">
-    <rosparam file="$(find labrom_optical_flow)/params/vrep.yaml" />
+		<!-- PArameters -->       
+		<rosparam file="$(find labrom_optical_flow)/params/vrep.yaml" />
+		<!-- Remap topics -->
+		<remap from="/image" to="/vrep/image"/>
+		<remap from="/imu" to="/vrep/imu"/>
   </node>
 
+	<node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
+    <!-- Remap topics -->
+    <remap from="/tag_detections_pose_covariance" to="/apriltag/pose"/>
+    <remap from="/image_rect" to="/vrep/image"/>
+		<!-- Parameters --> 
+    <rosparam  command="load" file="$(find labrom_mav_state_estimation)/params/april_tags.yaml" />
+    <!-- Describe the tags -->
+    <rosparam param="tag_descriptions">[
+      {id: 0, size: 0.16351}
+    ]</rosparam> 
 
-  <node name="LKImageViewer" type="rqt_image_view" pkg="rqt_image_view" />
+	</node>
 
-
-	<!-- FILTERING -->
+	<!-- ############ FILTERING ############ -->
   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_odom" clear_params="true">
+		<!-- remap -->
+		<remap from="/odom0" to ="/optical_flow/odometry"/>
+		<remap from="/imu0" to ="/vrep/imu"/>
+		<remap from="/odometry/filtered" to="/odometry/ekf_odom"/>
+		<!-- Parameters --> 
     <rosparam command="load" file="$(find labrom_mav_state_estimation)/params/ekf_odom.yaml" />
-		<remap from="odometry/filtered" to="odometry/drift"/>
   </node>
 
   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_global" clear_params="true">
+		<!-- remap -->
+		<remap from="/odom0" to="/odometry/ekf_odom"/>
+		<remap from="/pose0" to="/apriltag/pose"/>
+		<remap from="/pose1" to="/apriltag/pose"/>
+		<remap from="odometry/filtered" to="odometry/ekf_world"/>
+	  <!-- Parameters --> 
     <rosparam command="load" file="$(find labrom_mav_state_estimation)/params/ekf_landmark.yaml" />
-		<remap from="odometry/filtered" to="odometry/global"/>
   </node>
 
 	<!-- -->
