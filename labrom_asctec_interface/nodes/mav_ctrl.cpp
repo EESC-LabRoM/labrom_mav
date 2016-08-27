@@ -21,13 +21,27 @@
 namespace labrom_asctec_interface{
 
 /**
-* Empty constructor.
-*/
+ * Empty constructor.
+ */
 CtrlNode::CtrlNode(void): nh_("~"){};
 
 /**
-* Empty destructor.
-*/
-CtrlNode::CtrlNode(void){};
+ * Empty destructor. 
+ */
+CtrlNode::~CtrlNode(void){};
+
+/**
+ * Thrust callback. Save last thrust command received 
+ */
+void CtrlNode::ThrustCallback(const std_msgs::Int32::ConstPtr &msg){
+  thrust_ = *msg;
+}
+
+/**
+ * Attitude callback. Save last attitude command received 
+ */
+void CtrlNode::AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg){
+  attitude_ = *msg;
+}
 
 } // labrom_asctec_interface namespace
