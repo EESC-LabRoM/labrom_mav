@@ -20,4 +20,32 @@
 #ifndef MAV_CTRL_H_
 #define MAV_CTRL_H_
 
+#include <ros/ros.h>
+#include <std_msgs/Int32.h>
+#include <geometry_msgs/Twist.h>
+#include <asctec_hl_comm/mav_ctrl.h>
+
+namespace labrom_asctec_interface{
+class CtrlNode{
+  public:
+    //! Constructor
+    void CtrlNode(void);
+    //! Destructor
+    void ~CtrlNode(void);
+    //! Thrust callback
+    void ThrustCallback(const std_msgs::Int32::ConstPtr &msg);
+    //! Attitude callback
+    void AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg);
+    //! Pubish mav_ctrl message
+    void PublishMavCtrl(void);
+  
+  private: 
+    ros::NodeHandle nh_;                      //!< ROS node handle
+	  ros::Rate loop_rate_;                     //!< Loop rate
+    ros::Subscriber sub_thrust_;              //!< Thrust subscriber
+    ros::Subscriber sub_attitude_;            //!< Attitude subscriber
+    ros::Publisher pub_mav_ctrl_;             //!< Mav ctrl publisher
+	 
+};
+} // labrom_asctec_interface namespace
 #endif
