@@ -45,7 +45,10 @@ class CtrlNode{
     ros::Subscriber sub_thrust_;              //!< Thrust subscriber
     ros::Subscriber sub_attitude_;            //!< Attitude subscriber
     ros::Publisher pub_mav_ctrl_;             //!< Mav ctrl publisher
-	 
+	
+    geometry_msgs::Vector3 attitude_;		//!< received attitude message
+    std_msgs::Int32 thrust_;		        //!< received thrust message
+    asctec_hl_comm::mav_ctrl mav_ctrl_;		//!< mav_ctrl message to be sent 
 };
 } // labrom_asctec_interface namespace
 #endif
