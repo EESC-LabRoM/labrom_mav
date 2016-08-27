@@ -41,7 +41,7 @@ class CtrlNode{
   
   private: 
     ros::NodeHandle nh_;                      //!< ROS node handle
-	  ros::Rate loop_rate_;                     //!< Loop rate
+    ros::Rate loop_rate_;                     //!< Loop rate
     ros::Subscriber sub_thrust_;              //!< Thrust subscriber
     ros::Subscriber sub_attitude_;            //!< Attitude subscriber
     ros::Publisher pub_mav_ctrl_;             //!< Mav ctrl publisher
