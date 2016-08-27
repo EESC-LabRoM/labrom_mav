@@ -134,7 +134,7 @@ int main(int argc, char**argv){
   // Initialize ROS within this node
   ros::init(argc, argv,"VelocityControl");
   // Controller
-  mav_control::velocity::linear::Controller controller1("velocity_control");
+  mav_control::velocity::linear::Controller controller("velocity_control");
   // Run controller
   controller.Loop();
   ros::spin();
