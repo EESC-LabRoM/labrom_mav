@@ -1,0 +1,9 @@
+# Frame ids
+odom_frame_id: odom
+# Camera parameters
+fx: 305
+fy: 305
+u0: 256
+v0: 256
+# Optical flow parameters
+min_frame_rate_in_secs: 0.1

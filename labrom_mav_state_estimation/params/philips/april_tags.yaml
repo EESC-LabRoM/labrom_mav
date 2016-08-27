@@ -1,0 +1,4 @@
+image_transport: compressed
+base_link      : fcu
+publish_tag_tf : false
+
