@@ -31,9 +31,9 @@ namespace labrom_asctec_interface{
 class CtrlNode{
   public:
     //! Constructor
-    void CtrlNode(void);
+    CtrlNode(void);
     //! Destructor
-    void ~CtrlNode(void);
+    ~CtrlNode(void);
     //! Thrust callback
     void ThrustCallback(const std_msgs::Int32::ConstPtr &msg);
     //! Attitude callback
@@ -45,7 +45,6 @@ class CtrlNode{
   
   private: 
     ros::NodeHandle nh_;                      //!< ROS node handle
-    ros::Rate loop_rate_;                     //!< Loop rate
     ros::Subscriber sub_thrust_;              //!< Thrust subscriber
     ros::Subscriber sub_attitude_;            //!< Attitude subscriber
     ros::Publisher pub_mav_ctrl_;             //!< Mav ctrl publisher
@@ -56,7 +55,7 @@ class CtrlNode{
     
     // params
     double _max_thrust;				// maximum quad thrust in Newtons
-    double _loop_rate;				// ROS loop rate
+    int _loop_rate;				// ROS loop rate
 };
 } // labrom_asctec_interface namespace
 #endif

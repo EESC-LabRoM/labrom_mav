@@ -16,24 +16,24 @@
 *   along with labrom_asctec_interface.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 
-#include "labrom_asctec_interface.h/mav_ctrl.h"
+#include "labrom_asctec_interface/mav_ctrl.h"
 
 namespace labrom_asctec_interface{
 
 /**
  * Empty constructor.
  */
-CtrlNode::CtrlNode(void): nh_("~"){
+CtrlNode::CtrlNode(void){
   // Paramas
   nh_.param("max_thrust", _max_thrust, 17.1675);
   nh_.param("loop_rate", _loop_rate, 20);
 
   // Start subscribers
-  sub_thrust_   = node.subscribe("/cmd_thrust"  , 1, thrustCallback);
-  sub_attitude_ = node.subscribe("/cmd_attitude", 1, attitudeCallback);
+  sub_thrust_   = nh_.subscribe("/cmd_thrust"  , 1, &CtrlNode::ThrustCallback, this);
+  sub_attitude_ = nh_.subscribe("/cmd_attitude", 1, &CtrlNode::AttitudeCallback, this);
   
   // Start publishers
-  pub_mav_ctrl_ = node.advertise<asctec_hl_comm::mav_ctrl>("control", 1);
+  pub_mav_ctrl_ = nh_.advertise<asctec_hl_comm::mav_ctrl>("control", 1);
 
 };
 
@@ -61,15 +61,15 @@ void CtrlNode::AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg){
  */
 void CtrlNode::PublishMavCtrl(void){
   // Control method
-  mav_ctrl_;.type = 1;
+  mav_ctrl_.type = 1;
   // x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw
-  mav_ctrl_.x = attitude.y;                  // pitch (rad)
-  mav_ctrl_.y = attitude.x;                  // roll (rad)
-  mav_ctrl_.z = thrust.data / _max_thrust;   // thrust (0 to 1.0)
-  mav_ctrl_.yaw = attitude.z;                // yaw (rad/s)
+  mav_ctrl_.x = attitude_.y;                  // pitch (rad)
+  mav_ctrl_.y = attitude_.x;                  // roll (rad)
+  mav_ctrl_.z = thrust_.data / _max_thrust;   // thrust (0 to 1.0)
+  mav_ctrl_.yaw = attitude_.z;                // yaw (rad/s)
     
   // Publish message
-  pub_mav_ctrl.publish(msg_mav_ctrl);
+  pub_mav_ctrl_.publish(mav_ctrl_);
 }
 
 /**
@@ -91,9 +91,8 @@ void CtrlNode::Spin(void){
 int main(int argc, char **argv){
   // Initialize ROS within this node
   ros::init(argc, argv, "labrom_asctec_interface_ctrl");
-  // Ctrl interface node
+   // Ctrl interface node
   labrom_asctec_interface::CtrlNode node;
   // Loop
-  node.Spin();
-  
+  node.Spin();  
 }
