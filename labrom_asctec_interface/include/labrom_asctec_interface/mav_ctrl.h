@@ -25,7 +25,9 @@
 #include <geometry_msgs/Twist.h>
 #include <asctec_hl_comm/mav_ctrl.h>
 
+// top level namespace
 namespace labrom_asctec_interface{
+// Interface to asctec_hl_interface controls
 class CtrlNode{
   public:
     //! Constructor
