@@ -38,6 +38,8 @@ class CtrlNode{
     void AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg);
     //! Pubish mav_ctrl message
     void PublishMavCtrl(void);
+    //! Sping
+    void Spin(void);
   
   private: 
     ros::NodeHandle nh_;                      //!< ROS node handle
@@ -52,6 +54,7 @@ class CtrlNode{
     
     // params
     double _max_thrust;				// maximum quad thrust in Newtons
+    double _loop_rate;				// ROS loop rate
 };
 } // labrom_asctec_interface namespace
 #endif
