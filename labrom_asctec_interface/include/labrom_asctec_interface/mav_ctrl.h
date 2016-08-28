@@ -48,7 +48,10 @@ class CtrlNode{
 	
     geometry_msgs::Vector3 attitude_;		//!< received attitude message
     std_msgs::Int32 thrust_;		        //!< received thrust message
-    asctec_hl_comm::mav_ctrl mav_ctrl_;		//!< mav_ctrl message to be sent 
+    asctec_hl_comm::mav_ctrl mav_ctrl_;		//!< mav_ctrl message to be sent
+    
+    // params
+    double _max_thrust;				// maximum quad thrust in Newtons
 };
 } // labrom_asctec_interface namespace
 #endif
