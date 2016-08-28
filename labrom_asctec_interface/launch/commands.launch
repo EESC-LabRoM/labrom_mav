@@ -1,5 +1,5 @@
 <launch>
-  <node name="pelican_driver_1" pkg="labrom_asctec_commands" type="node" output="screen">
-    <remap from="/mav_ctrl" to="/fcu/control" />
+  <node name="ctrl_interface" pkg="labrom_asctec_interface" type="mav_ctrl_node" output="screen">
+    <remap from="/control" to="/fcu/control" />
   </node>
 </launch>
