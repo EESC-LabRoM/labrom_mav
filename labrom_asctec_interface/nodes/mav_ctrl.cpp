@@ -26,6 +26,7 @@ namespace labrom_asctec_interface{
 CtrlNode::CtrlNode(void): nh_("~"){
   // Paramas
   nh_.param("max_thrust", _max_thrust, 17.1675);
+  nh_.param("loop_rate", _loop_rate, 20);
 
   // Start subscribers
   sub_thrust_   = node.subscribe("/cmd_thrust"  , 1, thrustCallback);
@@ -83,6 +84,18 @@ void CtrlNode::PublishMavCtrl(void){
     pub_mav_ctrl.publish(msg_mav_ctrl);
 }
 
-
+/**
+ * ROS spin loop
+ */
+void CtrlNode::Spin(void){
+  ros::Rate rate(_loop_rate);
+  
+  while(ros::ok()){
+    // Publish control message
+    PublishMavCtrl();
+    // Sleep
+    rate.sleep();
+  }
+}
 
 } // labrom_asctec_interface namespace
