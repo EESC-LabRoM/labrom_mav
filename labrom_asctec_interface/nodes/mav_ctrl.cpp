@@ -99,3 +99,13 @@ void CtrlNode::Spin(void){
 }
 
 } // labrom_asctec_interface namespace
+
+int main(int argc, char **argv){
+  // Initialize ROS within this node
+  ros::init(argc, argv, "labrom_asctec_interface_ctrl");
+  // Ctrl interface node
+  labrom_asctec_interface::CtrlNode node;
+  // Loop
+  node.Spin();
+  
+}
