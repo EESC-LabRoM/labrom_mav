@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(labrom_asctec_commands)
+project(labrom_asctec_interface)
 
 find_package(catkin REQUIRED COMPONENTS
   actionlib
