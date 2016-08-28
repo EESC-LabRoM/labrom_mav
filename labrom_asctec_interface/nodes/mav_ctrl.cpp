@@ -60,28 +60,16 @@ void CtrlNode::AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg){
  * Publish control message in asctec_hl_interface format
  */
 void CtrlNode::PublishMavCtrl(void){
-    // Control method
-    switch (msg_mav_ctrl.type){
-      case 1: // x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw
-              msg_mav_ctrl.x = attitude.y;                  // pitch
-              msg_mav_ctrl.y = attitude.x;                  // roll
-              msg_mav_ctrl.z = thrust.data / _max_thrust;   // yaw
-              msg_mav_ctrl.yaw = attitude.z;    
-              break; 
-      case 2: //  x, y, z, yaw correspond to x_dot, y_dot, ...
-              msg_mav_ctrl.x = attitude.y;                  // pitch
-              msg_mav_ctrl.y = attitude.x;                  // roll
-              msg_mav_ctrl.z = thrust.data / _max_thrust;   // yaw
-              msg_mav_ctrl.yaw = attitude.z;    
-              break;      
-      default:msg_mav_ctrl.x = 0;   
-              msg_mav_ctrl.y = 0;   
-              msg_mav_ctrl.z = 0;   
-              msg_mav_ctrl.yaw = 0;
-              break;
-    }
-    // Publish message
-    pub_mav_ctrl.publish(msg_mav_ctrl);
+  // Control method
+  mav_ctrl_;.type = 1;
+  // x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw
+  mav_ctrl_.x = attitude.y;                  // pitch (rad)
+  mav_ctrl_.y = attitude.x;                  // roll (rad)
+  mav_ctrl_.z = thrust.data / _max_thrust;   // thrust (0 to 1.0)
+  mav_ctrl_.yaw = attitude.z;                // yaw (rad/s)
+    
+  // Publish message
+  pub_mav_ctrl.publish(msg_mav_ctrl);
 }
 
 /**
