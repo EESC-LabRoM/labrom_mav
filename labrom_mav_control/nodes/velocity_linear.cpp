@@ -29,8 +29,8 @@ Controller::Controller(std::string name): name_(name), nh_("~"){
   // Publishers and subscribers
   traj_sub_     = nh_.subscribe("/trajectory",1, & Controller::TrajCallback,this);
   odom_sub_     = nh_.subscribe("/odometry",1, &Controller::OdometryCallback,this);
-  thrust_pub_   = nh_.advertise<std_msgs::Float32>("/"+name_+"/velocity/cmd_thrust",1);
-  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/"+name_+"/velocity/cmd_attitude",1);
+  thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
+  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("cmd_attitude",1);
 
   // Controllers
   std::vector<double> kp, ki, kd, anti_windup;
@@ -134,9 +134,8 @@ int main(int argc, char**argv){
   // Initialize ROS within this node
   ros::init(argc, argv,"VelocityControl");
   // Controller
-  mav_control::velocity::linear::Controller controller1("c1");
-    mav_control::velocity::linear::Controller controller2("c2");
+  mav_control::velocity::linear::Controller controller("velocity_control");
   // Run controller
-  //controller.Loop();
+  controller.Loop();
   ros::spin();
 }
