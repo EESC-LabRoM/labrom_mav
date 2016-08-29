@@ -47,8 +47,8 @@
   </node>
 
 
-	<!-- VISUALIZATION TOOLS -->
+	<!-- VISUALIZATION TOOLS 
 	<node pkg="rqt_gui" type="rqt_gui" name="gui"/>
-	<node pkg="rviz" type="rviz" name="rviz"/>
+	<node pkg="rviz" type="rviz" name="rviz"/>-->
 </launch>
 

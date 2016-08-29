@@ -1,5 +1,5 @@
 # Frame ids
-base_frame_id  : base_link
+base_frame_id  : fcu
 # Camera parameters
 fx: 486.571128580368450
 fy: 486.190034622040460
