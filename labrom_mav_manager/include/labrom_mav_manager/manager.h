@@ -24,11 +24,12 @@
 
 // ROS message libraries
 #include "nav_msgs/Odometry.h"
+#include "sensor_msgs/Imu.h"
 #include "std_msgs/Int32.h"
 #include "geometry_msgs/Vector3.h"
 // top-level namespace
 namespace manager{
-enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, FREE_MODE, LAND, WAIT_LANDING, TURN_MOTORS_OFF};
+enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, CLIMB, WAIT_CLIMB, HOVER, FREE_MODE, LAND, WAIT_LANDING, TURN_MOTORS_OFF};
 
 class Manager{
   public:
@@ -37,18 +38,27 @@ class Manager{
     //! Destructor
     ~Manager();
     //! Odometry callback
-    void OdomCallback(const nav_msgs::Odometry::ConstPtr &msg);
+    void ImuCallback(const sensor_msgs::Imu::ConstPtr &msg);
     //! State machine loop
     void Loop(void);
 
   private:
     ros::NodeHandle nh_;                //!< ROS nodehandle
+
     ros::Publisher attitude_pub_;       //!< ROS attitude publisher
     ros::Publisher thrust_pub_;         //!< ROS thrust publisher
-    ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
 
-    nav_msgs::Odometry odom_;           //!< odometry message
+    ros::Subscriber imu_sub_;           //!< ROS IMU subscriber
 
+    sensor_msgs::Imu imu_;              //!< imu message
+
+    double max_detected_accel_;
+    double min_detected_accel_;
+    double time_;
+
+    double _take_off_accel;
+    double _land_accel;
+    double _climb_time;
 };
 
 

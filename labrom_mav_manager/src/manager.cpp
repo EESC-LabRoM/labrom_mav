@@ -18,19 +18,19 @@
 
 // labrom libraries
 #include "labrom_mav_manager/manager.h"
-// labrom_mav_manager libraries
-#include "labrom_mav_manager/blind.h"
 
 namespace manager{
 
 /**
 * Empty constructor
 */
-Manager::Manager(void){
+Manager::Manager(void): nh_("~"){
   // Adversite and subscribe topics
-  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("/cmd_attitude",1);
-  thrust_pub_   = nh_.advertise<std_msgs::Int32>("/cmd_thrust",1);
-  odom_sub_    = nh_.subscribe("/odometry",1,&Manager::OdomCallback,this);
+  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("cmd_attitude",1);
+  thrust_pub_   = nh_.advertise<std_msgs::Int32>("cmd_thrust",1);
+
+  imu_sub_      = nh_.subscribe("/imu",1,&Manager::ImuCallback,this);
+
 
 };
 
@@ -40,24 +40,28 @@ Manager::Manager(void){
 Manager::~Manager(void){};
 
 /**
-*  Odometry callback   
-* @param msg last odometry message received
+* IMU callback   
+* @param[in] msg last odometry message received
 */
-void Manager::OdomCallback(const nav_msgs::Odometry::ConstPtr &msg){
-  odom_ = *msg;
+void Manager::ImuCallback(const sensor_msgs::Imu::ConstPtr &msg){
+  imu_ = *msg;
+  // Save ~max upward acceleration
+  if (imu_.linear_acceleration.z >  max_detected_accel_){
+    max_detected_accel_ = imu_.linear_acceleration.z ;
+  // save ~min upward acceleration
+  }else if (imu_.linear_acceleration.z <  min_detected_accel_){
+     min_detected_accel_ = imu_.linear_acceleration.z ;
+  }
 }
+
 
 /**
 * Manager state machine
 */
 void Manager::Loop(void){
-  // Action clients
-  blind::take_off::Client blind_take_off("/blind/takeoff");
-  blind::landing::Client blind_landing("/blind/landing");
-
   // Setting state machine parameters
   ros::Rate rate(20);
-  manager::ManagerState state= manager::TAKE_OFF;
+  manager::ManagerState state= manager::IDLE;
 
   // ROS messages
   std_msgs::Int32 thrust;
@@ -68,52 +72,58 @@ void Manager::Loop(void){
 
     // Nothing to do  
     switch (state){
-      case (manager::IDLE):{
+      case (manager::IDLE):
         //! @todo Switching condition (turn motors on?)
-       thrust.data = 0;
+        thrust.data = 0;
+        attitude.x = 0;
+        attitude.y = 0;
+        attitude.z = 0;
         break;
-      }
-
-      case (manager::TURN_MOTORS_ON):{
-        //! @todo turn motors on
-        break;     
-      }
-
-      // Call take off server
-      case (manager::TAKE_OFF):{
-        // Assemble take off goal
-        double take_off_accel;
-        int  climb_time;
-        nh_.param("take_off_accel", take_off_accel, 10.0);
-        nh_.param("climb_time", climb_time, 0);
-        // Send take off goal
-        blind_take_off.SendGoal(take_off_accel, climb_time);
-        // Log and change state 
-        ROS_INFO("[Manager] Trying to take off.");
-        state = manager::WAIT_TAKE_OFF;
-        
+      
+      // Getting ready to take off
+      case (manager::TAKE_OFF):
+        // Setting variables to take off detection
+        max_detected_accel_ = 0;
         break;
-      }
 
       // Blind take off supervisionary state
       case (manager::WAIT_TAKE_OFF):{
-        thrust.data = blind_take_off.GetThrust();
-        if (blind_take_off.IsDone()){
-          // Change feedforward value for take off thrust value;
-          nh_.setParam("feedforward", thrust.data);
+        // Increase thrust
+        thrust.data = thrust.data + 1;
+        // Check if take off accel reached
+        if (max_detected_accel_ > _take_off_accel){
           // Log and change state
           ROS_INFO("[Manager] Take off succeeded.");
-          state = manager::FREE_MODE;
+          state = manager::CLIMB;
         }
         break;
+      }
+
+      // Getting ready to climb
+      case (manager::CLIMB):{
+        // Setting time to current time
+        time_ = ros::Time::now().toSec();
+        state = manager::CLIMB;
+      }
+
+      // Blind climb supervisor
+      case (manager::WAIT_CLIMB):{
+        if( (ros::Time::now().toSec() - time_) > _climb_time ){
+          state = manager::HOVER;
+        }
+      }
+
+      // Hover (velocity control)
+      case (manager::HOVER):{
+
       }
 
       // Receive order from extern machine
       case (manager::FREE_MODE):{
         //! @todo call user action server 
         // Check if disconnected from higher level controller 
-        if(  (ros::Time::now() - odom_.header.stamp).toSec() > 1) //_free_mode_estimation_timeout
-            state = manager::LAND;
+       // if(  (ros::Time::now() - odom_.header.stamp).toSec() > 1) //_free_mode_estimation_timeout
+         //   state = manager::LAND;
         
         break;
       }
@@ -121,26 +131,19 @@ void Manager::Loop(void){
       // Call land server (blind)
       case (manager::LAND):{
         // Assemble landing goal
-        double descend_accel, hit_ground_accel;
-        nh_.param("descend_accel", descend_accel, 9.0);
-        nh_.param("hit_ground_accel", hit_ground_accel, 11.5);
-        // Send goal
-        blind_landing.SendGoal(descend_accel, hit_ground_accel);     
-        // Log and change state 
-        ROS_INFO("[Manager] Trying to land.");
+
         state = manager::WAIT_LANDING;
         break;
       }
 
       // Landing supervisionary state
       case (manager::WAIT_LANDING):{
-        thrust.data = blind_landing.GetThrust();
-        if (blind_landing.IsDone()){
+      /*  if (blind_landing.IsDone()){
           // Send low motor speed, log and change state
           thrust.data = 0; 
           ROS_INFO("[Manager] Landing detected.");
           state = manager::TURN_MOTORS_OFF;
-        }
+        }*/
         break;
       }
 
