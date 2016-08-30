@@ -43,33 +43,21 @@ namespace linear{
 class Controller{
   public:
     //! Empty constructor
-    Controller(std::string name);
+    Controller(double mass, double gravity);
     //! Empty destructor
     ~Controller(void);
     //! Trajectory message callback
-    void TrajCallback(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg);
+    void UpdateTrajectory(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg);
     //! Odometry message callback
-    void OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg);
-    //! Shutdown controller
-    void Shutdown(void);
-    //! Turn controller on
-    void TurnControllerOn(void);
-    //! Loop
-    void Loop(void);
+    void Iterate(const nav_msgs::Odometry::ConstPtr &msg, std_msgs::Float32 &thrust, geometry_msgs::Vector3 &attitude);
 
   private:     
-    ros::NodeHandle nh_;                                    //!< ROS NodeHandle
-    ros::Subscriber traj_sub_;                              //!< trajectory subscriber
-    ros::Subscriber odom_sub_;                              //!< odometry subscriber
-    ros::Publisher thrust_pub_;                             //!< Thrust publisher
-    ros::Publisher attitude_pub_;                           //!< Attitude publisher
-
     trajectory_msgs::JointTrajectoryPoint traj_des_;        //!< Desired trajectory message
 
     controllers::pid::Simple pid_ddx_;
     controllers::pid::Simple pid_ddy_;
     controllers::pid::Simple pid_ddz_;
-    std::string name_;
+
     struct{
       double mass;
       double gravity;
