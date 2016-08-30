@@ -139,7 +139,7 @@ void Manager::Spin(void){
       // Blind climb supervisor
       case (manager::WAIT_CLIMB):
         if( (ros::Time::now().toSec() - time_) > climb_time ){
-          state = manager::HOVER;
+          state = manager::LAND;
         }
         break;
 
@@ -159,30 +159,33 @@ void Manager::Spin(void){
 
       // Receive order from extern machine
       case (manager::FREE_MODE):{
-        //! @todo call user action server 
-        // Check if disconnected from higher level controller 
-       // if(  (ros::Time::now() - odom_.header.stamp).toSec() > 1) //_free_mode_estimation_timeout
-         //   state = manager::LAND;
-        
         break;
       }
       
-      // Call land server (blind)
+      // Setting land parameters
       case (manager::LAND):{
-        // Assemble landing goal
+        /// Descend with constant downward velocity
+        local_traj.velocities.clear();
+        for(int i=0; i < 3; ++i)
+            local_traj.velocities.push_back(0);
+        local_traj.velocities[2] = -0.1;
+        /// Landing parameters
         nh_.param("land_accel", land_accel,0.0);
+        min_detected_accel_ = 100;
         state = manager::WAIT_LANDING;
+        ROS_INFO("[Manager] Trying to land!");
         break;
       }
 
       // Landing supervisionary state
       case (manager::WAIT_LANDING):{
-      /*  if (blind_landing.IsDone()){
-          // Send low motor speed, log and change state
-          thrust.data = 0; 
-          ROS_INFO("[Manager] Landing detected.");
-          state = manager::TURN_MOTORS_OFF;
-        }*/
+        vel_controller.LoopOnce(local_traj, odom_, thrust, attitude);
+        // Check if take off accel reached
+        if (min_detected_accel_ < land_accel){
+          // Log and change state
+          state = manager::IDLE;
+          ROS_INFO("[Manager] Land detected!");
+        }
         break;
       }
 
