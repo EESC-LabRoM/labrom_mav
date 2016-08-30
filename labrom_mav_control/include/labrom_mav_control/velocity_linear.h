@@ -43,17 +43,13 @@ namespace linear{
 class Controller{
   public:
     //! Empty constructor
-    Controller(double mass, double gravity);
+    Controller(double mass);
     //! Empty destructor
     ~Controller(void);
-    //! Trajectory message callback
-    void UpdateTrajectory(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg);
     //! Odometry message callback
-    void Iterate(const nav_msgs::Odometry::ConstPtr &msg, std_msgs::Float32 &thrust, geometry_msgs::Vector3 &attitude);
+    void LoopOnce(const trajectory_msgs::JointTrajectoryPoint &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3 &attitude);
 
   private:     
-    trajectory_msgs::JointTrajectoryPoint traj_des_;        //!< Desired trajectory message
-
     controllers::pid::Simple pid_ddx_;
     controllers::pid::Simple pid_ddy_;
     controllers::pid::Simple pid_ddz_;

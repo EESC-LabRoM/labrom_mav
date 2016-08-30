@@ -1,0 +1,19 @@
+<launch>
+    <rosparam command="load" file="$(find labrom_mav_control)/params/vrep.yaml"/>
+    
+    <node name="control_manager" pkg="labrom_mav_control" type="manager_node" output="screen">
+      <!-- Remapping topics-->
+      <remap from="/odometry" to="/odometry/ekf_odom"/>
+      <remap from="/imu" to="/vrep/imu"/>
+      <remap from="/trajectory" to="/vrep/trajectory"/>   
+      <remap from="/control_manager/cmd_attitude" to="/vrep/cmd_attitude"/>
+      <remap from="/control_manager/cmd_thrust" to="/vrep/cmd_thrust"/>
+
+      <!-- Loading parameters -->  
+      <param name="mass" value="1.2"/>
+      <param name="rate" value="20"/>
+      <param name="take_off_accel" value="10"/>
+      <param name="land_accel" value="9"/>
+      <param name="climb_time" value="1.0"/>        
+    </node>
+</launch>

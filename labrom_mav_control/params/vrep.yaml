@@ -1,11 +1,17 @@
-# vehicle parameters
-mass: 1.2
-
-#  environment parameters
+# global parameters
 gravity: 9.81
-
 # Controller gains
-Kp_xyz: [0.5, 0.5, 1.5]
-Ki_xyz: [0.05, 0.05, 0.1]
-Kd_xyz: [0.01, 0.01, 0.05]
-anti_windup_xyz: [0.25,0.25,5.0]
+velocity/x/kp: 0.5 
+velocity/x/ki: 0.075 
+velocity/x/kd: 0.01 
+velocity/x/anti_windup: 0.25
+
+velocity/y/kp: 0.5 
+velocity/y/ki: 0.075 
+velocity/y/kd: 0.01 
+velocity/y/anti_windup: 0.25
+
+velocity/z/kp: 1.5 
+velocity/z/ki: 0.5 
+velocity/z/kd: 0.05 
+velocity/z/anti_windup: 5.0

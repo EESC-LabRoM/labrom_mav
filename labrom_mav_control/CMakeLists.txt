@@ -29,7 +29,10 @@ include_directories(
 
 # Declare a C++ library
 add_library(${PROJECT_NAME}
-   nodes/velocity_linear.cpp
+   src/velocity_linear.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+
+add_executable(manager_node nodes/mav_manager.cpp)
+target_link_libraries(manager_node ${catkin_LIBRARIES} ${PROJECT_NAME})

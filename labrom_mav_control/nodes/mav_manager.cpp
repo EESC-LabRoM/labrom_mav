@@ -17,21 +17,21 @@
 ***************************************************************************/
 
 // labrom libraries
-#include "labrom_mav_manager/manager.h"
+#include "labrom_mav_control/mav_manager.h"
 
+namespace mav_control{
 namespace manager{
-
 /**
 * Empty constructor
 */
 Manager::Manager(void): nh_("~"){
   // Adversite and subscribe topics
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("cmd_attitude",1);
-  thrust_pub_   = nh_.advertise<std_msgs::Int32>("cmd_thrust",1);
+  thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
 
   imu_sub_      = nh_.subscribe("/imu",1,&Manager::ImuCallback,this);
-
-
+  odom_sub_     = nh_.subscribe("/odometry",1,&Manager::OdometryCallback,this);
+  traj_sub_     = nh_.subscribe("/trajectory",1,&Manager::TrajectoryCallback,this);  
 };
 
 /**
@@ -45,31 +45,56 @@ Manager::~Manager(void){};
 */
 void Manager::ImuCallback(const sensor_msgs::Imu::ConstPtr &msg){
   imu_ = *msg;
+
   // Save ~max upward acceleration
   if (imu_.linear_acceleration.z >  max_detected_accel_){
-    max_detected_accel_ = imu_.linear_acceleration.z ;
+     max_detected_accel_ = imu_.linear_acceleration.z;
   // save ~min upward acceleration
   }else if (imu_.linear_acceleration.z <  min_detected_accel_){
      min_detected_accel_ = imu_.linear_acceleration.z ;
   }
 }
 
+/**
+* Update odometry
+* param[in] Last odometry msg received
+*/
+void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
+    odom_ = *msg;
+}
+
+/**
+* Update trajectories
+* param[in] msg last trajectory received
+*/
+void Manager::TrajectoryCallback(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg){
+    traj_ = *msg;
+}
 
 /**
 * Manager state machine
 */
-void Manager::Loop(void){
-  // Setting state machine parameters
-  ros::Rate rate(20);
-  manager::ManagerState state= manager::IDLE;
-
+void Manager::Spin(void){
   // ROS messages
-  std_msgs::Int32 thrust;
+  std_msgs::Float32 thrust;
   geometry_msgs::Vector3 attitude;
+  trajectory_msgs::JointTrajectoryPoint local_traj;
+
+  // Setting state machine parameters
+  double mass, rate;
+  double take_off_accel, land_accel, climb_time;
+
+  nh_.param<double>("mass",mass, 0);
+  nh_.param<double>("rate",rate, 20);
+  ros::Rate loop_rate(rate);
+
+  // Controllers
+  mav_control::velocity::linear::Controller vel_controller(mass);
 
   // Here comes the manager state machine (core)
-  while(ros::ok()){
+  ManagerState state = manager::TAKE_OFF;
 
+  while(ros::ok()){
     // Nothing to do  
     switch (state){
       case (manager::IDLE):
@@ -79,44 +104,58 @@ void Manager::Loop(void){
         attitude.y = 0;
         attitude.z = 0;
         break;
-      
+
       // Getting ready to take off
       case (manager::TAKE_OFF):
         // Setting variables to take off detection
+        nh_.param("take_off_accel", take_off_accel,0.0);
         max_detected_accel_ = 0;
+        state = manager::WAIT_TAKE_OFF;
+        ROS_INFO("[Manager] Trying to take off..");
         break;
 
       // Blind take off supervisionary state
-      case (manager::WAIT_TAKE_OFF):{
+      case (manager::WAIT_TAKE_OFF):
         // Increase thrust
-        thrust.data = thrust.data + 1;
+        thrust.data = thrust.data + 1*1/rate;
         // Check if take off accel reached
-        if (max_detected_accel_ > _take_off_accel){
+        if (max_detected_accel_ > take_off_accel){
           // Log and change state
-          ROS_INFO("[Manager] Take off succeeded.");
           state = manager::CLIMB;
+          ROS_INFO("[Manager] Take off succeed!");
         }
         break;
-      }
+      
 
       // Getting ready to climb
-      case (manager::CLIMB):{
+      case (manager::CLIMB):
         // Setting time to current time
+        nh_.param("climb_time", climb_time,1.0);
         time_ = ros::Time::now().toSec();
-        state = manager::CLIMB;
-      }
+        state = manager::WAIT_CLIMB;
+        ROS_INFO("[Manager] Climbing!");
+        break;
 
       // Blind climb supervisor
-      case (manager::WAIT_CLIMB):{
-        if( (ros::Time::now().toSec() - time_) > _climb_time ){
+      case (manager::WAIT_CLIMB):
+        if( (ros::Time::now().toSec() - time_) > climb_time ){
           state = manager::HOVER;
         }
-      }
+        break;
 
-      // Hover (velocity control)
-      case (manager::HOVER):{
-
-      }
+      // Setting hover (velocity control)
+      case (manager::HOVER):
+        local_traj.velocities.clear();
+        for(int i=0; i < 3; ++i)
+            local_traj.velocities.push_back(0);
+        state = manager::HOVERING;
+        ROS_INFO("[Manager] Hovering!");
+        break;
+    
+      // Hovering
+      case (manager::HOVERING):
+        vel_controller.LoopOnce(local_traj, odom_, thrust, attitude);
+        break;
 
       // Receive order from extern machine
       case (manager::FREE_MODE):{
@@ -131,7 +170,7 @@ void Manager::Loop(void){
       // Call land server (blind)
       case (manager::LAND):{
         // Assemble landing goal
-
+        nh_.param("land_accel", land_accel,0.0);
         state = manager::WAIT_LANDING;
         break;
       }
@@ -161,19 +200,22 @@ void Manager::Loop(void){
 
     // Publish thrust and attitude messages
     thrust_pub_.publish(thrust);
+    attitude_pub_.publish(attitude);
     // Loop delay
-    rate.sleep();
-
+    ros::spinOnce();
+    loop_rate.sleep();
+    
   } // while
 }
-} // manager namespace
 
+} // manager namespace
+} // control namespace
 
 int main(int argc, char **argv){
   // Initialize ROS within this node 
   ros::init(argc,argv,"MAVManager");
 
-  manager::Manager manager;      
-  manager.Loop();
+  mav_control::manager::Manager manager;      
+  manager.Spin();
 
 }
