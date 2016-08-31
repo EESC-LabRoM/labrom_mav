@@ -92,7 +92,7 @@ void Manager::Spin(void){
   mav_control::velocity::linear::Controller vel_controller(mass);
 
   // Here comes the manager state machine (core)
-  ManagerState state = manager::TAKE_OFF;
+  ManagerState state = manager::HOVER;
 
   while(ros::ok()){
     // Nothing to do  
