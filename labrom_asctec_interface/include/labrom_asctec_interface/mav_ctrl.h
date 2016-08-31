@@ -25,7 +25,7 @@
 #include <tf/transform_listener.h>
 
 // ROS message libraries
-#include <std_msgs/Int32.h>
+#include <std_msgs/Float32.h>
 #include <geometry_msgs/Vector3Stamped.h>
 
 // Asctec libraries
@@ -41,7 +41,7 @@ class CtrlNode{
     //! Destructor
     ~CtrlNode(void);
     //! Thrust callback
-    void ThrustCallback(const std_msgs::Int32::ConstPtr &msg);
+    void ThrustCallback(const std_msgs::Float32::ConstPtr &msg);
     //! Attitude callback
     void AttitudeCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg);
     //! Pubish mav_ctrl message
@@ -58,7 +58,7 @@ class CtrlNode{
     tf::TransformListener tf_listener_;        //!< tf listener
 
     geometry_msgs::Vector3Stamped attitude_;		//!< received attitude message
-    std_msgs::Int32 thrust_;		                //!< received thrust message
+    std_msgs::Float32 thrust_;		                //!< received thrust message
     asctec_hl_comm::mav_ctrl mav_ctrl_;	      	//!< mav_ctrl message to be sent
     
     // params

@@ -45,7 +45,7 @@ CtrlNode::~CtrlNode(void){};
 /**
  * Thrust callback. Save last thrust command received 
  */
-void CtrlNode::ThrustCallback(const std_msgs::Int32::ConstPtr &msg){
+void CtrlNode::ThrustCallback(const std_msgs::Float32::ConstPtr &msg){
   thrust_ = *msg;
 }
 
