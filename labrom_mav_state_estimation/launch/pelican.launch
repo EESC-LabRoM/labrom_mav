@@ -8,7 +8,7 @@
 		<!-- PArameters -->       
 		<rosparam file="$(find labrom_mav_state_estimation)/params/philips/optical_flow.yaml" />
 		<!-- Remap topics -->
-  	 <remap from="/image/compressed" to="/camera/image_raw/compressed"/>
+  	 <remap from="/image/compressed" to="/camera/image_mono/compressed"/>
      <remap from="/imu" to="/fcu/imu" />
 		 <remap from="/odometry" to="/odometry/ekf_world"/>
   </node>
@@ -17,7 +17,7 @@
 	<node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
     <!-- Remap topics -->
     <remap from="/tag_detections_pose_covariance" to="/apriltag/pose"/>
-    <remap from="/image_rect" to="/camera/image_raw"/>
+    <remap from="/image_rect" to="/camera/image_mono"/>
 		<!-- Parameters --> 
     <rosparam  command="load" file="$(find labrom_mav_state_estimation)/params/philips/april_tags.yaml" />
     <!-- Describe the tags -->

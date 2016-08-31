@@ -27,7 +27,7 @@ CtrlNode::CtrlNode(void){
   // Paramas
   nh_.param("max_thrust", _max_thrust, 17.1675);
   nh_.param("loop_rate", _loop_rate, 20);
-
+  nh_.param<std::string>("control_frame_id", _control_frame_id, "control_link");
   // Start subscribers
   sub_thrust_   = nh_.subscribe("/cmd_thrust"  , 1, &CtrlNode::ThrustCallback, this);
   sub_attitude_ = nh_.subscribe("/cmd_attitude", 1, &CtrlNode::AttitudeCallback, this);
@@ -52,7 +52,7 @@ void CtrlNode::ThrustCallback(const std_msgs::Int32::ConstPtr &msg){
 /**
  * Attitude callback. Save last attitude command received 
  */
-void CtrlNode::AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg){
+void CtrlNode::AttitudeCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg){
   attitude_ = *msg;
 }
 
@@ -60,16 +60,34 @@ void CtrlNode::AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg){
  * Publish control message in asctec_hl_interface format
  */
 void CtrlNode::PublishMavCtrl(void){
-  // Control method
-  mav_ctrl_.type = 1;
-  // x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw
-  mav_ctrl_.x = attitude_.y;                  // pitch (rad)
-  mav_ctrl_.y = attitude_.x;                  // roll (rad)
-  mav_ctrl_.z = thrust_.data / _max_thrust;   // thrust (0 to 1.0)
-  mav_ctrl_.yaw = attitude_.z;                // yaw (rad/s)
+  // Nothing to do if attitude frame id not specified
+  if (attitude_.header.frame_id == "")
+    return;
+
+  try{  
+    // Transform from body_link to control_link
+    geometry_msgs::Vector3Stamped attitude;
+    tf_listener_.transformVector( _control_frame_id, attitude_, attitude); 
+    // Assemble message
+    mav_ctrl_.type = 1;
+    // x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw
+    mav_ctrl_.x = attitude.vector.y;                  // pitch (rad)
+    mav_ctrl_.y = attitude.vector.x;                  // roll (rad)
+    mav_ctrl_.z = thrust_.data / _max_thrust;         // thrust (0 to 1.0)
+    mav_ctrl_.yaw = attitude.vector.z;                      // yaw (rad/s)
     
-  // Publish message
-  pub_mav_ctrl_.publish(mav_ctrl_);
+    // Publish message
+    pub_mav_ctrl_.publish(mav_ctrl_);
+  }catch (tf::TransformException &ex) {
+    ROS_WARN("The tf from '%s' to '%s' does not seem to be available! ",
+             attitude_.header.frame_id.c_str(),
+             _control_frame_id.c_str());
+    ROS_ERROR("%s",ex.what());
+  }  
+
+
+  // Control method
+
 }
 
 /**
@@ -81,7 +99,9 @@ void CtrlNode::Spin(void){
   while(ros::ok()){
     // Publish control message
     PublishMavCtrl();
-    // Sleep
+    
+    // Spin and Sleep
+    ros::spinOnce();
     rate.sleep();
   }
 }

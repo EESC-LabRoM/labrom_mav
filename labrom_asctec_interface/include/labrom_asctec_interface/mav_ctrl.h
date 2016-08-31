@@ -20,9 +20,15 @@
 #ifndef MAV_CTRL_H_
 #define MAV_CTRL_H_
 
+// ROS libraries
 #include <ros/ros.h>
+#include <tf/transform_listener.h>
+
+// ROS message libraries
 #include <std_msgs/Int32.h>
-#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Vector3Stamped.h>
+
+// Asctec libraries
 #include <asctec_hl_comm/mav_ctrl.h>
 
 // top level namespace
@@ -37,7 +43,7 @@ class CtrlNode{
     //! Thrust callback
     void ThrustCallback(const std_msgs::Int32::ConstPtr &msg);
     //! Attitude callback
-    void AttitudeCallback(const geometry_msgs::Vector3::ConstPtr &msg);
+    void AttitudeCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg);
     //! Pubish mav_ctrl message
     void PublishMavCtrl(void);
     //! Sping
@@ -49,13 +55,16 @@ class CtrlNode{
     ros::Subscriber sub_attitude_;            //!< Attitude subscriber
     ros::Publisher pub_mav_ctrl_;             //!< Mav ctrl publisher
 	
-    geometry_msgs::Vector3 attitude_;		//!< received attitude message
-    std_msgs::Int32 thrust_;		        //!< received thrust message
-    asctec_hl_comm::mav_ctrl mav_ctrl_;		//!< mav_ctrl message to be sent
+    tf::TransformListener tf_listener_;        //!< tf listener
+
+    geometry_msgs::Vector3Stamped attitude_;		//!< received attitude message
+    std_msgs::Int32 thrust_;		                //!< received thrust message
+    asctec_hl_comm::mav_ctrl mav_ctrl_;	      	//!< mav_ctrl message to be sent
     
     // params
-    double _max_thrust;				// maximum quad thrust in Newtons
-    int _loop_rate;				// ROS loop rate
+    std::string _control_frame_id;       //!< control frame
+    double _max_thrust;				          //!< maximum quad thrust in Newtons
+    int _loop_rate;			     	          //!< ROS loop rate
 };
 } // labrom_asctec_interface namespace
 #endif

@@ -5,5 +5,6 @@ fx: 305
 fy: 305
 u0: 256
 v0: 256
+encoding: rgb8
 # Optical flow parameters
 min_frame_rate_in_secs: 0.1

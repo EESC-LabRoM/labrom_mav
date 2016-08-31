@@ -1,4 +1,7 @@
 <launch>
+ <!-- ######################## STATIC TRANSFORMS ##########################	-->
+ <node pkg="tf" type="static_transform_publisher" name="fcu_control_transform" args="0 0 0 2.3562 0 0 fcu control_link 1000"/> 
+  <!---->
   <node name="ctrl_interface" pkg="labrom_asctec_interface" type="mav_ctrl_interface_node" output="screen">
     <remap from="/control" to="/fcu/control" />
   </node>

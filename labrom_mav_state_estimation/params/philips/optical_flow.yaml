@@ -5,6 +5,7 @@ fx: 486.571128580368450
 fy: 486.190034622040460
 u0: 316.590495613997350
 v0: 246.162773362198210
+encoding: mono8
 # Optical flow parameters
 min_frame_rate_in_secs: 0.1
 image_transport: compressed
