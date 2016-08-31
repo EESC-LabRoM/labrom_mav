@@ -26,7 +26,7 @@ namespace manager{
 */
 Manager::Manager(void): nh_("~"){
   // Adversite and subscribe topics
-  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3>("cmd_attitude",1);
+  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
   thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
 
   imu_sub_      = nh_.subscribe("/imu",1,&Manager::ImuCallback,this);
@@ -77,9 +77,9 @@ void Manager::TrajectoryCallback(const trajectory_msgs::JointTrajectoryPoint::Co
 void Manager::Spin(void){
   // ROS messages
   std_msgs::Float32 thrust;
-  geometry_msgs::Vector3 attitude;
+  geometry_msgs::Vector3Stamped attitude;
   trajectory_msgs::JointTrajectoryPoint local_traj;
-
+  
   // Setting state machine parameters
   double mass, rate;
   double take_off_accel, land_accel, climb_time;
@@ -90,7 +90,6 @@ void Manager::Spin(void){
 
   // Controllers
   mav_control::velocity::linear::Controller vel_controller(mass);
-
   // Here comes the manager state machine (core)
   ManagerState state = manager::HOVER;
 
@@ -100,9 +99,9 @@ void Manager::Spin(void){
       case (manager::IDLE):
         //! @todo Switching condition (turn motors on?)
         thrust.data = 0;
-        attitude.x = 0;
-        attitude.y = 0;
-        attitude.z = 0;
+        attitude.vector.x = 0;
+        attitude.vector.y = 0;
+        attitude.vector.z = 0;
         break;
 
       // Getting ready to take off

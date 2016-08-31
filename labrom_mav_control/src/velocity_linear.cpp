@@ -61,7 +61,7 @@ Controller::~Controller(void){};
 * @param[out] thrust value required to follow trajectory 
 * @param[out] attitude value required to follow trajectory (roll, pitch, yaw)
 */
-void Controller::LoopOnce(const trajectory_msgs::JointTrajectoryPoint &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3 &attitude){
+void Controller::LoopOnce(const trajectory_msgs::JointTrajectoryPoint &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude){
   // Roll, pitch and yaw angles
   double roll, pitch, yaw;
   tf::Quaternion qt(odom.pose.pose.orientation.x, 
@@ -87,10 +87,11 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectoryPoint &traj, con
   double pitch_d = (params_.mass)/T_d * ddx_c;
 
   // Assemble command message
-  thrust.data = T_d;                                
-  attitude.x = roll_d ;                    
-  attitude.y = pitch_d;
-  attitude.z = 0;
+  thrust.data = T_d;        
+  attitude.header.frame_id = "fcu";                        
+  attitude.vector.x = roll_d ;                    
+  attitude.vector.y = pitch_d;
+  attitude.vector.z = 0;
 
 }
 

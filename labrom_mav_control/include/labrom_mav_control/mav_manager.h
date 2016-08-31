@@ -29,7 +29,7 @@
 #include "nav_msgs/Odometry.h"
 #include "sensor_msgs/Imu.h"
 #include "std_msgs/Int32.h"
-#include "geometry_msgs/Vector3.h"
+#include "geometry_msgs/Vector3Stamped.h"
 #include "trajectory_msgs/JointTrajectoryPoint.h"
 
 // top-level namespace
@@ -69,7 +69,6 @@ class Manager{
     double max_detected_accel_;
     double min_detected_accel_;
     double time_;
-
 
 };
 
