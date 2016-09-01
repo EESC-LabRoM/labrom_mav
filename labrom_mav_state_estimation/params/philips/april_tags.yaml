@@ -1,4 +1,4 @@
-image_transport: compressed
+image_transport: raw
 base_link      : fcu
 publish_tag_tf : false
 

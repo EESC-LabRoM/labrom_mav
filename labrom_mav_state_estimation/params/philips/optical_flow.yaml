@@ -8,4 +8,4 @@ v0: 246.162773362198210
 encoding: mono8
 # Optical flow parameters
 min_frame_rate_in_secs: 0.1
-image_transport: compressed
+image_transport: raw

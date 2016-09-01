@@ -8,7 +8,7 @@
 		<!-- PArameters -->       
 		<rosparam file="$(find labrom_mav_state_estimation)/params/philips/optical_flow.yaml" />
 		<!-- Remap topics -->
-  	 <remap from="/image/compressed" to="/camera/image_mono/compressed"/>
+  	 <remap from="/image" to="/camera/image_mono"/>
      <remap from="/imu" to="/fcu/imu" />
 		 <remap from="/odometry" to="/odometry/ekf_world"/>
   </node>
