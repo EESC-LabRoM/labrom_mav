@@ -22,7 +22,7 @@
     <rosparam file="$(find labrom_mav_state_estimation)/params/vrep/optical_flow.yaml" />
    		<remap from="/image_mono" to="/vrep/image_mono"/>
 		  <remap from="/imu"   to="/vrep/imu"/>
-		  <remap from="/odometry"  to="/vrep/odometry"/>   
+		  <remap from="/odometry"  to="/odometry/ekf_world"/>   
   </node>
 
   <!-- ************ APRILTAGS ************ -->
@@ -59,8 +59,5 @@
     <rosparam command="load" file="$(find labrom_mav_state_estimation)/params/vrep/ekf_landmark.yaml" />
   </node>
 
-
-	<!-- VISUALIZATION TOOLS 
-	<node pkg="rqt_image_View" type="rqt_image_view" name="image_view"/>-->
 </launch>
 
