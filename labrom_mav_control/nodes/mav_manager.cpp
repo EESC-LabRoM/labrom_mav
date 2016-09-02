@@ -26,12 +26,24 @@ namespace manager{
 */
 Manager::Manager(void): nh_("~"){
   // Adversite and subscribe topics
-  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
-  thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
+  attitude_pub_ = pnh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
+  thrust_pub_   = pnh_.advertise<std_msgs::Float32>("cmd_thrust",1);
 
   imu_sub_      = nh_.subscribe("/imu",1,&Manager::ImuCallback,this);
   odom_sub_     = nh_.subscribe("/odometry",1,&Manager::OdometryCallback,this);
   traj_sub_     = nh_.subscribe("/trajectory",1,&Manager::TrajectoryCallback,this);  
+
+  // Initialize trajectory
+  for(int i=0; i<3; ++i){
+    traj_.positions.push_back(0);
+    traj_.velocities.push_back(0);
+    traj_.accelerations.push_back(0);
+    traj_.effort.push_back(0);
+  }
+  
+  // Initialize flags
+   is_odom_active_ = false;
+
 };
 
 /**
@@ -60,6 +72,8 @@ void Manager::ImuCallback(const sensor_msgs::Imu::ConstPtr &msg){
 * param[in] Last odometry msg received
 */
 void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
+    if(!is_odom_active_) 
+      is_odom_active_ = true;
     odom_ = *msg;
 }
 
@@ -90,9 +104,16 @@ void Manager::Spin(void){
 
   // Controllers
   mav_control::velocity::linear::Controller vel_controller(mass);
-  // Here comes the manager state machine (core)
-  ManagerState state = manager::HOVER;
 
+  // Wait for odometry message
+  while(!is_odom_active_){
+    // Loop delay
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+
+  // Here comes the manager state machine (core)
+  ManagerState state = manager::FREE_MODE_VELOCITY;
   while(ros::ok()){
     // Nothing to do  
     switch (state){
@@ -157,7 +178,8 @@ void Manager::Spin(void){
         break;
 
       // Receive order from extern machine
-      case (manager::FREE_MODE):{
+      case (manager::FREE_MODE_VELOCITY):{
+        vel_controller.LoopOnce(traj_, odom_, thrust, attitude);
         break;
       }
       
@@ -203,6 +225,7 @@ void Manager::Spin(void){
     // Publish thrust and attitude messages
     thrust_pub_.publish(thrust);
     attitude_pub_.publish(attitude);
+
     // Loop delay
     ros::spinOnce();
     loop_rate.sleep();

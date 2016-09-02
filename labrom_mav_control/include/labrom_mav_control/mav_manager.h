@@ -35,7 +35,7 @@
 // top-level namespace
 namespace mav_control{
 namespace manager{
-enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, CLIMB, WAIT_CLIMB=5, HOVER, HOVERING, FREE_MODE, LAND, WAIT_LANDING, TURN_MOTORS_OFF};
+enum ManagerState{IDLE=0, TURN_MOTORS_ON, TAKE_OFF, WAIT_TAKE_OFF, CLIMB, WAIT_CLIMB=5, HOVER, HOVERING, FREE_MODE_VELOCITY, LAND, WAIT_LANDING, TURN_MOTORS_OFF};
 
 class Manager{
   public:
@@ -54,6 +54,7 @@ class Manager{
 
   private:
     ros::NodeHandle nh_;                //!< ROS nodehandle
+    ros::NodeHandle pnh_;                //!< ROS nodehandle (private)
 
     ros::Publisher attitude_pub_;       //!< ROS attitude publisher
     ros::Publisher thrust_pub_;         //!< ROS thrust publisher
@@ -65,11 +66,13 @@ class Manager{
     sensor_msgs::Imu imu_;              //!< imu message
     nav_msgs::Odometry odom_;           //!< odometry message
     trajectory_msgs::JointTrajectoryPoint traj_;  //!< trajectory message
-    
+
+    bool is_odom_active_;
+
     double max_detected_accel_;
     double min_detected_accel_;
     double time_;
-
+  
 };
 
 } // manager namespace

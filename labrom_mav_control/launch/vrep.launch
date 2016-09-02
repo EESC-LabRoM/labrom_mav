@@ -5,12 +5,12 @@
       <!-- Remapping topics-->
       <remap from="/odometry" to="/odometry/ekf_odom"/>
       <remap from="/imu" to="/vrep/imu"/>
-      <remap from="/trajectory" to="/vrep/trajectory"/>   
-      <remap from="/control_manager/cmd_attitude" to="/vrep/cmd_attitude"/>
-      <remap from="/control_manager/cmd_thrust" to="/vrep/cmd_thrust"/>
+      <remap from="/trajectory" to="/planner/trajectory"/>   
+      <remap from="cmd_attitude" to="/vrep/cmd_attitude"/>
+      <remap from="cmd_thrust" to="/vrep/cmd_thrust"/>
 
       <!-- Loading parameters -->  
-      <param name="mass" value="1.2"/>
+      <param name="mass" value="1.1"/>
       <param name="rate" value="20"/>
       <param name="take_off_accel" value="10"/>
       <param name="land_accel" value="9.2"/>
