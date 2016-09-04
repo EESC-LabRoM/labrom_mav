@@ -27,7 +27,7 @@ namespace teleop{
 class Keyboard{
   public:
     //! Constructor
-    Keyboard(double _key_gain = 0.1);
+    Keyboard(double key_gain = 0.1);
     //! Destructor
     ~Keyboard();
     //! Key pressed event handle
