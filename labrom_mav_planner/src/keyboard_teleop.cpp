@@ -15,3 +15,55 @@
 *   You should have received a copy of the GNU General Public License
 *   along with labrom_mav_planner.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
+
+// labrom_mav_planner library
+#include "labrom_mav_planner/keyboard_teleop.h"
+
+namespace mav_planner{
+namespace teleop{
+
+/**
+ * Constructor
+ * @param[in] key_gain that boost corresponding key actuation.
+ */
+Keyboard::Keyboard(double key_gain): _key_gain(key_gain){
+  for(int i=0; i<4; ++i){
+    positions.push_back(0);
+    velocities.push_back(0);
+    accelerations.push_back(0);
+    effort.push_back(0);
+  }
+};
+
+/**
+ * Destructor.
+ */ 
+Keyboard::~Keyboard(){};
+
+/**
+ * Key pressed event handle
+ * @param[in] key pressed
+ */
+void Keyboard::KeyPressed(uint16 key){
+  
+}
+
+/**
+ * Key unpressed event handle
+ * @param[in] key pressed
+ */
+void Keyboard::KeyUnpressed(uint16 key){
+  
+}
+
+/**
+ * Get keyboard teleop command
+ * @return trajectory_msgs::JointTrajectoryPoint message 
+ */
+trajectory_msgs::JointTrajectoryPoint GetKeyboardTeleopCommand(void){
+  return trajectory_;
+}
+
+
+} // teleop namespace
+} // mav_planner namespace
