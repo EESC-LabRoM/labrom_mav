@@ -18,10 +18,29 @@
 #ifndef KEYBOARD_TELEOP_H_
 #define KEYBOARD_TELEOP_H_
 
+// ROS message libraries
+#include <keyboard/Key.h>
+#include "trajectory_msgs/JointTrajectoryPoint.h"
+
 namespace mav_planner{
 namespace teleop{
 class Keyboard{
-
+  public:
+    //! Constructor
+    Keyboard(double _key_gain = 0.1);
+    //! Destructor
+    ~Keyboard();
+    //! Key pressed event handle
+    void KeyPressed(uint16 key);
+    //! Key unpressed event handle
+    void KeyUnpressed(uint16 key);
+    //! Get command
+    trajectory_msgs::JointTrajectoryPoint GetKeyboardTeleopCommand(void);
+    
+  private:
+    trajectory_msgs::JointTrajectoryPoint trajectory_;        //!< Trajectory from keyboard input
+    double _key_gain;                                         //!< Multiplicative factor
+    
 };
 } // teleop namespace
 } // mav_planner namespace
