@@ -11,7 +11,7 @@ velocity/y/ki: 0.075
 velocity/y/kd: 0.01 
 velocity/y/anti_windup: 0.25
 
-velocity/z/kp: 1.5 
+velocity/z/kp: 2.5 
 velocity/z/ki: 0.25 
 velocity/z/kd: 0.05 
 velocity/z/anti_windup: 5.0

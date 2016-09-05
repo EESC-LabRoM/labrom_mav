@@ -27,7 +27,7 @@
 #include "tf/tf.h"
 // ROS message libraries
 #include "nav_msgs/Odometry.h"
-#include "trajectory_msgs/JointTrajectoryPoint.h"
+#include "trajectory_msgs/JointTrajectory.h"
 #include "std_msgs/Float32.h"
 #include "geometry_msgs/Vector3Stamped.h"
 
@@ -47,7 +47,7 @@ class Controller{
     //! Empty destructor
     ~Controller(void);
     //! Odometry message callback
-    void LoopOnce(const trajectory_msgs::JointTrajectoryPoint &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude);
+    void LoopOnce(const trajectory_msgs::JointTrajectory &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude);
 
   private:     
     controllers::pid::Simple pid_ddx_;

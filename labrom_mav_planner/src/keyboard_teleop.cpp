@@ -54,10 +54,10 @@ void Keyboard::KeyPressed(int &key){
       trajectory_.velocities[0] = -_key_gain;;
       break;
     case (KEY_RIGHT):
-      trajectory_.velocities[1] = _key_gain;;
+      trajectory_.velocities[1] = -_key_gain;;
       break;
     case (KEY_LEFT):
-      trajectory_.velocities[1] = -_key_gain;;
+      trajectory_.velocities[1] = _key_gain;;
       break;    
     case (KEY_a):
       trajectory_.velocities[2] = _key_gain;;

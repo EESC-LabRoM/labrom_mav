@@ -30,7 +30,7 @@
 #include "sensor_msgs/Imu.h"
 #include "std_msgs/Int32.h"
 #include "geometry_msgs/Vector3Stamped.h"
-#include "trajectory_msgs/JointTrajectoryPoint.h"
+#include "trajectory_msgs/JointTrajectory.h"
 
 // top-level namespace
 namespace mav_control{
@@ -48,7 +48,7 @@ class Manager{
     //! Odometry callback
     void OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg);
     //! Trajectory callback
-    void TrajectoryCallback(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg);
+    void TrajectoryCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg);
     //! State machine loop
     void Spin(void);
 
@@ -63,9 +63,9 @@ class Manager{
     ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
     ros::Subscriber traj_sub_;          //!< ROS trajectory subscriber
 
-    sensor_msgs::Imu imu_;              //!< imu message
-    nav_msgs::Odometry odom_;           //!< odometry message
-    trajectory_msgs::JointTrajectoryPoint traj_;  //!< trajectory message
+    sensor_msgs::Imu imu_;                   //!< imu message
+    nav_msgs::Odometry odom_;                //!< odometry message
+    trajectory_msgs::JointTrajectory traj_;  //!< trajectory message
 
     bool is_odom_active_;
 

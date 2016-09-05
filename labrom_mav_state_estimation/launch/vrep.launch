@@ -1,4 +1,5 @@
 <launch>
+
 	<!-- ######################## STATIC TRANSFORMS ##########################	-->
   <node pkg="tf" type="static_transform_publisher" name="base_imu_transform" args="0 0 0 0 0 0 base_link imu_link 1000" ns="tf"/>
   <node pkg="tf" type="static_transform_publisher" name="base_camera_transform" args="0 0 -0.06 -1.5708 0 3.1416 base_link camera_link 1000" ns="tf" />
@@ -9,8 +10,8 @@
 
 	<!-- ######################## IMAGE PROC ######################## -->
   <node name="image_proc" pkg="labrom_sensors" type="image_proc_node" output="screen">
-    <remap from="/image_raw" to="/vrep/image_raw"/>
-    <remap from="/image_proc/image_mono" to="/vrep/image_mono"/>
+    <remap from="/image_raw" to="/vrep/camera/image_raw"/>
+    <remap from="/image_proc/image_mono" to="/vrep/camera/image_mono"/>
 
     <param name="image_transport" value="raw"/>
     <param name="encoding" value="rgb8"/>
@@ -20,7 +21,7 @@
 	<!-- ************ OPTICAL FLOW ************ -->
   <node name="optical_flow" type="continuous_homography_node" pkg="labrom_optical_flow" output="screen">
     <rosparam file="$(find labrom_mav_state_estimation)/params/vrep/optical_flow.yaml" />
-   		<remap from="/image_mono" to="/vrep/image_mono"/>
+   		<remap from="/image_mono" to="/vrep/camera/image_mono"/>
 		  <remap from="/imu"   to="/vrep/imu"/>
 		  <remap from="/odometry"  to="/odometry/ekf_world"/>   
   </node>
@@ -28,7 +29,7 @@
   <!-- ************ APRILTAGS ************ -->
 	<node pkg="apriltags_ros" type="apriltag_detector_node" name="detector" output="screen" ns="apriltag">
     <!-- Remap topics -->
-    <remap from="image_rect" to="/vrep/image_mono"/>
+    <remap from="image_rect" to="/vrep/camera/image_mono"/>
     <remap from="tag_detections_image" to="image"/>
     <remap from="tag_detections_pose_covariance" to="pose"/>    
 

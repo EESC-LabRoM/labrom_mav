@@ -1,14 +1,20 @@
 <launch>
+    <arg name="robot_ns" value="fcu" />
+
     <rosparam command="load" file="$(find labrom_mav_control)/params/pelican.yaml"/>
     
     <node name="control_manager" pkg="labrom_mav_control" type="manager_node" output="screen">
       <!-- Remapping topics-->
+      <!-- Remapping topics-->
       <remap from="/odometry" to="/odometry/ekf_odom"/>
-      <remap from="/imu" to="/fcu/imu"/>
-      <remap from="/trajectory" to="/fcu/trajectory"/>   
+      <remap from="/imu" to="/$(arg robot_ns)/imu"/>
+      
+      <remap from="/trajectory" to="/planner/trajectory"/>   
+      <remap from="cmd_attitude" to="/$(arg robot_ns)/cmd_attitude"/>
+      <remap from="cmd_thrust" to="/$(arg robot_ns)/cmd_thrust"/>
       
       <!-- Loading parameters -->  
-      <param name="mass" value="0.8"/>
+      <param name="mass" value="1.0"/>
       <param name="rate" value="20"/>
       <param name="take_off_accel" value="10"/>
       <param name="land_accel" value="9.2"/>

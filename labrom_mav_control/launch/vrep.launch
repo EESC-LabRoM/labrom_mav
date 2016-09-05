@@ -5,6 +5,7 @@
       <!-- Remapping topics-->
       <remap from="/odometry" to="/odometry/ekf_odom"/>
       <remap from="/imu" to="/vrep/imu"/>
+      
       <remap from="/trajectory" to="/planner/trajectory"/>   
       <remap from="cmd_attitude" to="/vrep/cmd_attitude"/>
       <remap from="cmd_thrust" to="/vrep/cmd_thrust"/>

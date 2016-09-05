@@ -61,7 +61,7 @@ Controller::~Controller(void){};
 * @param[out] thrust value required to follow trajectory 
 * @param[out] attitude value required to follow trajectory (roll, pitch, yaw)
 */
-void Controller::LoopOnce(const trajectory_msgs::JointTrajectoryPoint &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude){
+void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude){
   // Roll, pitch and yaw angles
   double roll, pitch, yaw;
   tf::Quaternion qt(odom.pose.pose.orientation.x, 
@@ -77,9 +77,9 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectoryPoint &traj, con
   double vz = -sin(pitch)*odom.twist.twist.linear.x + cos(pitch)*sin(roll)*odom.twist.twist.linear.y  + cos(roll)*cos(pitch)*odom.twist.twist.linear.z;
 
   // Command accelerations 
-  double ddx_c = pid_ddx_.LoopOnce(traj.velocities[0], vx);
-  double ddy_c = pid_ddy_.LoopOnce(traj.velocities[1], vy);
-  double ddz_c = pid_ddz_.LoopOnce(traj.velocities[2], vz);
+  double ddx_c = pid_ddx_.LoopOnce(traj.points[0].velocities[0], vx);
+  double ddy_c = pid_ddy_.LoopOnce(traj.points[0].velocities[1], vy);
+  double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], vz);
 
   // Quadrotor input commands
   double T_d     = (params_.gravity + ddz_c)*params_.mass;

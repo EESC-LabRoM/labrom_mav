@@ -34,13 +34,14 @@ Manager::Manager(void): nh_("~"){
   traj_sub_     = nh_.subscribe("/trajectory",1,&Manager::TrajectoryCallback,this);  
 
   // Initialize trajectory
-  for(int i=0; i<3; ++i){
-    traj_.positions.push_back(0);
-    traj_.velocities.push_back(0);
-    traj_.accelerations.push_back(0);
-    traj_.effort.push_back(0);
+  trajectory_msgs::JointTrajectoryPoint trajPoint;
+  for(int i=0; i<4; ++i){
+    trajPoint.positions.push_back(0);
+    trajPoint.velocities.push_back(0);
+    trajPoint.accelerations.push_back(0);
+    trajPoint.effort.push_back(0);
   }
-  
+  traj_.points.push_back(trajPoint);
   // Initialize flags
    is_odom_active_ = false;
 
@@ -81,7 +82,7 @@ void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
 * Update trajectories
 * param[in] msg last trajectory received
 */
-void Manager::TrajectoryCallback(const trajectory_msgs::JointTrajectoryPoint::ConstPtr &msg){
+void Manager::TrajectoryCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg){
     traj_ = *msg;
 }
 
@@ -92,7 +93,6 @@ void Manager::Spin(void){
   // ROS messages
   std_msgs::Float32 thrust;
   geometry_msgs::Vector3Stamped attitude;
-  trajectory_msgs::JointTrajectoryPoint local_traj;
   
   // Setting state machine parameters
   double mass, rate;
@@ -165,26 +165,26 @@ void Manager::Spin(void){
 
       // Setting hover (velocity control)
       case (manager::HOVER):
-        local_traj.velocities.clear();
         for(int i=0; i < 3; ++i)
-            local_traj.velocities.push_back(0);
+            traj_.points[0].velocities[i] = 0;
         state = manager::HOVERING;
         ROS_INFO("[Manager] Hovering!");
         break;
     
       // Hovering
       case (manager::HOVERING):
-        vel_controller.LoopOnce(local_traj, odom_, thrust, attitude);
+        vel_controller.LoopOnce(traj_, odom_, thrust, attitude);
         break;
 
       // Receive order from extern machine
-      case (manager::FREE_MODE_VELOCITY):{
+      case (manager::FREE_MODE_VELOCITY):
         vel_controller.LoopOnce(traj_, odom_, thrust, attitude);
         break;
-      }
       
+      /*
       // Setting land parameters
       case (manager::LAND):{
+        
         /// Descend with constant downward velocity
         local_traj.velocities.clear();
         for(int i=0; i < 3; ++i)
@@ -209,7 +209,7 @@ void Manager::Spin(void){
         }
         break;
       }
-
+      */
       case (manager::TURN_MOTORS_OFF):
         //! @todo turn motors off
 
