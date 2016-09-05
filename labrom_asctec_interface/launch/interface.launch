@@ -1,0 +1,22 @@
+<launch>
+  <!-- ######################## STATIC TRANSFORMS ##########################    -->
+  <node pkg="tf" type="static_transform_publisher" name="fcu_control_transform" args="0 0 0 2.3562 0 0 fcu control_link 1000"/>
+  <node pkg="tf" type="static_transform_publisher" name="camera_fcu_transform" args="0 0 0 -2.3562 0 3.1416 fcu camera 1000"/>
+  <node pkg="tf" type="static_transform_publisher" name="world_tag_0_transform" args="0 0 0 0 0 0 tag_0 world 1000"/>
+
+  <!-- #######################          FCU      ###########################   -->
+  <node name="fcu" pkg="asctec_hl_interface" type="hl_node" output="screen" clear_params="true">
+    <rosparam file="$(find asctec_hl_interface)/launch/fcu_parameters.yaml" />
+    <rosparam file="$(find asctec_hl_interface)/launch/ssdk_parameters.yaml" />
+  </node>
+
+
+  <!-- ################ LABROM INTERFACE FOR ASCTEC_HL_INTERF_INTERFACE ################## -->
+  <node name="interface" pkg="labrom_asctec_interface" type="mav_ctrl_interface_node" output="screen">
+    <remap from="/control" to="/fcu/control" />
+    <remap from="/cmd_attitude" to="/fcu/cmd_attitude"/>
+    <remap from="/cmd_thrust"   to="/fcu/cmd_thrust"/>
+
+  </node>
+</launch>
+
