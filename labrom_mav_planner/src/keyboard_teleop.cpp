@@ -27,6 +27,7 @@ namespace teleop{
  * @param[in] key_gain that boost corresponding key actuation.
  */
 Keyboard::Keyboard(double key_gain): _key_gain(key_gain){
+
   for(int i=0; i<4; ++i){
     trajectory_.positions.push_back(0);
     trajectory_.velocities.push_back(0);
@@ -47,22 +48,22 @@ Keyboard::~Keyboard(){};
 void Keyboard::KeyPressed(int &key){
   switch (key){
     case (KEY_UP):
-      trajectory_.velocities[0] = 0.1;
+      trajectory_.velocities[0] = _key_gain;;
       break;
     case (KEY_DOWN):
-      trajectory_.velocities[0] = -0.1;
+      trajectory_.velocities[0] = -_key_gain;;
       break;
     case (KEY_RIGHT):
-      trajectory_.velocities[1] = 0.1;
+      trajectory_.velocities[1] = _key_gain;;
       break;
     case (KEY_LEFT):
-      trajectory_.velocities[1] = -0.1;
+      trajectory_.velocities[1] = -_key_gain;;
       break;    
     case (KEY_a):
-      trajectory_.velocities[2] = 0.1;
+      trajectory_.velocities[2] = _key_gain;;
       break;
     case (KEY_z):
-      trajectory_.velocities[2] = -0.1;
+      trajectory_.velocities[2] = -_key_gain;;
       break;   
   }
 }
@@ -98,7 +99,7 @@ void Keyboard::KeyUnpressed(int &key){
  * Get keyboard teleop command
  * @return trajectory_msgs::JointTrajectoryPoint message 
  */
-trajectory_msgs::JointTrajectoryPoint  Keyboard::GetKeyboardTeleopCommand(void){
+trajectory_msgs::JointTrajectoryPoint  Keyboard::GetTrajectory(void){
   return trajectory_;
 }
 

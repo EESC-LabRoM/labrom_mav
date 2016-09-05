@@ -1,0 +1,6 @@
+<launch>
+  <node name="planner" pkg="labrom_mav_planner" type="planner_node">
+    <remap from="/key_pressed"   to="/keyboard/keydown"/>
+    <remap from="/key_unpressed" to="/keyboard/keyup"/>
+  </node>
+</launch>

@@ -40,23 +40,15 @@ include_directories(
 add_library(${PROJECT_NAME}
    src/keyboard_teleop.cpp
 )
-
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} )
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(labrom_mav_planner ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(labrom_mav_planner_node src/labrom_mav_planner_node.cpp)
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(labrom_mav_planner_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-# target_link_libraries(labrom_mav_planner_node
-#   ${catkin_LIBRARIES}
-# )
+add_executable(planner_node nodes/planner_node.cpp)
+target_link_libraries(planner_node ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 #############
 ## Install ##

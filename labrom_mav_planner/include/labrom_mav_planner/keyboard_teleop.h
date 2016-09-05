@@ -285,7 +285,7 @@ class Keyboard{
     //! Key unpressed event handle
     void KeyUnpressed(int &key);
     //! Get command
-    trajectory_msgs::JointTrajectoryPoint GetKeyboardTeleopCommand(void);
+    trajectory_msgs::JointTrajectoryPoint GetTrajectory(void);
     
   private:
     trajectory_msgs::JointTrajectoryPoint trajectory_;        //!< Trajectory from keyboard input
