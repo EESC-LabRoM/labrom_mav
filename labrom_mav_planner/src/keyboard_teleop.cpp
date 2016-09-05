@@ -28,10 +28,10 @@ namespace teleop{
  */
 Keyboard::Keyboard(double key_gain): _key_gain(key_gain){
   for(int i=0; i<4; ++i){
-    positions.push_back(0);
-    velocities.push_back(0);
-    accelerations.push_back(0);
-    effort.push_back(0);
+    trajectory_.positions.push_back(0);
+    trajectory_.velocities.push_back(0);
+    trajectory_.accelerations.push_back(0);
+    trajectory_.effort.push_back(0);
   }
 };
 
@@ -44,23 +44,61 @@ Keyboard::~Keyboard(){};
  * Key pressed event handle
  * @param[in] key pressed
  */
-void Keyboard::KeyPressed(uint16 key){
-    
+void Keyboard::KeyPressed(int &key){
+  switch (key){
+    case (KEY_UP):
+      trajectory_.velocities[0] = 0.1;
+      break;
+    case (KEY_DOWN):
+      trajectory_.velocities[0] = -0.1;
+      break;
+    case (KEY_RIGHT):
+      trajectory_.velocities[1] = 0.1;
+      break;
+    case (KEY_LEFT):
+      trajectory_.velocities[1] = -0.1;
+      break;    
+    case (KEY_a):
+      trajectory_.velocities[2] = 0.1;
+      break;
+    case (KEY_z):
+      trajectory_.velocities[2] = -0.1;
+      break;   
+  }
 }
 
 /**
  * Key unpressed event handle
- * @param[in] key pressed
+ * @param[in] key unpressed
  */
-void Keyboard::KeyUnpressed(uint16 key){
-  
+void Keyboard::KeyUnpressed(int &key){
+  switch (key){
+    case (KEY_UP):
+      trajectory_.velocities[0] = 0;
+      break;
+    case (KEY_DOWN):
+      trajectory_.velocities[0] = 0;
+      break;
+    case (KEY_RIGHT):
+      trajectory_.velocities[1] = 0;
+      break;
+    case (KEY_LEFT):
+      trajectory_.velocities[1] = 0;
+      break;    
+    case (KEY_a):
+      trajectory_.velocities[2] = 0;
+      break;
+    case (KEY_z):
+      trajectory_.velocities[2] = 0;
+      break;   
+  }
 }
 
 /**
  * Get keyboard teleop command
  * @return trajectory_msgs::JointTrajectoryPoint message 
  */
-trajectory_msgs::JointTrajectoryPoint GetKeyboardTeleopCommand(void){
+trajectory_msgs::JointTrajectoryPoint  Keyboard::GetKeyboardTeleopCommand(void){
   return trajectory_;
 }
 
