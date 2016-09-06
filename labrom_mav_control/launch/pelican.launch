@@ -14,7 +14,7 @@
       <remap from="cmd_thrust" to="/$(arg robot_ns)/cmd_thrust"/>
       
       <!-- Loading parameters -->  
-      <param name="mass" value="1.0"/>
+      <param name="mass" value="0.9"/>
       <param name="rate" value="20"/>
       <param name="take_off_accel" value="10"/>
       <param name="land_accel" value="9.2"/>

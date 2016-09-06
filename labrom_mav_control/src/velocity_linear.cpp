@@ -83,8 +83,8 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
 
   // Quadrotor input commands
   double T_d     = (params_.gravity + ddz_c)*params_.mass;
-  double roll_d  = -(params_.mass)/T_d  * ddy_c;
-  double pitch_d = (params_.mass)/T_d * ddx_c;
+  double roll_d  = -1/params_.gravity  * ddy_c; //-(params_.mass)/T_d  * ddy_c;
+  double pitch_d = 1/params_.gravity   * ddx_c;  //(params_.mass)/T_d * ddx_c;
 
   // Assemble command message
   thrust.data = T_d;        

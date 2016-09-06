@@ -17,6 +17,8 @@
     <remap from="/cmd_attitude" to="/fcu/cmd_attitude"/>
     <remap from="/cmd_thrust"   to="/fcu/cmd_thrust"/>
 
+    <param name="max_thrust" value="21.5"/>
+    <param name="loop_rate" value="20"/>
   </node>
 </launch>
 
