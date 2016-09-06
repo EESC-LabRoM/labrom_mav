@@ -13,9 +13,10 @@
 
   <!-- ################ LABROM INTERFACE FOR ASCTEC_HL_INTERF_INTERFACE ################## -->
   <node name="interface" pkg="labrom_asctec_interface" type="mav_ctrl_interface_node" output="screen">
-    <remap from="/control" to="/fcu/control" />
     <remap from="/cmd_attitude" to="/fcu/cmd_attitude"/>
     <remap from="/cmd_thrust"   to="/fcu/cmd_thrust"/>
+
+    <remap from="control" to="/fcu/control" />
 
     <param name="max_thrust" value="21.5"/>
     <param name="loop_rate" value="20"/>

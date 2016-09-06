@@ -51,6 +51,7 @@ class CtrlNode{
   
   private: 
     ros::NodeHandle nh_;                      //!< ROS node handle
+    ros::NodeHandle pnh_;                      //!< ROS node handle   
     ros::Subscriber sub_thrust_;              //!< Thrust subscriber
     ros::Subscriber sub_attitude_;            //!< Attitude subscriber
     ros::Publisher pub_mav_ctrl_;             //!< Mav ctrl publisher
@@ -62,7 +63,7 @@ class CtrlNode{
     asctec_hl_comm::mav_ctrl mav_ctrl_;	      	//!< mav_ctrl message to be sent
     
     // params
-    std::string _control_frame_id;       //!< control frame
+    std::string _control_frame_id;      //!< control frame
     double _max_thrust;				          //!< maximum quad thrust in Newtons
     int _loop_rate;			     	          //!< ROS loop rate
 };

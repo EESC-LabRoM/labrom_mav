@@ -23,17 +23,17 @@ namespace labrom_asctec_interface{
 /**
  * Empty constructor.
  */
-CtrlNode::CtrlNode(void){
+CtrlNode::CtrlNode(void): pnh_("~"){
   // Paramas
-  nh_.param("max_thrust", _max_thrust, 17.1675);
-  nh_.param("loop_rate", _loop_rate, 20);
-  nh_.param<std::string>("control_frame_id", _control_frame_id, "control_link");
+  pnh_.param("max_thrust", _max_thrust, 20.0);
+  pnh_.param("loop_rate", _loop_rate, 20);
+  pnh_.param<std::string>("control_frame_id", _control_frame_id, "control_link");
   // Start subscribers
   sub_thrust_   = nh_.subscribe("/cmd_thrust"  , 1, &CtrlNode::ThrustCallback, this);
   sub_attitude_ = nh_.subscribe("/cmd_attitude", 1, &CtrlNode::AttitudeCallback, this);
   
   // Start publishers
-  pub_mav_ctrl_ = nh_.advertise<asctec_hl_comm::mav_ctrl>("control", 1);
+  pub_mav_ctrl_ = pnh_.advertise<asctec_hl_comm::mav_ctrl>("control", 1);
 
 };
 
