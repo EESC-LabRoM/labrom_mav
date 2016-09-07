@@ -35,9 +35,9 @@ Planner::Planner(void): pnh_("~"){
   trajectory_.points.push_back(trajPoint);
 
   // ROS publishers and subscribers
-  keyboard_pressed_sub_ = nh_.subscribe("/key_pressed",1,&Planner::KeyboardPressedCallback,this);
-  keyboard_unpressed_sub_ = nh_.subscribe("/key_unpressed",1,&Planner::KeyboardUnpressedCallback,this);
-  traj_pub_     = pnh_.advertise<trajectory_msgs::JointTrajectory>("trajectory",1);  
+  keyboard_pressed_sub_ = nh_.subscribe("key_down",1,&Planner::KeyboardPressedCallback,this);
+  keyboard_unpressed_sub_ = nh_.subscribe("key_up",1,&Planner::KeyboardUnpressedCallback,this);
+  traj_pub_     = nh_.advertise<trajectory_msgs::JointTrajectory>("trajectory",1);  
 }
 
 /**
