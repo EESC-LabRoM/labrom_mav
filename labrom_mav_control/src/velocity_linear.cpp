@@ -82,9 +82,9 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], vz);
 
   // Saturate command accelerations
-  ddx_c = std::min(std::max(ddz_c, -2), 2 );   
-  ddy_c = std::min(std::max(ddz_c, -2), 2 );
-  ddz_c = std::min(std::max(ddz_c, -2), 2 );
+  ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
+  ddy_c = std::min(std::max(ddy_c, -2.0), 2.0 );
+  ddz_c = std::min(std::max(ddz_c, -2.0), 2.0 );
 
   // Quadrotor input commands
   double T_d     = (params_.gravity + ddz_c)*params_.mass;

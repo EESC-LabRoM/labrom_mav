@@ -3,12 +3,12 @@ gravity: 9.81
 # Controller gains
 velocity/x/kp: 1 
 velocity/x/ki: 0.175 
-velocity/x/kd: 0.01 
+velocity/x/kd: 0.1 
 velocity/x/anti_windup: 1.0
 
 velocity/y/kp: 1 
 velocity/y/ki: 0.175 
-velocity/y/kd: 0.01 
+velocity/y/kd: 0.1 
 velocity/y/anti_windup: 1.0
 
 velocity/z/kp: 0.5
