@@ -92,7 +92,8 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double pitch_d =  1/params_.gravity  * ddx_c; 
 
   // Assemble command message        
-  attitude.header.frame_id = "fcu";                        
+  attitude.header.frame_id = "fcu";            
+  thrust.data = T_d;            
   attitude.vector.x = roll_d ;                    
   attitude.vector.y = pitch_d;
   attitude.vector.z = 0;

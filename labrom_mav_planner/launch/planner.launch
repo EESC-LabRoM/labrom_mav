@@ -1,8 +1,8 @@
 <launch>
 <group ns="quadrotor"> <!-- ROBOT name -->
   <node name="planner" pkg="labrom_mav_planner" type="planner_node">
-    <remap from="key_down"   to="/keyboard/key_down"/>
-    <remap from="key_up" to="/keyboard/key_up"/>
+    <remap from="key_down"   to="/keyboard/keydown"/>
+    <remap from="key_up" to="/keyboard/keyup"/>
     <remap from="trajectory" to="trajectory"/>
   </node>
 </group>

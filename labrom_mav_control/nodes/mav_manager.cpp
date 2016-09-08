@@ -223,6 +223,7 @@ void Manager::Spin(void){
     } // switch
 
     // Publish thrust and attitude messages
+    std::cout << "thrust: " << thrust.data << std::endl;
     thrust_pub_.publish(thrust);
     attitude_pub_.publish(attitude);
 
