@@ -1,5 +1,5 @@
 # Optical flow parameters
-min_frame_rate_in_secs: 0.1
+min_frame_rate_in_secs: 0.2
 estimate_N: true
 estimate_w: false
 estimate_v: true

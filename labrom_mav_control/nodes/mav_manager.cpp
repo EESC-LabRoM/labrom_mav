@@ -24,14 +24,14 @@ namespace manager{
 /**
 * Empty constructor
 */
-Manager::Manager(void): nh_("~"){
+Manager::Manager(void): pnh_("~"){
   // Adversite and subscribe topics
-  attitude_pub_ = pnh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
-  thrust_pub_   = pnh_.advertise<std_msgs::Float32>("cmd_thrust",1);
+  attitude_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
+  thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
 
-  imu_sub_      = nh_.subscribe("/imu",1,&Manager::ImuCallback,this);
-  odom_sub_     = nh_.subscribe("/odometry",1,&Manager::OdometryCallback,this);
-  traj_sub_     = nh_.subscribe("/trajectory",1,&Manager::TrajectoryCallback,this);  
+  imu_sub_      = nh_.subscribe("imu",1,&Manager::ImuCallback,this);
+  odom_sub_     = nh_.subscribe("odometry",1,&Manager::OdometryCallback,this);
+  traj_sub_     = nh_.subscribe("trajectory",1,&Manager::TrajectoryCallback,this);  
 
   // Initialize trajectory
   trajectory_msgs::JointTrajectoryPoint trajPoint;
@@ -75,7 +75,11 @@ void Manager::ImuCallback(const sensor_msgs::Imu::ConstPtr &msg){
 void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
     if(!is_odom_active_) 
       is_odom_active_ = true;
-    odom_ = *msg;
+    odom_.twist.twist.linear = msg->twist.twist.linear;
+    odom_.pose.pose.orientation.x=0;
+odom_.pose.pose.orientation.y=0;
+odom_.pose.pose.orientation.z=0;
+odom_.pose.pose.orientation.w=1;
 }
 
 /**
@@ -98,7 +102,7 @@ void Manager::Spin(void){
   double mass, rate;
   double take_off_accel, land_accel, climb_time;
 
-  nh_.param<double>("mass",mass, 0);
+  nh_.param<double>("mass",mass, 1.2);
   nh_.param<double>("rate",rate, 20);
   ros::Rate loop_rate(rate);
 

@@ -79,7 +79,7 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   // Command accelerations 
   double ddx_c = pid_ddx_.LoopOnce(traj.points[0].velocities[0], vx);
   double ddy_c = pid_ddy_.LoopOnce(traj.points[0].velocities[1], vy);
-  double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], vz);
+  double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], -vz);
 
   // Saturate command accelerations
   ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
