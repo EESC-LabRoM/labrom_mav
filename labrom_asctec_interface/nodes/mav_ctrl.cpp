@@ -78,7 +78,7 @@ void CtrlNode::PublishMavCtrl(void){
     
     // Publish message
     pub_mav_ctrl_.publish(mav_ctrl_);
-  }catch (tf::TransformException &ex) {
+  }catch (tf::TransformException <&ex) {
     ROS_WARN("The tf from '%s' to '%s' does not seem to be available! ",
              attitude_.header.frame_id.c_str(),
              _control_frame_id.c_str());
