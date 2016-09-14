@@ -77,9 +77,9 @@ void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
       is_odom_active_ = true;
     odom_.twist.twist.linear = msg->twist.twist.linear;
     odom_.pose.pose.orientation.x=0;
-odom_.pose.pose.orientation.y=0;
-odom_.pose.pose.orientation.z=0;
-odom_.pose.pose.orientation.w=1;
+    odom_.pose.pose.orientation.y=0;
+    odom_.pose.pose.orientation.z=0;
+    odom_.pose.pose.orientation.w=1;
 }
 
 /**

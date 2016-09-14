@@ -15,5 +15,10 @@
     <param name="max_thrust" value="21.5"/>
     <param name="loop_rate" value="20"/>
   </node>
+
+  <node name="fcu" pkg="asctec_hl_interface" type="hl_node" output="screen" clear_params="true">
+		<rosparam file="$(find asctec_hl_interface)/launch/fcu_parameters.yaml" />
+    <rosparam file="$(find asctec_hl_interface)/launch/ssdk_parameters.yaml" />        
+  </node>
 </launch>
 
