@@ -31,6 +31,7 @@
 #include "std_msgs/Int32.h"
 #include "geometry_msgs/Vector3Stamped.h"
 #include "trajectory_msgs/JointTrajectory.h"
+#include <tf/transform_listener.h>
 
 // top-level namespace
 namespace mav_control{
@@ -55,14 +56,13 @@ class Manager{
   private:
     ros::NodeHandle nh_;                //!< ROS nodehandle
     ros::NodeHandle pnh_;                //!< ROS nodehandle (private)
-
     ros::Publisher attitude_pub_;       //!< ROS attitude publisher
     ros::Publisher thrust_pub_;         //!< ROS thrust publisher
-
     ros::Subscriber imu_sub_;           //!< ROS IMU subscriber
     ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
     ros::Subscriber traj_sub_;          //!< ROS trajectory subscriber
-
+    tf::TransformListener tf_listener_;        //!< tf listener
+    
     sensor_msgs::Imu imu_;                   //!< imu message
     nav_msgs::Odometry odom_;                //!< odometry message
     trajectory_msgs::JointTrajectory traj_;  //!< trajectory message

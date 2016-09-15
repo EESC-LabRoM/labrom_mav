@@ -75,8 +75,21 @@ void Manager::ImuCallback(const sensor_msgs::Imu::ConstPtr &msg){
 void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
     if(!is_odom_active_) 
       is_odom_active_ = true;
-    odom_.twist.twist.linear = msg->twist.twist.linear;
-    odom_.pose.pose.orientation = msg->pose.pose.orientation;
+
+    try{
+      geometry_msgs::Vector3Stamped in, out;
+      // Transform twist
+      in.vector = msg->twist.twist.linear;
+      in.header = msg->header;
+      in.header.frame_id = msg->child_frame_id;
+      tf_listener_.transformVector(imu_.header.frame_id, in, out);
+      odom_.twist.twist.linear = out.vector;
+      // Transform orientation
+      odom_.pose.pose.orientation = msg->pose.pose.orientation;
+    }catch (tf::TransformException &ex){   
+      ;
+    }
+
 }
 
 /**
@@ -182,23 +195,14 @@ void Manager::Spin(void){
         vel_controller.LoopOnce(traj_, odom_, thrust, attitude);
         break;
       
-      /*
+      
       // Setting land parameters
       case (manager::LAND):{
-        
-        /// Descend with constant downward velocity
-        local_traj.velocities.clear();
-        for(int i=0; i < 3; ++i)
-            local_traj.velocities.push_back(0);
-        local_traj.velocities[2] = -0.1;
-        /// Landing parameters
-        nh_.param("land_accel", land_accel,0.0);
-        min_detected_accel_ = 100;
-        state = manager::WAIT_LANDING;
+        thrust.data = 0;
         ROS_INFO("[Manager] Trying to land!");
         break;
       }
-
+      /*
       // Landing supervisionary state
       case (manager::WAIT_LANDING):{
         vel_controller.LoopOnce(local_traj, odom_, thrust, attitude);
