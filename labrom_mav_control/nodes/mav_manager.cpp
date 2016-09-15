@@ -87,7 +87,7 @@ void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
       // Transform orientation
       odom_.pose.pose.orientation = msg->pose.pose.orientation;
     }catch (tf::TransformException &ex){   
-      ;
+      ROS_INFO("EXCEPTION");
     }
 
 }
