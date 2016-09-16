@@ -81,6 +81,8 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double ddy_c = pid_ddy_.LoopOnce(traj.points[0].velocities[1], vy);
   double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], vz);
 
+
+
    // Saturate command accelerations
   ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
   ddy_c = std::min(std::max(ddy_c, -2.0), 2.0 );
@@ -90,6 +92,8 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double T_d     = (params_.gravity + ddz_c)*params_.mass;
   double roll_d  = -1/params_.gravity  * ddy_c; 
   double pitch_d =  1/params_.gravity  * ddx_c; 
+
+  std::cout << vz << " " << ddz_c << " " << " " << T_d << std::endl;
 
   // Assemble command message        
   attitude.header.frame_id = "fcu";            
