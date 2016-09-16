@@ -73,9 +73,6 @@ void Manager::ImuCallback(const sensor_msgs::Imu::ConstPtr &msg){
 * param[in] Last odometry msg received
 */
 void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
-    if(!is_odom_active_) 
-      is_odom_active_ = true;
-
     try{
       geometry_msgs::Vector3Stamped in, out;
       // Transform twist
@@ -86,6 +83,8 @@ void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
       odom_.twist.twist.linear = out.vector;
       // Transform orientation
       odom_.pose.pose.orientation = msg->pose.pose.orientation;
+      if(!is_odom_active_) 
+        is_odom_active_ = true;
     }catch (tf::TransformException &ex){   
       ROS_INFO("EXCEPTION");
     }

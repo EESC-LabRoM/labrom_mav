@@ -79,8 +79,14 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   // Command accelerations 
   double ddx_c = pid_ddx_.LoopOnce(traj.points[0].velocities[0], vx);
   double ddy_c = pid_ddy_.LoopOnce(traj.points[0].velocities[1], vy);
-  double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], -vz);
+  double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], vz);
 
+
+  std::cout << "ddz:= " << "[" << ddx_c << ", " << ddy_c << ", " << ddz_c << " ]"<< std::endl; 
+  std::cout << "[r,p,y] := " << "[" << roll << ", " << pitch << ", " << yaw << " ]"<< std::endl; 
+  std::cout << "[vx,vy,vz] := " << "[" << odom.twist.twist.linear.x << ", " << odom.twist.twist.linear.y << ", " << odom.twist.twist.linear.z << " ]"<< std::endl; 
+  std::cout << "[vx,vy,vz] := " << "[" << vx << ", " << vy << ", " << vz << " ]"<< std::endl; 
+  std::cout << "taj_points := " << "[" << traj.points[0].velocities[0] << ", " << traj.points[0].velocities[1] << ", " << traj.points[0].velocities[2] << " ]"<< std::endl; 
   // Saturate command accelerations
   ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
   ddy_c = std::min(std::max(ddy_c, -2.0), 2.0 );
