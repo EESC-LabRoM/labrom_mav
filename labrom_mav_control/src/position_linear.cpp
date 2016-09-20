@@ -1,5 +1,5 @@
 /*************************************************************************
-*   Linear plant associate with a PID control law for velocity control (Implemenation)
+*   Linear plant associate with a PID control law for position control (Implemenation)
 *   This file is part of labrom_mav_control
 *
 *   labrom_mav_control is free software: you can redistribute it and/or modify
@@ -17,10 +17,10 @@
 ***************************************************************************/
 
 // labrom_mav_control libraries
-#include <labrom_mav_control/velocity_linear.h>
+#include <labrom_mav_control/position_linear.h>
 #include <vector>
 namespace mav_control{
-namespace velocity{
+namespace position{
 namespace linear{
 /**
 * Empty constructor
@@ -63,27 +63,28 @@ Controller::~Controller(void){};
 */
 void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude){
   // Roll, pitch and yaw angles
-  double roll, pitch, yaw;
+  /*double roll, pitch, yaw;
   tf::Quaternion qt(odom.pose.pose.orientation.x, 
                     odom.pose.pose.orientation.y, 
                     odom.pose.pose.orientation.z, 
                     odom.pose.pose.orientation.w);
   tf::Matrix3x3 R(qt);
   R.getRPY(roll, pitch, yaw);
-
+*/
   // Transform velocities from body-fixed frame to speed frame
-  double vx = cos(pitch) *odom.twist.twist.linear.x + sin(roll)*sin(pitch)*odom.twist.twist.linear.y  + cos(roll)*sin(pitch)*odom.twist.twist.linear.z;
-  double vy = cos(roll)  *odom.twist.twist.linear.y - sin(roll)* odom.twist.twist.linear.z;
-  double vz = -sin(pitch)*odom.twist.twist.linear.x + cos(pitch)*sin(roll)*odom.twist.twist.linear.y  + cos(roll)*cos(pitch)*odom.twist.twist.linear.z;
+  Eigen::Quaterniond qt(odom.pose.pose.orientation.x, 
+                        odom.pose.pose.orientation.y, 
+                        odom.pose.pose.orientation.z, 
+                        odom.pose.pose.orientation.w);
+
+  Eigen::Vector3d v = qt*Eigen::Vector3d(odom.twist.twist.linear.x , odom.twist.twist.linear.y, odom.twist.twist.linear.z);
 
   // Command accelerations 
-  double ddx_c = pid_ddx_.LoopOnce(traj.points[0].velocities[0], vx);
-  double ddy_c = pid_ddy_.LoopOnce(traj.points[0].velocities[1], vy);
-  double ddz_c = pid_ddz_.LoopOnce(traj.points[0].velocities[2], vz);
+  double ddx_c = pid_ddx_.LoopOnce(traj.points[0].positions[0], odom.pose.pose.position.x, traj.points[0].velocities[0], v(0) );
+  double ddy_c = pid_ddx_.LoopOnce(traj.points[0].positions[1], odom.pose.pose.position.y, traj.points[0].velocities[1], v(1) );
+  double ddz_c = pid_ddx_.LoopOnce(traj.points[0].positions[2], odom.pose.pose.position.z, traj.points[0].velocities[2], v(2) );
 
-
-
-   // Saturate command accelerations
+  // Saturate command accelerations
   ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
   ddy_c = std::min(std::max(ddy_c, -2.0), 2.0 );
   ddz_c = std::min(std::max(ddz_c, -2.0), 2.0 );

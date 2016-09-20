@@ -1,5 +1,5 @@
 /*************************************************************************
-*   Linear plant associate with a PID control law for velocity control (Header file)
+*   Linear plant associate with a PID control law for position control (Header file)
 *   This file is part of labrom_mav_control
 *
 *   labrom_mav_control is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
 *   along with labrom_mav_control.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 
-#ifndef VELOCITY_LINEAR_H_
-#define VELOCITY_LINEAR_H_
+#ifndef POSITION_LINEAR_H_
+#define POSITION_LINEAR_H_
 
 //labrom_control libraries
 #include<labrom_control/pid_simple.h>
@@ -30,16 +30,18 @@
 #include "trajectory_msgs/JointTrajectory.h"
 #include "std_msgs/Float32.h"
 #include "geometry_msgs/Vector3Stamped.h"
+// Libraries
+#include <Eigen/Geometry>
 
 #include <vector>
 
 //! top level namespace
 namespace mav_control{
-//! velocity controllers
-namespace velocity{
+//! position controllers
+namespace position{
 //! Linearized plants
 namespace linear{
-//! Linearized quadrotor controllers for velocity commands.
+//! Linearized quadrotor controllers for position commands.
 class Controller{
   public:
     //! Empty constructor
