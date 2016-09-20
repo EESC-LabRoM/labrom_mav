@@ -1,10 +1,5 @@
 <launch>
 
-	<!-- ######################## STATIC TRANSFORMS ##########################	-->
-  <node pkg="tf" type="static_transform_publisher" name="base_imu_transform" args="0 0 0 0 0 0 base_link imu_link 1000" ns="tf"/>
-  <node pkg="tf" type="static_transform_publisher" name="base_camera_transform" args="0 0 -0.06 -1.5708 0 3.1416 base_link camera_link 1000" ns="tf" />
-  <node pkg="tf" type="static_transform_publisher" name="world_tag_0_transform" args="0 0 0 0 0 0 tag_0 world 1000" ns="tf"/>
-
 	<!-- VREP heartbeat message -->
   <node name="heartbeat" type="heartbeat_node" pkg="vrep"/>
 

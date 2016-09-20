@@ -1,6 +1,6 @@
 # global parameters
 gravity: 9.81
-# Controller gains
+# Velocity controller gains
 velocity/x/kp: 0.5 
 velocity/x/ki: 0.075 
 velocity/x/kd: 0.01 
@@ -15,3 +15,18 @@ velocity/z/kp: 1.5
 velocity/z/ki: 0.5 
 velocity/z/kd: 0.05 
 velocity/z/anti_windup: 5.0
+# Position controller gains 
+position/x/kp: 0.0
+position/x/ki: 0.0 
+position/x/kd: 0.0 
+position/x/anti_windup: 0.0
+
+position/y/kp: 0.0
+position/y/ki: 0.0
+position/y/kd: 0.0 
+position/y/anti_windup: 0.0
+
+position/z/kp: 1
+position/z/ki: 0.5 
+position/z/kd: 0.5 
+position/z/anti_windup: 1.0

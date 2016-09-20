@@ -32,7 +32,7 @@ Controller::Controller(double mass){
   for(int i=0;i<3;++i){
     for(int j=0;j<4;++j){
       params.push_back(0);
-      ros::param::get("velocity"+coordinate[i]+gains[j], params[4*i+j]);
+      ros::param::get("position"+coordinate[i]+gains[j], params[4*i+j]);
     }
 
   }
@@ -87,7 +87,7 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   // Saturate command accelerations
   ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
   ddy_c = std::min(std::max(ddy_c, -2.0), 2.0 );
-  ddz_c = std::min(std::max(ddz_c, -2.0), 2.0 );
+  ddz_c = std::min(std::max(ddz_c, -3.0), 3.0 );
 
   // Quadrotor input commands
   double T_d     = (params_.gravity + ddz_c)*params_.mass;

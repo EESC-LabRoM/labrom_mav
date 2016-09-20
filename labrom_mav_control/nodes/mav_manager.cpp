@@ -117,6 +117,7 @@ void Manager::Spin(void){
 
   // Controllers
   mav_control::velocity::linear::Controller vel_controller(mass);
+  mav_control::velocity::linear::Controller pos_controller(mass);
 
   // Wait for odometry message
   while(!is_odom_active_){
@@ -126,7 +127,7 @@ void Manager::Spin(void){
   }
 
   // Here comes the manager state machine (core)
-  ManagerState state = manager::FREE_MODE_VELOCITY;
+  ManagerState state = manager::HOVER;
   while(ros::ok()){
     // Nothing to do  
     switch (state){
@@ -180,13 +181,17 @@ void Manager::Spin(void){
       case (manager::HOVER):
         for(int i=0; i < 3; ++i)
             traj_.points[0].velocities[i] = 0;
+        traj_.points[0].positions[0] = odom_.pose.pose.position.x;
+        traj_.points[0].positions[0] = odom_.pose.pose.position.y;
+        traj_.points[0].positions[0] = odom_.pose.pose.position.z;
+        
         state = manager::HOVERING;
         ROS_INFO("[Manager] Hovering!");
         break;
     
       // Hovering
       case (manager::HOVERING):
-        vel_controller.LoopOnce(traj_, odom_, thrust, attitude);
+        pos_controller.LoopOnce(traj_, odom_, thrust, attitude);
         break;
 
       // Receive order from extern machine

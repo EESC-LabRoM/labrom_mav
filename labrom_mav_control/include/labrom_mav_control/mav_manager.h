@@ -21,6 +21,7 @@
 
 // Control laws
 #include <labrom_mav_control/velocity_linear.h>
+#include <labrom_mav_control/position_linear.h>
 
 // ROS libraries
 #include "ros/ros.h"
