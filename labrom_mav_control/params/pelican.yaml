@@ -15,3 +15,19 @@ velocity/z/kp: 12.0
 velocity/z/ki: 3.0
 velocity/z/kd: 2.0
 velocity/z/anti_windup: 2.5
+
+# Position controller gains 
+position/x/kp: 0.0
+position/x/ki: 0.0 
+position/x/kd: 0.0 
+position/x/anti_windup: 0.5
+
+position/y/kp: 0.0
+position/y/ki: 0.0
+position/y/kd: 0.0 
+position/y/anti_windup: 0.5
+
+position/z/kp: 10
+position/z/ki: 2
+position/z/kd: 5
+position/z/anti_windup: 2.0
