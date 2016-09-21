@@ -73,21 +73,13 @@ void Manager::ImuCallback(const sensor_msgs::Imu::ConstPtr &msg){
 * param[in] Last odometry msg received
 */
 void Manager::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
-    try{
-      geometry_msgs::Vector3Stamped in, out;
-      // Transform twist
-      in.vector = msg->twist.twist.linear;
-      in.header = msg->header;
-      in.header.frame_id = msg->child_frame_id;
-      tf_listener_.transformVector(imu_.header.frame_id, in, out);
-      odom_.twist.twist.linear = out.vector;
-      // Transform orientation
-      odom_.pose.pose.orientation = msg->pose.pose.orientation;
-      if(!is_odom_active_) 
-        is_odom_active_ = true;
-    }catch (tf::TransformException &ex){   
-      ROS_INFO("EXCEPTION");
-    }
+  // Copying
+  odom_.pose.pose.orientation = msg->pose.pose.orientation;
+  odom_.pose.pose.position = msg->pose.pose.position;
+  odom_.twist.twist.linear = msg->twist.twist.linear;
+
+  if(!is_odom_active_) 
+    is_odom_active_ = true;
 
 }
 
@@ -107,17 +99,19 @@ void Manager::Spin(void){
   std_msgs::Float32 thrust;
   geometry_msgs::Vector3Stamped attitude;
   
+  thrust.data = 1.2*9.7;
+
   // Setting state machine parameters
   double mass, rate;
   double take_off_accel, land_accel, climb_time;
 
-  nh_.param<double>("mass",mass, 1.2);
-  nh_.param<double>("rate",rate, 20);
+  pnh_.param<double>("mass",mass, 1.2);
+  pnh_.param<double>("rate",rate, 20);
   ros::Rate loop_rate(rate);
 
   // Controllers
   mav_control::velocity::linear::Controller vel_controller(mass);
-  mav_control::velocity::linear::Controller pos_controller(mass);
+  mav_control::position::linear::Controller pos_controller(mass);
 
   // Wait for odometry message
   while(!is_odom_active_){
@@ -182,8 +176,8 @@ void Manager::Spin(void){
         for(int i=0; i < 3; ++i)
             traj_.points[0].velocities[i] = 0;
         traj_.points[0].positions[0] = odom_.pose.pose.position.x;
-        traj_.points[0].positions[0] = odom_.pose.pose.position.y;
-        traj_.points[0].positions[0] = odom_.pose.pose.position.z;
+        traj_.points[0].positions[1] = odom_.pose.pose.position.y;
+        traj_.points[0].positions[2] = odom_.pose.pose.position.z;
         
         state = manager::HOVERING;
         ROS_INFO("[Manager] Hovering!");

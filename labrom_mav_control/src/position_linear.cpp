@@ -72,17 +72,17 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   R.getRPY(roll, pitch, yaw);
 */
   // Transform velocities from body-fixed frame to speed frame
-  Eigen::Quaterniond qt(odom.pose.pose.orientation.x, 
+  Eigen::Quaterniond qt(odom.pose.pose.orientation.w, 
+                        odom.pose.pose.orientation.x, 
                         odom.pose.pose.orientation.y, 
-                        odom.pose.pose.orientation.z, 
-                        odom.pose.pose.orientation.w);
+                        odom.pose.pose.orientation.z);
 
   Eigen::Vector3d v = qt*Eigen::Vector3d(odom.twist.twist.linear.x , odom.twist.twist.linear.y, odom.twist.twist.linear.z);
 
   // Command accelerations 
   double ddx_c = pid_ddx_.LoopOnce(traj.points[0].positions[0], odom.pose.pose.position.x, traj.points[0].velocities[0], v(0) );
-  double ddy_c = pid_ddx_.LoopOnce(traj.points[0].positions[1], odom.pose.pose.position.y, traj.points[0].velocities[1], v(1) );
-  double ddz_c = pid_ddx_.LoopOnce(traj.points[0].positions[2], odom.pose.pose.position.z, traj.points[0].velocities[2], v(2) );
+  double ddy_c = pid_ddy_.LoopOnce(traj.points[0].positions[1], odom.pose.pose.position.y, traj.points[0].velocities[1], v(1) );
+  double ddz_c = pid_ddz_.LoopOnce(traj.points[0].positions[2], odom.pose.pose.position.z, traj.points[0].velocities[2], v(2) );
 
   // Saturate command accelerations
   ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
@@ -94,7 +94,7 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double roll_d  = -1/params_.gravity  * ddy_c; 
   double pitch_d =  1/params_.gravity  * ddx_c; 
 
-  // Assemble command message        
+  // Assemble command message     
   attitude.header.frame_id = "fcu";            
   thrust.data = T_d;            
   attitude.vector.x = roll_d ;                    
