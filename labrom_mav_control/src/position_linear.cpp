@@ -63,14 +63,14 @@ Controller::~Controller(void){};
 */
 void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude){
   // Roll, pitch and yaw angles
-  /*double roll, pitch, yaw;
-  tf::Quaternion qt(odom.pose.pose.orientation.x, 
+  double roll, pitch, yaw;
+  tf::Quaternion qt_rpy(odom.pose.pose.orientation.x, 
                     odom.pose.pose.orientation.y, 
                     odom.pose.pose.orientation.z, 
                     odom.pose.pose.orientation.w);
-  tf::Matrix3x3 R(qt);
+  tf::Matrix3x3 R(qt_rpy);
   R.getRPY(roll, pitch, yaw);
-*/
+
   // Transform velocities from body-fixed frame to speed frame
   Eigen::Quaterniond qt(odom.pose.pose.orientation.w, 
                         odom.pose.pose.orientation.x, 
@@ -85,16 +85,15 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double ddz_c = pid_ddz_.LoopOnce(traj.points[0].positions[2], odom.pose.pose.position.z, traj.points[0].velocities[2], v(2) );
 
   // Saturate command accelerations
-  ddx_c = std::min(std::max(ddx_c, -2.0), 2.0 );   
-  ddy_c = std::min(std::max(ddy_c, -2.0), 2.0 );
-  ddz_c = std::min(std::max(ddz_c, -3.0), 3.0 );
+  ddx_c = std::min(std::max(ddx_c, -1.0), 1.0 );   
+  ddy_c = std::min(std::max(ddy_c, -1.0), 1.0 );
+  ddz_c = std::min(std::max(ddz_c, -1.0), 1.0 );
 
   // Quadrotor input commands
   double T_d     = (params_.gravity + ddz_c)*params_.mass;
-  double roll_d  = -1/params_.gravity  * ddy_c; 
-  double pitch_d =  1/params_.gravity  * ddx_c; 
+  double roll_d  = 1/params_.gravity  * (ddx_c*sin(yaw) - ddy_c*cos(yaw) ); 
+  double pitch_d =  1/params_.gravity * (ddx_c*cos(yaw) + ddy_c*sin(yaw) ); 
 
-  std::cout << "dzz_C: " << ddz_c << std::endl;
 
   // Assemble command message     
   attitude.header.frame_id = "fcu";            

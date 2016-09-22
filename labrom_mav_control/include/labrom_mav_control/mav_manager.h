@@ -73,7 +73,8 @@ class Manager{
     double max_detected_accel_;
     double min_detected_accel_;
     double time_;
-  
+    
+    std::string _base_link_id;
 };
 
 } // manager namespace

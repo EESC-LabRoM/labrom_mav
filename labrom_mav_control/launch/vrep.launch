@@ -11,7 +11,7 @@
       <remap from="cmd_thrust" to="cmd_thrust"/>
 
       <!-- Loading parameters -->  
-      <param name="mass" value="1.1"/>
+      <param name="mass" value="1.2"/>
       <param name="rate" value="20"/>
       <param name="take_off_accel" value="10"/>
       <param name="land_accel" value="9.2"/>
