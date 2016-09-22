@@ -94,6 +94,8 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double roll_d  = -1/params_.gravity  * ddy_c; 
   double pitch_d =  1/params_.gravity  * ddx_c; 
 
+  std::cout << "dzz_C: " << ddz_c << std::endl;
+
   // Assemble command message     
   attitude.header.frame_id = "fcu";            
   thrust.data = T_d;            

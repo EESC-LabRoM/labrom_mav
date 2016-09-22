@@ -4,7 +4,7 @@
     <node name="control_manager" pkg="labrom_mav_control" type="manager_node" output="screen">
       <!-- Remapping topics-->
       <!-- Remapping topics-->
-      <remap from="odometry" to="/odometry"/>
+      <remap from="odometry" to="/optical_flow/odometry"/>
       <remap from="imu" to="fcu/imu"/>
       
       <remap from="trajectory" to="trajectory"/>   
