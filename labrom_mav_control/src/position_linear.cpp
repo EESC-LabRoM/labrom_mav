@@ -85,9 +85,7 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   double ddz_c = pid_ddz_.LoopOnce(traj.points[0].positions[2], odom.pose.pose.position.z, traj.points[0].velocities[2], v(2) );
 
   // Saturate command accelerations
-  ddx_c = std::min(std::max(ddx_c, -1.0), 1.0 );   
-  ddy_c = std::min(std::max(ddy_c, -1.0), 1.0 );
-  ddz_c = std::min(std::max(ddz_c, -1.0), 1.0 );
+  ddz_c = std::min(std::max(ddz_c, -0.2), 0.2 );
 
   // Quadrotor input commands
   double T_d     = (params_.gravity + ddz_c)*params_.mass;
@@ -98,8 +96,8 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   // Assemble command message     
   attitude.header.frame_id = "fcu";            
   thrust.data = T_d;            
-  attitude.vector.x = roll_d ;                    
-  attitude.vector.y = pitch_d;
+  attitude.vector.x = std::min(std::max(roll_d, -0.2), 0.2 ) ;                    
+  attitude.vector.y = std::min(std::max(pitch_d, -0.2), 0.2 ) ;
   attitude.vector.z = 0;
 
 }
