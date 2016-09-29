@@ -18,7 +18,8 @@
   
   <run_depend>actionlib</run_depend>
   <run_depend>asctec_hl_comm</run_depend>
-  <run_depend>asctec_hl_interface</run_depend>    
+  <run_depend>asctec_hl_interface</run_depend>   
+  <run_depend>ftdisonar</run_depend>   
   <run_depend>geometry_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>

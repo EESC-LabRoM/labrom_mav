@@ -19,8 +19,8 @@
 
   <!-- ################ ASCTEC_HL_INTERFACE ################## -->
   <node name="fcu" pkg="asctec_hl_interface" type="hl_node" output="screen" clear_params="true">
-		<rosparam file="$(find asctec_hl_interface)/launch/fcu_parameters.yaml" />
-    <rosparam file="$(find asctec_hl_interface)/launch/ssdk_parameters.yaml" />        
+		<rosparam file="$(find labrom_asctec_interface)/params/fcu_parameters.yaml" />
+    <rosparam file="$(find labrom_asctec_interface)/params/ssdk_parameters.yaml" />        
   </node>
 
   <!-- ################ CAMERA ################## -->
@@ -28,7 +28,7 @@
 		<rosparam file="$(find labrom_asctec_interface)/params/philips.yaml" />	
 		<param name="camera_info_url" value="file://$(find labrom_sensors)/params/philips.yaml" />
   </node>
-  
+
   <!-- ################ SONAR ################## -->
   <node name="floor_sonar" pkg="sonar" type="sonar_node">
     <!-- publishers -->
