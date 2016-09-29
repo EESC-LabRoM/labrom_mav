@@ -1,0 +1,20 @@
+<launch>
+   <!-- ################ LABROM INTERFACE FOR ASCTEC_HL_INTERFACE ################## -->
+  <node name="interface" pkg="labrom_asctec_interface" type="mav_ctrl_interface_node" output="screen">
+    <!-- subscribers -->
+    <remap from="cmd_attitude" to="cmd_attitude"/>
+    <remap from="cmd_thrust"   to="cmd_thrust"/>
+    <!-- publishers -->
+    <remap from="control" to="fcu/control" />
+    <!-- parameters -->
+    <param name="max_thrust" value="31.5"/>
+    <param name="loop_rate" value="20"/>
+    <param name="control_id" value="control_link"/>
+  </node>
+
+  <!-- ################ ASCTEC_HL_INTERFACE ################## -->
+  <node name="fcu" pkg="asctec_hl_interface" type="hl_node" output="screen" clear_params="true">
+	<rosparam file="$(find labrom_asctec_interface)/params/fcu_parameters.yaml" />
+    <rosparam file="$(find labrom_asctec_interface)/params/ssdk_parameters.yaml" />        
+  </node>
+</launch>
