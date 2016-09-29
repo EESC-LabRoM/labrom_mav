@@ -1,6 +1,5 @@
 <launch>
   <!-- ######################## STATIC TRANSFORMS ##########################    -->
-  <node pkg="tf" type="static_transform_publisher" name="fcu_control_transform" args="0 0 0 2.3562 0 0 fcu control_link 1000"/>
   <node pkg="tf" type="static_transform_publisher" name="fcu_camera_transform" args="0 0 0 -2.3562 0 3.1416 fcu camera 1000"/>
   <node pkg="tf" type="static_transform_publisher" name="fcu_sonar_transform" args="0 0 0 0 0 3.1416 fcu sonar 1000"/>
 
@@ -11,13 +10,11 @@
   </node>
 
   <!-- ################ SONAR ################## -->
-  <node name="floor_sonar" pkg="sonar" type="sonar_node">
+  <node name="floor_sonar" pkg="serial_sonar" type="sonar_node">
     <!-- publishers -->
     <remap from="distance" to="sonar/distance"/>
     <remap from="pose" to="sonar/pose"/>
     <!-- parameters -->
     <param name="port" value="USB0"/>
   </node>
-
 </launch>
-
