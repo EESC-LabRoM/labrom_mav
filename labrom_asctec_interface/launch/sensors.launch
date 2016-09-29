@@ -7,7 +7,7 @@
   <!-- ################ CAMERA ################## -->
   <node name="camera" pkg="usb_cam" type="usb_cam_node" output="screen">
 		<rosparam file="$(find labrom_asctec_interface)/params/philips.yaml" />	
-		<param name="camera_info_url" value="file://$(find labrom_sensors)/params/philips.yaml" />
+		<param name="camera_info_url" value="file://$(find labrom_asctec_interface)/params/philips.yaml" />
   </node>
 
   <!-- ################ SONAR ################## -->
