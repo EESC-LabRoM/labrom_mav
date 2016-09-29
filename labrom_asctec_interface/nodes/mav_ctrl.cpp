@@ -27,12 +27,12 @@ CtrlNode::CtrlNode(void): pnh_("~"){
   // Paramas
   pnh_.param("max_thrust", _max_thrust, 20.0);
   pnh_.param("loop_rate", _loop_rate, 20);
-  pnh_.param<std::string>("control_frame_id", _control_frame_id, "control_link");
-  // Start subscribers
+  pnh_.param<std::string>("control_id", _control_frame_id, "control_link");
+  // subscribers
   sub_thrust_   = nh_.subscribe("cmd_thrust"  , 1, &CtrlNode::ThrustCallback, this);
   sub_attitude_ = nh_.subscribe("cmd_attitude", 1, &CtrlNode::AttitudeCallback, this);
   
-  // Start publishers
+  // publishers
   pub_mav_ctrl_ = nh_.advertise<asctec_hl_comm::mav_ctrl>("control", 1);
 
 };
@@ -71,10 +71,10 @@ void CtrlNode::PublishMavCtrl(void){
     // Assemble message
     mav_ctrl_.type = 1;
     // x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw
-    mav_ctrl_.x = attitude.vector.y;                  // pitch (rad)
-    mav_ctrl_.y = attitude.vector.x;                  // roll (rad)
+    mav_ctrl_.x = attitude.vector.x;                  // pitch (rad)
+    mav_ctrl_.y = -attitude.vector.y;                 // roll (rad)
     mav_ctrl_.z = thrust_.data / _max_thrust;         // thrust (0 to 1.0)
-    mav_ctrl_.yaw = attitude.vector.z;                      // yaw (rad/s)
+    mav_ctrl_.yaw = attitude.vector.z;                // yaw (rad/s)
     
     // Publish message
     pub_mav_ctrl_.publish(mav_ctrl_);
