@@ -30,7 +30,7 @@
   <!-- ************ APRILTAGS ************ 
 	<node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag" output="screen"> -->
     <!-- Remap topics 
-    <remap from="image_rect" to="camera/image_mono"/>
+    <remap from="image_rect" to="camera/image_raw"/>
     <remap from="tag_detections_image" to="apriltag/image"/>
     <remap from="tag_detections_pose_covariance" to="apriltag/pose"/>   --> 
 		<!-- Parameters  

@@ -1,24 +1,42 @@
 <launch>
   <!-- ######################## STATIC TRANSFORMS ##########################    -->
   <node pkg="tf" type="static_transform_publisher" name="fcu_control_transform" args="0 0 0 2.3562 0 0 fcu control_link 1000"/>
-  <node pkg="tf" type="static_transform_publisher" name="camera_fcu_transform" args="0 0 0 -2.3562 0 3.1416 fcu camera 1000"/>
-  <node pkg="tf" type="static_transform_publisher" name="world_tag_0_transform" args="0 0 0 0 0 0 tag_0 world 1000"/>
+  <node pkg="tf" type="static_transform_publisher" name="fcu_camera_transform" args="0 0 0 -2.3562 0 3.1416 fcu camera 1000"/>
+  <node pkg="tf" type="static_transform_publisher" name="fcu_sonar_transform" args="0 0 0 0 0 3.1416 fcu sonar 1000"/>
 
-
-  <!-- ################ LABROM INTERFACE FOR ASCTEC_HL_INTERF_INTERFACE ################## -->
+  <!-- ################ LABROM INTERFACE FOR ASCTEC_HL_INTERFACE ################## -->
   <node name="interface" pkg="labrom_asctec_interface" type="mav_ctrl_interface_node" output="screen">
+    <!-- subscribers -->
     <remap from="cmd_attitude" to="cmd_attitude"/>
     <remap from="cmd_thrust"   to="cmd_thrust"/>
-
+    <!-- publishers -->
     <remap from="control" to="fcu/control" />
-
-    <param name="max_thrust" value="21.5"/>
+    <!-- parameters -->
+    <param name="max_thrust" value="31.5"/>
     <param name="loop_rate" value="20"/>
+    <param name="control_id" value="control_link"/>
   </node>
 
+  <!-- ################ ASCTEC_HL_INTERFACE ################## -->
   <node name="fcu" pkg="asctec_hl_interface" type="hl_node" output="screen" clear_params="true">
 		<rosparam file="$(find asctec_hl_interface)/launch/fcu_parameters.yaml" />
     <rosparam file="$(find asctec_hl_interface)/launch/ssdk_parameters.yaml" />        
   </node>
+
+  <!-- ################ CAMERA ################## -->
+  <node name="camera" pkg="usb_cam" type="usb_cam_node" output="screen">
+		<rosparam file="$(find labrom_asctec_interface)/params/philips.yaml" />	
+		<param name="camera_info_url" value="file://$(find labrom_sensors)/params/philips.yaml" />
+  </node>
+  
+  <!-- ################ SONAR ################## -->
+  <node name="floor_sonar" pkg="sonar" type="sonar_node">
+    <!-- publishers -->
+    <remap from="distance" to="sonar/distance"/>
+    <remap from="pose" to="sonar/pose"/>
+    <!-- parameters -->
+    <param name="port" value="USB0"/>
+  </node>
+
 </launch>
 

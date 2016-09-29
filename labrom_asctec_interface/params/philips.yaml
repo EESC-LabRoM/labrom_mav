@@ -1,0 +1,20 @@
+image_width: 320
+image_height: 240
+camera_name: philips
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [244.827319, 0, 154.603717, 0, 244.672218, 120.663694, 0, 0, 1]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0.062504, -0.098976, -0.003060, -0.004299, 0.000000]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [246.102875, 0, 152.640009, 0, 0, 246.742081, 119.541447, 0, 0, 0, 1, 0]
