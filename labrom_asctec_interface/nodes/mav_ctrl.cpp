@@ -72,7 +72,7 @@ void CtrlNode::PublishMavCtrl(void){
     mav_ctrl_.type = 1;
     // x~pitch, y~roll, z~thrust, units in rad and rad/s for yaw
     mav_ctrl_.x = attitude.vector.x;                  // pitch (rad)
-    mav_ctrl_.y = -attitude.vector.y;                 // roll (rad)
+    mav_ctrl_.y = attitude.vector.y;                 // roll (rad)
     mav_ctrl_.z = thrust_.data / _max_thrust;         // thrust (0 to 1.0)
     mav_ctrl_.yaw = attitude.vector.z;                // yaw (rad/s)
     

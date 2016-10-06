@@ -90,6 +90,8 @@ void Controller::LoopOnce(const trajectory_msgs::JointTrajectory &traj, const na
   ddz_c = std::min(std::max(ddz_c, -1.0), 1.0 );
 
   // Quadrotor input commands
+   yaw = yaw + 2.3562;
+
   double T_d     = (params_.gravity + ddz_c)*params_.mass;
   double roll_d  = 1/params_.gravity  * (ddx_c*sin(yaw) - ddy_c*cos(yaw) ); 
   double pitch_d =  1/params_.gravity * (ddx_c*cos(yaw) + ddy_c*sin(yaw) ); 

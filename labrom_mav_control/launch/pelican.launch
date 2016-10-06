@@ -5,7 +5,7 @@
       <!-- Remapping topics-->
       <!-- Remapping topics-->
       <remap from="odometry" to="/optical_flow/odometry"/>
-      <remap from="imu" to="/fcu/imu"/>
+      <remap from="imu" to="fcu/imu"/>
       
       <remap from="trajectory" to="trajectory"/>   
       <remap from="cmd_attitude" to="cmd_attitude"/>

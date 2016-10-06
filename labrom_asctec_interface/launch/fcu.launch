@@ -1,6 +1,6 @@
 <launch>
   <!-- ######################## STATIC TRANSFORMS ##########################    -->
-   <node pkg="tf" type="static_transform_publisher" name="fcu_control_transform" args="0 0 0 2.3562 0 0 fcu control_link 1000"/>
+   <node pkg="tf" type="static_transform_publisher" name="fcu_control_transform" args="0 0 0 -2.3562 0 3.1416 fcu control_link 1000"/>
 
    <!-- ################ LABROM INTERFACE FOR ASCTEC_HL_INTERFACE ################## -->
   <node name="interface" pkg="labrom_asctec_interface" type="mav_ctrl_interface_node" output="screen">
