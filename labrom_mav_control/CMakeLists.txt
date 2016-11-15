@@ -31,13 +31,5 @@ include_directories(
   ${Eigen_INCLUDE_DIRS}
 )
 
-# Declare a C++ library
-add_library(${PROJECT_NAME}
-   src/velocity_linear.cpp
-   src/position_linear.cpp
-)
-
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
-
-add_executable(manager_node nodes/mav_manager.cpp)
-target_link_libraries(manager_node ${catkin_LIBRARIES} ${PROJECT_NAME})
+add_executable(velocity_node src/velocity_linear.cpp)
+target_link_libraries(velocity_node ${catkin_LIBRARIES} )

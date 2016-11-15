@@ -26,10 +26,11 @@
 #include "ros/ros.h"
 #include "tf/tf.h"
 // ROS message libraries
-#include "nav_msgs/Odometry.h"
-#include "trajectory_msgs/JointTrajectory.h"
-#include "std_msgs/Float32.h"
 #include "geometry_msgs/Vector3Stamped.h"
+#include "geometry_msgs/Twist.h"
+#include "nav_msgs/Odometry.h"
+#include "std_msgs/Float32.h"
+
 
 #include <vector>
 
@@ -43,13 +44,27 @@ namespace linear{
 class Controller{
   public:
     //! Empty constructor
-    Controller(double mass);
+    Controller(void);
     //! Empty destructor
     ~Controller(void);
+    //! Odometry callback
+    void OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg);
+    //! Twist callback
+    void TwistCallback(const geometry_msgs::Twist::ConstPtr &msg);
     //! Odometry message callback
-    void LoopOnce(const trajectory_msgs::JointTrajectory &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude);
+    //void LoopOnce(const trajectory_msgs::JointTrajectory &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude);
 
   private:     
+    ros::NodeHandle nh_;                //! node handle 
+    ros::NodeHandle pnh_;               //! private node handle
+
+    ros::Publisher attitude_pub_;       //!< ROS attitude publisher
+    ros::Publisher thrust_pub_;         //!< ROS thrust publisher
+    ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
+    ros::Subscriber twist_sub_;         //!< ROS command velocity subscriber
+
+    geometry_msgs::Twist twist_;        //!< Last command vel received
+
     controllers::pid::Simple pid_ddx_;
     controllers::pid::Simple pid_ddy_;
     controllers::pid::Simple pid_ddz_;
