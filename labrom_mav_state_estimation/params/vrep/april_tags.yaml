@@ -1,4 +1,0 @@
-image_transport: raw
-base_link      : base_link
-publish_tag_tf : false
-
