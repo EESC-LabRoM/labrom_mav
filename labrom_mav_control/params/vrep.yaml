@@ -15,6 +15,7 @@ velocity/z/kp: 1.5
 velocity/z/ki: 0.5 
 velocity/z/kd: 0.05 
 velocity/z/anti_windup: 5.0
+
 # Position controller gains 
 position/x/kp: 0.0
 position/x/ki: 0.0 
