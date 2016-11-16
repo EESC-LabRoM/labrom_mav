@@ -43,6 +43,8 @@ Controller::Controller(void): pnh_("~"){
     }
   }
 
+  pnh_.param<std::string>("world_frame", world_frame_, "/world");
+  pnh_.param<std::string>("body_frame", body_frame_, "/body_link");
   pnh_.param<int>("loop_rate", loop_rate_, 50);
   pnh_.param<bool>("use_tf", use_tf_, false);
 
@@ -98,16 +100,16 @@ void Controller::TFCallback(void){
     
     // Pose
     tf::StampedTransform transform;
-    listener_.lookupTransform	(	"world",   
-                              	"body_link",
+    listener_.lookupTransform	(	world_frame_,   
+                              	body_frame_,
                                 ros::Time(0),
                                 transform); 
     tf::poseTFToMsg(tf::Pose(transform), pose.pose);
 
     // Twist
     geometry_msgs::TwistStamped twist; 
-    listener_.lookupTwist("body_link", 
-                          "world",  
+    listener_.lookupTwist(body_frame_, 
+                          world_frame_,  
                           ros::Time(0), 
                           ros::Duration(0.001),
                           twist.twist );

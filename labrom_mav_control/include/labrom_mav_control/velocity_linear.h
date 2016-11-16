@@ -68,20 +68,21 @@ class Controller{
 
     tf::TransformListener listener_;     //!< TF transformer listener
 
-    geometry_msgs::Twist desired_twist_;        //!< Last command vel received (desired)
+    geometry_msgs::Twist desired_twist_;    //!< Last command vel received (desired)
 
-    controllers::pid::Simple pid_ddx_;
-    controllers::pid::Simple pid_ddy_;
-    controllers::pid::Simple pid_ddz_;
+    controllers::pid::Simple pid_ddx_;      //! body frame velocity x-axis controller
+    controllers::pid::Simple pid_ddy_;      //! body frame velocity y-axis controller
+    controllers::pid::Simple pid_ddz_;      //! body frame velocity z-axis controller
     
     struct{
       double mass;
       double gravity;
     } params_;
 
-    bool use_tf_;
-    int loop_rate_;
-
+    bool use_tf_;                   //! set true to use TF or false to use Odometry
+    int loop_rate_;                 //! Control loop rate (TF usage only)
+    std::string world_frame_;       //! world frame (AKA fixed frame)
+    std::string body_frame_;        //! body frame (AKA control frame)
 };
 } // pid namespace
 } // linear namespace

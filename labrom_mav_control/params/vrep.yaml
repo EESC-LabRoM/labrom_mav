@@ -1,4 +1,6 @@
 # global parameters
+world_frame: /world
+body_frame: /body_link
 loop_rate: 25
 use_tf: false
 mass: 1.2
