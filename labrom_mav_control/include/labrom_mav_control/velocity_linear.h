@@ -29,7 +29,8 @@
 
 // ROS message libraries
 #include "geometry_msgs/Vector3Stamped.h"
-#include "geometry_msgs/Twist.h"
+#include "geometry_msgs/TwistStamped.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "nav_msgs/Odometry.h"
 #include "std_msgs/Float32.h"
 

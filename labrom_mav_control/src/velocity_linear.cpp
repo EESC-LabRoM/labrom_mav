@@ -162,7 +162,8 @@ void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const g
   attitude.vector.x = roll_d ;                    
   attitude.vector.y = pitch_d;
   attitude.vector.z = yaw_rate;
-
+  attitude.header.frame_id = body_frame_;
+  
   thrust_pub_.publish(thrust);
   attitude_pub_.publish(attitude);  
 }
