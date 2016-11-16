@@ -43,6 +43,9 @@ Controller::Controller(void): pnh_("~"){
     }
   }
 
+  pnh_.param<int>("loop_rate", loop_rate_, 50);
+  pnh_.param<bool>("use_tf", use_tf_, false);
+
   // Loading PID controllers with configuration
   pid_ddx_ = controllers::pid::Simple("PID_ddx", params[0], params[1], params[2],  params[3]);
   pid_ddy_ = controllers::pid::Simple("PID_ddy", params[4], params[5], params[6],  params[7]);
@@ -53,6 +56,7 @@ Controller::Controller(void): pnh_("~"){
 
   // vehicle parameters
   params_.gravity = 9.81;
+
 };
 
 /**
@@ -60,31 +64,89 @@ Controller::Controller(void): pnh_("~"){
 */
 Controller::~Controller(void){};
 
+/** Twist callback. Receives desired twist.
+* @param[in] msg last twist message receivedist
+*/
+void Controller::TwistCallback(const geometry_msgs::Twist::ConstPtr &msg){
+   desired_twist_ = *msg;
+}
+
 /**
 * Odometry message callback
 * @param[in] odom current estimated odometry
 */
 void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
+  geometry_msgs::PoseStamped pose;
+  geometry_msgs::TwistStamped twist;
+  // Copying values
+  pose.pose   = msg->pose.pose;
+  pose.header = msg->header;
+  
+  twist.twist = msg->twist.twist;
+  twist.header = msg->header;
+  twist.header.frame_id = msg->child_frame_id;
+  // Call method that actually computes/publishes control signals
+  ComputeActuation(pose, twist);
+}
+
+/**
+* TFCallback. Listen for TF to compute actuation inputs [DOES NOT WORK PROPERLY]
+*/
+void Controller::TFCallback(void){
+  try{
+    geometry_msgs::PoseStamped pose;
+    
+    // Pose
+    tf::StampedTransform transform;
+    listener_.lookupTransform	(	"world",   
+                              	"body_link",
+                                ros::Time(0),
+                                transform); 
+    tf::poseTFToMsg(tf::Pose(transform), pose.pose);
+
+    // Twist
+    geometry_msgs::TwistStamped twist; 
+    listener_.lookupTwist("body_link", 
+                          "world",  
+                          ros::Time(0), 
+                          ros::Duration(0.001),
+                          twist.twist );
+
+    // Call method that actually computes/publishes control signals.
+    ComputeActuation(pose, twist);
+
+  }catch (tf::TransformException ex){
+    ROS_ERROR("[Velocity Controller]%s",ex.what());
+    ros::Duration(1.0).sleep();
+  }
+}
+
+/**
+* Compute vehicle actuation input (collective thrust and attitude angles)
+* @param[in] pose contains the current vehicle pose
+* @param[in] twist contains the current vehicle twist
+*/
+void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry_msgs::TwistStamped &twist){
   // Roll, pitch and yaw angles
   double roll, pitch, yaw;
-  tf::Quaternion qt( msg->pose.pose.orientation.x, 
-                     msg->pose.pose.orientation.y, 
-                     msg->pose.pose.orientation.z, 
-                     msg->pose.pose.orientation.w);
+  tf::Quaternion qt( pose.pose.orientation.x, 
+                     pose.pose.orientation.y, 
+                     pose.pose.orientation.z, 
+                     pose.pose.orientation.w);
   tf::Matrix3x3 R(qt);
   R.getRPY(roll, pitch, yaw);
 
   // Transform velocities from body-fixed frame to speed frame
-  double vx = cos(pitch) * msg->twist.twist.linear.x + sin(roll)*sin(pitch)* msg->twist.twist.linear.y  + cos(roll)*sin(pitch)* msg->twist.twist.linear.z;
-  double vy = cos(roll)  * msg->twist.twist.linear.y - sin(roll)*  msg->twist.twist.linear.z;
-  double vz = -sin(pitch)* msg->twist.twist.linear.x + cos(pitch)*sin(roll)* msg->twist.twist.linear.y  + cos(roll)*cos(pitch)* msg->twist.twist.linear.z;
+  double vx = cos(pitch) * twist.twist.linear.x + sin(roll)*sin(pitch)* twist.twist.linear.y  + cos(roll)*sin(pitch)* twist.twist.linear.z;
+  double vy = cos(roll)  * twist.twist.linear.y - sin(roll)*  twist.twist.linear.z;
+  double vz = -sin(pitch)* twist.twist.linear.x + cos(pitch)*sin(roll)* twist.twist.linear.y  + cos(roll)*cos(pitch)* twist.twist.linear.z;
 
   // Command accelerations 
-  double ddx_c = pid_ddx_.LoopOnce(twist_.linear.x, vx);
-  double ddy_c = pid_ddy_.LoopOnce(twist_.linear.y, vy);
-  double ddz_c = pid_ddz_.LoopOnce(twist_.linear.z, vz);
-  double yaw_rate = twist_.angular.z;
-  
+  double ddx_c = pid_ddx_.LoopOnce(desired_twist_.linear.x, vx);
+  double ddy_c = pid_ddy_.LoopOnce(desired_twist_.linear.y, vy);
+  double ddz_c = pid_ddz_.LoopOnce(desired_twist_.linear.z, vz);
+  double yaw_rate = desired_twist_.angular.z;
+
   // Quadrotor input commands
   double T_d     = (params_.gravity - ddz_c)*params_.mass;
   double roll_d  =  1/params_.gravity  * ddy_c; 
@@ -100,14 +162,34 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   attitude.vector.z = yaw_rate;
 
   thrust_pub_.publish(thrust);
-  attitude_pub_.publish(attitude);
-
+  attitude_pub_.publish(attitude);  
 }
 
-//! Twist callback
-void Controller::TwistCallback(const geometry_msgs::Twist::ConstPtr &msg){
-   twist_ = *msg;
-}
+/**
+* ROS loop
+*/
+
+void Controller::Spin(void){
+  // Odometry based
+  if (!use_tf_)
+    ros::spin();
+  // TF based (not working properly) 
+  else{
+    //! @todo TFCallback is not working properly. Problem computing the twist with lookUpTwist
+    /*
+    ros::Rate rate(loop_rate_);
+    while(ros::ok()){
+      // Try to grab tf
+      TFCallback();
+      // Sleep until next iteration
+      ros::spinOnce();
+      rate.sleep();
+    }
+    */
+  }
+
+
+};
 
 } // linear namespace
 } // velocity namespace
@@ -118,6 +200,6 @@ int main(int argc, char** argv){
 
   mav_control::velocity::linear::Controller vel_control;
 
-  ros::spin();
+ vel_control.Spin();
 
 }

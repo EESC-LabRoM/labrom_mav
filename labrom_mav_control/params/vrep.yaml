@@ -1,6 +1,8 @@
 # global parameters
-gravity: 9.81
+loop_rate: 25
+use_tf: false
 mass: 1.2
+
 # Velocity controller gains
 velocity/x/kp: 1 
 velocity/x/ki: 0.025 

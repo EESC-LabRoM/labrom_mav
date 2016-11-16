@@ -25,14 +25,13 @@
 // ROS libraries
 #include "ros/ros.h"
 #include "tf/tf.h"
+#include <tf/transform_listener.h>
+
 // ROS message libraries
 #include "geometry_msgs/Vector3Stamped.h"
 #include "geometry_msgs/Twist.h"
 #include "nav_msgs/Odometry.h"
 #include "std_msgs/Float32.h"
-
-
-#include <vector>
 
 //! top level namespace
 namespace mav_control{
@@ -51,8 +50,12 @@ class Controller{
     void OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg);
     //! Twist callback
     void TwistCallback(const geometry_msgs::Twist::ConstPtr &msg);
-    //! Odometry message callback
-    //void LoopOnce(const trajectory_msgs::JointTrajectory &traj, const nav_msgs::Odometry &odom, std_msgs::Float32 &thrust, geometry_msgs::Vector3Stamped &attitude);
+    //! TF callback
+    void TFCallback(void);
+    //! Update vehicle control commands
+    void ComputeActuation( const geometry_msgs::PoseStamped &pose, const geometry_msgs::TwistStamped &twist);
+    //! ROS loop
+    void Spin(void);
 
   private:     
     ros::NodeHandle nh_;                //! node handle 
@@ -63,16 +66,21 @@ class Controller{
     ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
     ros::Subscriber twist_sub_;         //!< ROS command velocity subscriber
 
-    geometry_msgs::Twist twist_;        //!< Last command vel received
+    tf::TransformListener listener_;     //!< TF transformer listener
+
+    geometry_msgs::Twist desired_twist_;        //!< Last command vel received (desired)
 
     controllers::pid::Simple pid_ddx_;
     controllers::pid::Simple pid_ddy_;
     controllers::pid::Simple pid_ddz_;
-
+    
     struct{
       double mass;
       double gravity;
     } params_;
+
+    bool use_tf_;
+    int loop_rate_;
 
 };
 } // pid namespace

@@ -3,7 +3,7 @@ project(labrom_asctec_interface)
 
 find_package(catkin REQUIRED COMPONENTS
   actionlib
-  asctec_hl_comm 
+#  asctec_hl_comm 
   geometry_msgs
   roscpp
   std_msgs
@@ -18,8 +18,8 @@ include_directories(
 )
 
 ## Declare a C++ executable
-add_executable(mav_ctrl_interface_node nodes/mav_ctrl.cpp)
+#add_executable(mav_ctrl_interface_node nodes/mav_ctrl.cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(mav_ctrl_interface_node ${catkin_LIBRARIES})
+#target_link_libraries(mav_ctrl_interface_node ${catkin_LIBRARIES})
 
