@@ -59,6 +59,8 @@ PID::PID(void): pnh_("~"){
   // vehicle parameters
   params_.gravity = 9.81;
 
+  // Miscellaneous
+  has_goal_ = false;
 };
 
 /**
@@ -70,7 +72,9 @@ PID::~PID(void){};
 * @param[in] msg last goal pose message receive
 */
 void PID::GoalCallback(const geometry_msgs::PoseStamped::ConstPtr &msg){
-   desired_pose_ = msg->pose;
+  desired_pose_ = msg->pose;
+  if(!has_goal_)
+    has_goal_= true;
 }
 
 /**
@@ -129,6 +133,12 @@ void PID::TFCallback(void){
 * @param[in] twist contains the current vehicle twist
 */
 void PID::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry_msgs::TwistStamped &twist){
+  if (has_goal_ == false){
+    ROS_WARN("[PID Pose Controller] No goal has been set. Setting goal as current pose!");
+    desired_pose_ = pose.pose;
+    has_goal_ = true;
+  }
+
   // Roll, pitch and yaw angles
   double roll, pitch, yaw;
   tf::Quaternion qt( pose.pose.orientation.x, 

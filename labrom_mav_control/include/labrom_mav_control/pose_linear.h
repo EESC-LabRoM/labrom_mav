@@ -80,6 +80,7 @@ class PID{
       double gravity;
     } params_;
 
+    bool has_goal_;                  //! Flag that indicates if goal set point has already been initialized
     bool use_tf_;                   //! set true to use TF or false to use Odometry
     int loop_rate_;                 //! Control loop rate (TF usage only)
     std::string world_frame_;       //! world frame (AKA fixed frame)
