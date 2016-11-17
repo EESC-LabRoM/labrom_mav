@@ -19,6 +19,7 @@
 // labrom_mav_control libraries
 #include <labrom_mav_control/pose_linear.h>
 #include <vector>
+
 namespace mav_control{
 namespace pose{
 namespace linear{
@@ -152,12 +153,19 @@ void PID::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry
   double ddx_c = pid_ddx_.LoopOnce(desired_pose_.position.x, pose.pose.position.x);
   double ddy_c = pid_ddy_.LoopOnce(desired_pose_.position.y, pose.pose.position.y);
   double ddz_c = pid_ddz_.LoopOnce(desired_pose_.position.z, pose.pose.position.z);
-  double yaw_rate = 0 ;//desired_pose_.angular.z;
 
+  // yaw controller
+  double yaw_error = (tf::getYaw (desired_pose_.orientation) - yaw);
+  if (yaw_error > M_PI)
+    yaw_error -= 2*M_PI;
+  else if(yaw_error < -M_PI)
+    yaw_error += 2*M_PI;
+
+  double yaw_rate = 0.5*yaw_error;
   // Quadrotor input commands
   double T_d     = (params_.gravity - ddz_c)*params_.mass;
-  double roll_d  =  1/params_.gravity  * ddy_c; 
-  double pitch_d = -1/params_.gravity  * ddx_c; 
+  double pitch_d =  - 1/params_.gravity  * (  ddx_c*cos(yaw) + ddy_c*sin(yaw) ); 
+  double roll_d  =    1/params_.gravity  * ( -ddx_c*sin(yaw) + ddy_c*cos(yaw) );
 
   // Assemble command message                 
   std_msgs::Float32 thrust;
