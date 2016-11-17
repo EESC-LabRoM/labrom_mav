@@ -1,5 +1,5 @@
 /*************************************************************************
-*   Linear plant associate with a PID control law for velocity control (Header file)
+*   Linear plant associate with a PID control law for position control (Header file)
 *   This file is part of labrom_mav_control
 *
 *   labrom_mav_control is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
 *   along with labrom_mav_control.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 
-#ifndef VELOCITY_LINEAR_H_
-#define VELOCITY_LINEAR_H_
+#ifndef POSITION_LINEAR_H_
+#define POSITION_LINEAR_H_
 
 //labrom_control libraries
 #include<labrom_control/pid_simple.h>
@@ -37,20 +37,20 @@
 //! top level namespace
 namespace mav_control{
 //! velocity controllers
-namespace velocity{
+namespace pose{
 //! Linearized plants
 namespace linear{
-//! Linearized quadrotor controllers for velocity commands.
-class Controller{
+//! Linearized quadrotor controllers for position commands.
+class PID{
   public:
     //! Empty constructor
-    Controller(void);
+    PID(void);
     //! Empty destructor
-    ~Controller(void);
+    ~PID(void);
     //! Odometry callback
     void OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg);
-    //! Twist callback
-    void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
+    //! Goal (pose) callback
+    void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr &msg);
     //! TF callback
     void TFCallback(void);
     //! Update vehicle control commands
@@ -65,11 +65,11 @@ class Controller{
     ros::Publisher attitude_pub_;       //!< ROS attitude publisher
     ros::Publisher thrust_pub_;         //!< ROS thrust publisher
     ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
-    ros::Subscriber twist_sub_;         //!< ROS command velocity subscriber
+    ros::Subscriber goal_sub_;         //!< ROS goal pose subscriber
 
     tf::TransformListener listener_;     //!< TF transformer listener
 
-    geometry_msgs::Twist desired_twist_;    //!< Last command vel received (desired)
+    geometry_msgs::Pose desired_pose_;    //!< Last command pose received (desired)
 
     controllers::pid::Simple pid_ddx_;      //! body frame velocity x-axis controller
     controllers::pid::Simple pid_ddy_;      //! body frame velocity y-axis controller
@@ -85,7 +85,7 @@ class Controller{
     std::string world_frame_;       //! world frame (AKA fixed frame)
     std::string body_frame_;        //! body frame (AKA control frame)
 };
-} // pid namespace
 } // linear namespace
+} // pose namespace
 } // mav_control namespace
 #endif

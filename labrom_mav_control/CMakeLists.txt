@@ -33,3 +33,6 @@ include_directories(
 
 add_executable(velocity_node src/velocity_linear.cpp)
 target_link_libraries(velocity_node ${catkin_LIBRARIES} )
+
+add_executable(pose_node src/pose_linear.cpp)
+target_link_libraries(pose_node ${catkin_LIBRARIES} )

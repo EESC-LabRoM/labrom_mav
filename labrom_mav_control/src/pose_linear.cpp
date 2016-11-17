@@ -1,5 +1,5 @@
 /*************************************************************************
-*   Linear plant associate with a PID control law for velocity control (Implemenation)
+*   Linear plant associate with a PID control law for pose control (Implemenation)
 *   This file is part of labrom_mav_control
 *
 *   labrom_mav_control is free software: you can redistribute it and/or modify
@@ -17,21 +17,21 @@
 ***************************************************************************/
 
 // labrom_mav_control libraries
-#include <labrom_mav_control/velocity_linear.h>
+#include <labrom_mav_control/pose_linear.h>
 #include <vector>
 namespace mav_control{
-namespace velocity{
+namespace pose{
 namespace linear{
 /**
 * Empty constructor
 */
-Controller::Controller(void): pnh_("~"){
+PID::PID(void): pnh_("~"){
   // Adversite and subscribe topics
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
   thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
 
-  odom_sub_     = nh_.subscribe("odometry",1,&Controller::OdometryCallback,this);
-  twist_sub_    = nh_.subscribe("cmd_vel",1,&Controller::CmdVelCallback,this);  
+  odom_sub_     = nh_.subscribe("odometry",1,&PID::OdometryCallback,this);
+  goal_sub_     = nh_.subscribe("goal",1,&PID::GoalCallback,this);  
 
   // Controllers parameters from configuration file
   std::vector<double> params;
@@ -39,7 +39,7 @@ Controller::Controller(void): pnh_("~"){
   for(int i=0;i<3;++i){
     for(int j=0;j<4;++j){
       params.push_back(0);
-      pnh_.getParam("velocity"+coordinate[i]+gains[j], params[4*i+j]);
+      pnh_.getParam("pose"+coordinate[i]+gains[j], params[4*i+j]);
     }
   }
 
@@ -64,20 +64,20 @@ Controller::Controller(void): pnh_("~"){
 /**
 * Empty destructor
 */
-Controller::~Controller(void){};
+PID::~PID(void){};
 
-/** Twist callback. Receives desired twist.
-* @param[in] msg last twist message receivedist
+/** Goal callback. Receives desired pose.
+* @param[in] msg last goal pose message receive
 */
-void Controller::CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg){
-   desired_twist_ = *msg;
+void PID::GoalCallback(const geometry_msgs::PoseStamped::ConstPtr &msg){
+   desired_pose_ = msg->pose;
 }
 
 /**
 * Odometry message callback
 * @param[in] odom current estimated odometry
 */
-void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
+void PID::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   geometry_msgs::PoseStamped pose;
   geometry_msgs::TwistStamped twist;
   // Copying values
@@ -94,7 +94,7 @@ void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
 /**
 * TFCallback. Listen for TF to compute actuation inputs [DOES NOT WORK PROPERLY]
 */
-void Controller::TFCallback(void){
+void PID::TFCallback(void){
   try{
     geometry_msgs::PoseStamped pose;
     
@@ -128,7 +128,7 @@ void Controller::TFCallback(void){
 * @param[in] pose contains the current vehicle pose
 * @param[in] twist contains the current vehicle twist
 */
-void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry_msgs::TwistStamped &twist){
+void PID::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry_msgs::TwistStamped &twist){
   // Roll, pitch and yaw angles
   double roll, pitch, yaw;
   tf::Quaternion qt( pose.pose.orientation.x, 
@@ -138,16 +138,11 @@ void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const g
   tf::Matrix3x3 R(qt);
   R.getRPY(roll, pitch, yaw);
 
-  // Transform velocities from body-fixed frame to speed frame
-  double vx = cos(pitch) * twist.twist.linear.x + sin(roll)*sin(pitch)* twist.twist.linear.y  + cos(roll)*sin(pitch)* twist.twist.linear.z;
-  double vy = cos(roll)  * twist.twist.linear.y - sin(roll)*  twist.twist.linear.z;
-  double vz = -sin(pitch)* twist.twist.linear.x + cos(pitch)*sin(roll)* twist.twist.linear.y  + cos(roll)*cos(pitch)* twist.twist.linear.z;
-
   // Command accelerations 
-  double ddx_c = pid_ddx_.LoopOnce(desired_twist_.linear.x, vx);
-  double ddy_c = pid_ddy_.LoopOnce(desired_twist_.linear.y, vy);
-  double ddz_c = pid_ddz_.LoopOnce(desired_twist_.linear.z, vz);
-  double yaw_rate = desired_twist_.angular.z;
+  double ddx_c = pid_ddx_.LoopOnce(desired_pose_.position.x, pose.pose.position.x);
+  double ddy_c = pid_ddy_.LoopOnce(desired_pose_.position.y, pose.pose.position.y);
+  double ddz_c = pid_ddz_.LoopOnce(desired_pose_.position.z, pose.pose.position.z);
+  double yaw_rate = 0 ;//desired_pose_.angular.z;
 
   // Quadrotor input commands
   double T_d     = (params_.gravity - ddz_c)*params_.mass;
@@ -172,7 +167,7 @@ void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const g
 * ROS loop
 */
 
-void Controller::Spin(void){
+void PID::Spin(void){
   // Odometry based
   if (!use_tf_)
     ros::spin();
@@ -195,14 +190,14 @@ void Controller::Spin(void){
 };
 
 } // linear namespace
-} // velocity namespace
+} // pose namespace
 } // mav_control namespace
 
 int main(int argc, char** argv){
-  ros::init(argc, argv,"velocity_controller");
+  ros::init(argc, argv,"pose_controller");
 
-  mav_control::velocity::linear::Controller vel_control;
+  mav_control::pose::linear::PID pose_control;
 
- vel_control.Spin();
+  pose_control.Spin();
 
 }
