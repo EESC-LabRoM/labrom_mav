@@ -53,6 +53,8 @@ class PID{
     void GoalCallback(const geometry_msgs::PoseStamped::ConstPtr &msg);
     //! TF callback
     void TFCallback(void);
+    //! Pose callback
+    void PoseCallback(const geometry_msgs::PoseStamped::ConstPtr &msg);
     //! Update vehicle control commands
     void ComputeActuation( const geometry_msgs::PoseStamped &pose, const geometry_msgs::TwistStamped &twist);
     //! ROS loop
@@ -65,7 +67,8 @@ class PID{
     ros::Publisher attitude_pub_;       //!< ROS attitude publisher
     ros::Publisher thrust_pub_;         //!< ROS thrust publisher
     ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
-    ros::Subscriber goal_sub_;         //!< ROS goal pose subscriber
+    ros::Subscriber pose_sub_;          //!< ROS pose subscriber
+    ros::Subscriber goal_sub_;          //!< ROS goal pose subscriber
 
     tf::TransformListener listener_;     //!< TF transformer listener
 
@@ -77,8 +80,7 @@ class PID{
     
     struct{
       double mass;
-      double gravity;
-    } params_;
+    } vehicle_;
 
     bool has_goal_;                  //! Flag that indicates if goal set point has already been initialized
     bool use_tf_;                   //! set true to use TF or false to use Odometry

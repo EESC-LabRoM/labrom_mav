@@ -3,7 +3,8 @@
       <!-- Remapping topics-->
       <remap from="cmd_attitude" to="/vrep/cmd_attitude"/>
       <remap from="cmd_thrust" to="/vrep/cmd_thrust"/>    
-      <remap from="odometry" to="/vrep/odometry"/>   
+      <remap from="odometry" to="/vrep/odometry"/>
+      <remap from="pose" to="/vrep/pose"/>
       <remap from="goal" to="/vrep/goal"/>
 
       <!-- Loading parameters -->  

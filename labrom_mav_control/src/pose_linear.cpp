@@ -32,6 +32,7 @@ PID::PID(void): pnh_("~"){
   thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
 
   odom_sub_     = nh_.subscribe("odometry",1,&PID::OdometryCallback,this);
+  pose_sub_     = nh_.subscribe("pose",1,&PID::PoseCallback,this);
   goal_sub_     = nh_.subscribe("goal",1,&PID::GoalCallback,this);  
 
   // Controllers parameters from configuration file
@@ -45,7 +46,7 @@ PID::PID(void): pnh_("~"){
   }
 
   pnh_.param<std::string>("world_frame", world_frame_, "/world");
-  pnh_.param<std::string>("body_frame", body_frame_, "/body_link");
+  pnh_.param<std::string>("body_frame" , body_frame_, "/body_link");
   pnh_.param<int>("loop_rate", loop_rate_, 50);
   pnh_.param<bool>("use_tf", use_tf_, false);
 
@@ -55,10 +56,7 @@ PID::PID(void): pnh_("~"){
   pid_ddz_ = controllers::pid::Simple("PID_ddz", params[8], params[9], params[10], params[11]);
 
   // Retrieving vehicle parameters
-  pnh_.getParam("mass", params_.mass);
-
-  // vehicle parameters
-  params_.gravity = 9.81;
+  pnh_.getParam("mass", vehicle_.mass);
 
   // Miscellaneous
   has_goal_ = false;
@@ -105,7 +103,7 @@ void PID::TFCallback(void){
     
     // Pose
     tf::StampedTransform transform;
-    listener_.lookupTransform	(	world_frame_,   
+    listener_.lookupTransform(	world_frame_,
                               	body_frame_,
                                 ros::Time(0),
                                 transform); 
@@ -123,11 +121,25 @@ void PID::TFCallback(void){
     ComputeActuation(pose, twist);
 
   }catch (tf::TransformException ex){
-    ROS_ERROR("[Velocity Controller]%s",ex.what());
+    ROS_ERROR("[Pose Controller]%s",ex.what());
     ros::Duration(1.0).sleep();
   }
 }
 
+/**
+* Odometry message callback
+* @param[in] odom current estimated odometry
+*/
+void PID::PoseCallback(const geometry_msgs::PoseStamped::ConstPtr &msg){
+  geometry_msgs::PoseStamped pose;
+  geometry_msgs::TwistStamped twist;
+  // Copying values
+  pose.pose   = msg->pose;
+  pose.header = msg->header;
+  
+  ComputeActuation(pose, twist);
+}
+  
 /**
 * Compute vehicle actuation input (collective thrust and attitude angles)
 * @param[in] pose contains the current vehicle pose
@@ -140,21 +152,13 @@ void PID::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry
     has_goal_ = true;
   }
 
-  // Roll, pitch and yaw angles
-  double roll, pitch, yaw;
-  tf::Quaternion qt( pose.pose.orientation.x, 
-                     pose.pose.orientation.y, 
-                     pose.pose.orientation.z, 
-                     pose.pose.orientation.w);
-  tf::Matrix3x3 R(qt);
-  R.getRPY(roll, pitch, yaw);
-
   // Command accelerations 
   double ddx_c = pid_ddx_.LoopOnce(desired_pose_.position.x, pose.pose.position.x);
   double ddy_c = pid_ddy_.LoopOnce(desired_pose_.position.y, pose.pose.position.y);
   double ddz_c = pid_ddz_.LoopOnce(desired_pose_.position.z, pose.pose.position.z);
 
   // yaw controller
+  double yaw = tf::getYaw(pose.pose.orientation);
   double yaw_error = (tf::getYaw (desired_pose_.orientation) - yaw);
   if (yaw_error > M_PI)
     yaw_error -= 2*M_PI;
@@ -163,9 +167,9 @@ void PID::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry
 
   double yaw_rate = 0.5*yaw_error;
   // Quadrotor input commands
-  double T_d     = (params_.gravity - ddz_c)*params_.mass;
-  double pitch_d =  - 1/params_.gravity  * (  ddx_c*cos(yaw) + ddy_c*sin(yaw) ); 
-  double roll_d  =    1/params_.gravity  * ( -ddx_c*sin(yaw) + ddy_c*cos(yaw) );
+  double T_d     = (9.81 - ddz_c)*vehicle_.mass;
+  double pitch_d =  - 1/9.81  * (  ddx_c*cos(yaw) + ddy_c*sin(yaw) );
+  double roll_d  =    1/9.81  * ( -ddx_c*sin(yaw) + ddy_c*cos(yaw) );
 
   // Assemble command message                 
   std_msgs::Float32 thrust;

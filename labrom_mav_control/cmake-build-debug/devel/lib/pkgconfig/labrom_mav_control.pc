@@ -1,0 +1,8 @@
+prefix=/home/active/catkin_ws/src/labrom_mav/labrom_mav_control/cmake-build-debug/devel
+
+Name: labrom_mav_control
+Description: Description of labrom_mav_control
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/active/catkin_ws/src/labrom_mav/labrom_mav_control/cmake-build-debug/devel/lib 
+Requires: 
