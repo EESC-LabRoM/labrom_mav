@@ -3,47 +3,47 @@
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" buildAllGenerated="true">
     <generated>
       <config projectName="labrom_mav_control" targetName="nav_msgs_generate_messages_cpp" />
-      <config projectName="labrom_mav_control" targetName="actionlib_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="actionlib_msgs_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="geometry_msgs_generate_messages_cpp" />
       <config projectName="labrom_mav_control" targetName="std_msgs_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="tf2_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="tests" />
-      <config projectName="labrom_mav_control" targetName="geometry_msgs_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="tf_generate_messages_py" />
       <config projectName="labrom_mav_control" targetName="tf2_msgs_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="doxygen" />
-      <config projectName="labrom_mav_control" targetName="velocity_node" />
+      <config projectName="labrom_mav_control" targetName="nav_msgs_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="roscpp_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="actionlib_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="actionlib_msgs_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="rosgraph_msgs_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="sensor_msgs_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="std_msgs_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="actionlib_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="trajectory_msgs_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="pose_node" />
+      <config projectName="labrom_mav_control" targetName="roscpp_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="actionlib_msgs_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="tf2_msgs_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="geometry_msgs_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="sensor_msgs_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="rosgraph_msgs_generate_messages_cpp" />
       <config projectName="labrom_mav_control" targetName="run_tests" />
       <config projectName="labrom_mav_control" targetName="std_msgs_generate_messages_cpp" />
-      <config projectName="labrom_mav_control" targetName="trajectory_msgs_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="trajectory_msgs_generate_messages_cpp" />
-      <config projectName="labrom_mav_control" targetName="std_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="pose_node" />
-      <config projectName="labrom_mav_control" targetName="nav_msgs_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="gtest" />
-      <config projectName="labrom_mav_control" targetName="actionlib_msgs_generate_messages_cpp" />
-      <config projectName="labrom_mav_control" targetName="tf_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="gtest_main" />
-      <config projectName="labrom_mav_control" targetName="clean_test_results" />
-      <config projectName="labrom_mav_control" targetName="rosgraph_msgs_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="trajectory_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="actionlib_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="roscpp_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="geometry_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="tf_generate_messages_cpp" />
-      <config projectName="labrom_mav_control" targetName="actionlib_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="sensor_msgs_generate_messages_cpp" />
-      <config projectName="labrom_mav_control" targetName="rosgraph_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="rosgraph_msgs_generate_messages_cpp" />
-      <config projectName="labrom_mav_control" targetName="sensor_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="tf_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="sensor_msgs_generate_messages_lisp" />
-      <config projectName="labrom_mav_control" targetName="roscpp_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="actionlib_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="tests" />
       <config projectName="labrom_mav_control" targetName="download_extra_data" />
-      <config projectName="labrom_mav_control" targetName="roscpp_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="geometry_msgs_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="gtest_main" />
+      <config projectName="labrom_mav_control" targetName="actionlib_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="tf2_msgs_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="doxygen" />
+      <config projectName="labrom_mav_control" targetName="clean_test_results" />
+      <config projectName="labrom_mav_control" targetName="gtest" />
+      <config projectName="labrom_mav_control" targetName="trajectory_msgs_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="rosgraph_msgs_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="trajectory_msgs_generate_messages_py" />
+      <config projectName="labrom_mav_control" targetName="geometry_msgs_generate_messages_cpp" />
       <config projectName="labrom_mav_control" targetName="nav_msgs_generate_messages_py" />
-      <config projectName="labrom_mav_control" targetName="tf2_msgs_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="velocity_node" />
+      <config projectName="labrom_mav_control" targetName="actionlib_msgs_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="tf_generate_messages_lisp" />
+      <config projectName="labrom_mav_control" targetName="sensor_msgs_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="tf_generate_messages_cpp" />
+      <config projectName="labrom_mav_control" targetName="roscpp_generate_messages_lisp" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -69,37 +69,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="pose_linear.cpp" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/pose_linear.cpp">
+      <file leaf-file-name="vrep_velocity.launch" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/launch/vrep_velocity.launch">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
-              <caret line="173" column="27" lean-forward="true" selection-start-line="173" selection-start-column="27" selection-end-line="173" selection-end-column="27" />
-              <folding>
-                <element signature="e#2618#2852#0" expanded="false" />
-                <element signature="e#2854#3370#0" expanded="false" />
-                <element signature="e#4315#4653#0" expanded="false" />
-                <element signature="e#6289#6728#0" expanded="false" />
-                <element signature="e#6801#6951#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pose_linear.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/labrom_mav_control/pose_linear.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
-              <caret line="82" column="13" lean-forward="false" selection-start-line="82" selection-start-column="13" selection-end-line="82" selection-end-column="13" />
+            <state relative-caret-position="324">
+              <caret line="18" column="30" lean-forward="false" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vrep_pose.launch" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/launch/vrep_pose.launch">
+      <file leaf-file-name="vrep.yaml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/params/vrep.yaml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="5" column="38" lean-forward="false" selection-start-line="5" selection-start-column="38" selection-end-line="5" selection-end-column="38" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -107,12 +91,21 @@
       </file>
     </leaf>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>std</find>
+    </findStrings>
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/launch/vrep_pose.launch" />
         <option value="$PROJECT_DIR$/include/labrom_mav_control/pose_linear.h" />
         <option value="$PROJECT_DIR$/src/pose_linear.cpp" />
+        <option value="$PROJECT_DIR$/include/labrom_mav_control/velocity_linear.h" />
+        <option value="$PROJECT_DIR$/src/velocity_linear.cpp" />
+        <option value="$PROJECT_DIR$/params/vrep.yaml" />
+        <option value="$PROJECT_DIR$/launch/vrep_velocity.launch" />
       </list>
     </option>
   </component>
@@ -128,6 +121,61 @@
     <option name="y" value="-4" />
     <option name="width" value="1301" />
     <option name="height" value="772" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>C/C++</id>
+          </State>
+          <State>
+            <id>CSS</id>
+          </State>
+          <State>
+            <id>Code style issuesCSS</id>
+          </State>
+          <State>
+            <id>Control flow issuesJavaScript</id>
+          </State>
+          <State>
+            <id>DOM issuesJavaScript</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>GeneralC/C++</id>
+          </State>
+          <State>
+            <id>GeneralJavaScript</id>
+          </State>
+          <State>
+            <id>Invalid elementsCSS</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>Probable bugsCSS</id>
+          </State>
+          <State>
+            <id>Python</id>
+          </State>
+          <State>
+            <id>Unused codeC/C++</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>LocalValueEscapesScope</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -192,7 +240,47 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="params" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labrom_mav_control" />
+              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labrom_mav_control" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labrom_mav_control" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="launch" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labrom_mav_control" />
+              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labrom_mav_control" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labrom_mav_control" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="include" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labrom_mav_control" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -264,6 +352,12 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
@@ -609,24 +703,24 @@
       <workItem from="1481911673391" duration="643000" />
       <workItem from="1481982897797" duration="497000" />
       <workItem from="1481984037276" duration="3940000" />
+      <workItem from="1482242988815" duration="9951000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5080000" />
+    <option name="totallyTimeSpent" value="15031000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1301" height="772" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18831667" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14296696" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935917" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1505216" sideWeight="0.50269026" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1505216" sideWeight="0.49730977" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -634,6 +728,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32935917" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -651,26 +746,24 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/velocity_linear.cpp">
+    <entry file="file://$PROJECT_DIR$/src/pose_linear.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#2618#2852#0" expanded="false" />
+            <element signature="e#2854#3370#0" expanded="false" />
+            <element signature="e#4315#4653#0" expanded="false" />
+            <element signature="e#6289#6728#0" expanded="false" />
+            <element signature="e#6801#6951#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/velocity_linear.cpp">
+    <entry file="file://$PROJECT_DIR$/include/labrom_mav_control/pose_linear.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/velocity_linear.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+        <state relative-caret-position="1476">
+          <caret line="82" column="13" lean-forward="false" selection-start-line="82" selection-start-column="13" selection-end-line="82" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -683,18 +776,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/labrom_mav_control/pose_linear.h">
+    <entry file="file://$PROJECT_DIR$/src/velocity_linear.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="82" column="13" lean-forward="false" selection-start-line="82" selection-start-column="13" selection-end-line="82" selection-end-column="13" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/velocity_linear.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/launch/vrep_pose.launch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="38" lean-forward="false" selection-start-line="5" selection-start-column="38" selection-end-line="5" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pose_linear.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="173" column="27" lean-forward="true" selection-start-line="173" selection-start-column="27" selection-end-line="173" selection-end-column="27" />
+        <state relative-caret-position="18">
+          <caret line="172" column="0" lean-forward="false" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
           <folding>
             <element signature="e#2618#2852#0" expanded="false" />
             <element signature="e#2854#3370#0" expanded="false" />
@@ -702,6 +811,46 @@
             <element signature="e#6289#6728#0" expanded="false" />
             <element signature="e#6801#6951#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/labrom_mav_control/velocity_linear.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/labrom_mav_control/pose_linear.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="82" column="13" lean-forward="false" selection-start-line="82" selection-start-column="13" selection-end-line="82" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/velocity_linear.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3348">
+          <caret line="187" column="17" lean-forward="true" selection-start-line="187" selection-start-column="17" selection-end-line="187" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/params/vrep.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/launch/vrep_velocity.launch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="18" column="30" lean-forward="false" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
+          <folding />
         </state>
       </provider>
     </entry>
