@@ -65,15 +65,14 @@ class Controller{
     ros::Publisher attitude_pub_;       //!< ROS attitude publisher
     ros::Publisher thrust_pub_;         //!< ROS thrust publisher
     ros::Subscriber odom_sub_;          //!< ROS odometry subscriber
-    ros::Subscriber twist_sub_;         //!< ROS command velocity subscriber
+    ros::Subscriber cmdvel_sub_;        //!< ROS command velocity subscriber
+    tf::TransformListener listener_;    //!< TF transformer listener
 
-    tf::TransformListener listener_;     //!< TF transformer listener
+    geometry_msgs::Twist desired_twist_;    //!< Last vel command received (desired)
 
-    geometry_msgs::Twist desired_twist_;    //!< Last command vel received (desired)
-
-    controllers::pid::Simple pid_ddx_;      //! body frame velocity x-axis controller
-    controllers::pid::Simple pid_ddy_;      //! body frame velocity y-axis controller
-    controllers::pid::Simple pid_ddz_;      //! body frame velocity z-axis controller
+    controllers::pid::Simple pid_ddx_;      //!< body frame velocity x-axis controller
+    controllers::pid::Simple pid_ddy_;      //!< body frame velocity y-axis controller
+    controllers::pid::Simple pid_ddz_;      //!< body frame velocity z-axis controller
     
     struct{
       double mass;
@@ -81,9 +80,9 @@ class Controller{
     } params_;
 
     bool use_tf_;                   //! set true to use TF or false to use Odometry
-    int loop_rate_;                 //! Control loop rate (TF usage only)
-    std::string world_frame_;       //! world frame (AKA fixed frame)
+    int loop_rate_;                 //! Actuation loop
     std::string body_frame_;        //! body frame (AKA control frame)
+    std::string world_frame_;       //! world frame (AKA inertial frame)
 };
 } // pid namespace
 } // linear namespace

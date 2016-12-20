@@ -29,9 +29,7 @@ Controller::Controller(void): pnh_("~"){
   // Adversite and subscribe topics
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
   thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
-
-  odom_sub_     = nh_.subscribe("odometry",1,&Controller::OdometryCallback,this);
-  twist_sub_    = nh_.subscribe("cmd_vel",1,&Controller::CmdVelCallback,this);  
+  cmdvel_sub_   = nh_.subscribe("cmd_vel",1,&Controller::CmdVelCallback,this);
 
   // Controllers parameters from configuration file
   std::vector<double> params;
@@ -44,7 +42,7 @@ Controller::Controller(void): pnh_("~"){
   }
 
   pnh_.param<std::string>("world_frame", world_frame_, "/world");
-  pnh_.param<std::string>("body_frame", body_frame_, "/body_link");
+  pnh_.param<std::string>("body_frame", body_frame_, "/base_link");
   pnh_.param<int>("loop_rate", loop_rate_, 50);
   pnh_.param<bool>("use_tf", use_tf_, false);
 
@@ -108,11 +106,24 @@ void Controller::TFCallback(void){
 
     // Twist
     geometry_msgs::TwistStamped twist; 
-    listener_.lookupTwist(body_frame_, 
-                          world_frame_,  
+    listener_.lookupTwist(body_frame_,
+                          world_frame_,
+                          body_frame_,
+                          tf::Point(0,0,0),
+                          body_frame_,
                           ros::Time(0), 
                           ros::Duration(0.001),
                           twist.twist );
+
+    // Applying rotation to expresse twist w.r.t. body_frame
+    transform.setOrigin(tf::Vector3(0,0,0));
+    transform.setRotation(transform.inverse().getRotation());
+    tf::vector3TFToMsg(
+            transform*tf::Vector3(twist.twist.linear.x, twist.twist.linear.y, twist.twist.linear.z),
+            twist.twist.linear);
+    tf::vector3TFToMsg(
+            transform*tf::Vector3(twist.twist.angular.x, twist.twist.angular.y, twist.twist.angular.z),
+            twist.twist.angular);
 
     // Call method that actually computes/publishes control signals.
     ComputeActuation(pose, twist);
@@ -174,21 +185,19 @@ void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const g
 
 void Controller::Spin(void){
   // Odometry based
-  if (!use_tf_)
+  if (!use_tf_) {
+    odom_sub_     = nh_.subscribe("odometry",1,&Controller::OdometryCallback,this);
     ros::spin();
-  // TF based (not working properly) 
-  else{
-    //! @todo TFCallback is not working properly. Problem computing the twist with lookUpTwist
-    /*
+    // TF based (not working properly)
+  }else{
     ros::Rate rate(loop_rate_);
-    while(ros::ok()){
+    while(ros::ok()) {
       // Try to grab tf
       TFCallback();
       // Sleep until next iteration
       ros::spinOnce();
       rate.sleep();
     }
-    */
   }
 
 

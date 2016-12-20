@@ -1,18 +1,11 @@
-# global parameters
-world_frame: /world
-body_frame: /body_link
-loop_rate: 25
-use_tf: false
-mass: 1.2
-
 # Velocity controller gains
 velocity/x/kp: 1 
-velocity/x/ki: 0.025 
+velocity/x/ki: 0.025
 velocity/x/kd: 0.1 
 velocity/x/anti_windup: 0.25
 
 velocity/y/kp: 1
-velocity/y/ki: 0.025 
+velocity/y/ki: 0.025
 velocity/y/kd: 0.1 
 velocity/y/anti_windup: 0.25
 
