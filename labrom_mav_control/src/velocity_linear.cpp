@@ -69,6 +69,16 @@ Controller::~Controller(void){};
 */
 void Controller::CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg){
    desired_twist_ = *msg;
+   /*
+   transform.setOrigin(tf::Vector3(0,0,0));
+   transform.setRotation(transform.inverse().getRotation());
+   tf::vector3TFToMsg(
+     transform*tf::Vector3(twist.twist.linear.x, twist.twist.linear.y, twist.twist.linear.z),
+     twist.twist.linear);
+   tf::vector3TFToMsg(
+     transform*tf::Vector3(twist.twist.angular.x, twist.twist.angular.y, twist.twist.angular.z),
+     twist.twist.angular);
+       */
 }
 
 /**
@@ -78,11 +88,19 @@ void Controller::CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg){
 void Controller::OdometryCallback(const nav_msgs::Odometry::ConstPtr &msg){
   geometry_msgs::PoseStamped pose;
   geometry_msgs::TwistStamped twist;
+  tf::Pose bt;
   // Copying values
   pose.pose   = msg->pose.pose;
   pose.header = msg->header;
-  
-  twist.twist = msg->twist.twist;
+
+  tf::poseMsgToTF(pose.pose, bt);
+  bt.setOrigin(tf::Vector3(0,0,0));
+
+  tf::vector3TFToMsg(bt*tf::Vector3(msg->twist.twist.linear.x, msg->twist.twist.linear.y, msg->twist.twist.linear.z),
+                twist.twist.linear);
+  tf::vector3TFToMsg(bt*tf::Vector3(msg->twist.twist.angular.x, msg->twist.twist.angular.y, msg->twist.twist.angular.z),
+                twist.twist.angular);
+
   twist.header = msg->header;
   twist.header.frame_id = msg->child_frame_id;
   // Call method that actually computes/publishes control signals
@@ -98,13 +116,15 @@ void Controller::TFCallback(void){
     
     // Pose
     tf::StampedTransform transform;
-    listener_.lookupTransform	(	world_frame_,   
+    listener_.lookupTransform	(	world_frame_,
                               	body_frame_,
                                 ros::Time(0),
                                 transform); 
     tf::poseTFToMsg(tf::Pose(transform), pose.pose);
 
     // Twist
+    //! @TODO We want the body_frame velocity w.r.t. the world_frame, expressed in the world_frame. Notice that the
+    //! only reason this actually works is because there is a bug in lookupTwist.
     geometry_msgs::TwistStamped twist; 
     listener_.lookupTwist(body_frame_,
                           world_frame_,
@@ -112,18 +132,8 @@ void Controller::TFCallback(void){
                           tf::Point(0,0,0),
                           body_frame_,
                           ros::Time(0), 
-                          ros::Duration(0.001),
+                          ros::Duration(0.1),
                           twist.twist );
-
-    // Applying rotation to expresse twist w.r.t. body_frame
-    transform.setOrigin(tf::Vector3(0,0,0));
-    transform.setRotation(transform.inverse().getRotation());
-    tf::vector3TFToMsg(
-            transform*tf::Vector3(twist.twist.linear.x, twist.twist.linear.y, twist.twist.linear.z),
-            twist.twist.linear);
-    tf::vector3TFToMsg(
-            transform*tf::Vector3(twist.twist.angular.x, twist.twist.angular.y, twist.twist.angular.z),
-            twist.twist.angular);
 
     // Call method that actually computes/publishes control signals.
     ComputeActuation(pose, twist);
@@ -140,43 +150,30 @@ void Controller::TFCallback(void){
 * @param[in] twist contains the current vehicle twist
 */
 void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const geometry_msgs::TwistStamped &twist){
-  // Roll, pitch and yaw angles
-  double roll, pitch, yaw;
-  tf::Quaternion qt( pose.pose.orientation.x, 
-                     pose.pose.orientation.y, 
-                     pose.pose.orientation.z, 
-                     pose.pose.orientation.w);
-  tf::Matrix3x3 R(qt);
-  R.getRPY(roll, pitch, yaw);
+        // Command accelerations
+        double ddx_c = pid_ddx_.LoopOnce(desired_twist_.linear.x, twist.twist.linear.x);
+        double ddy_c = pid_ddy_.LoopOnce(desired_twist_.linear.y, twist.twist.linear.y);
+        double ddz_c = pid_ddz_.LoopOnce(desired_twist_.linear.z, twist.twist.linear.z);
 
-  // Transform velocities from body-fixed frame to speed frame
-  double vx = cos(pitch) * twist.twist.linear.x + sin(roll)*sin(pitch)* twist.twist.linear.y  + cos(roll)*sin(pitch)* twist.twist.linear.z;
-  double vy = cos(roll)  * twist.twist.linear.y - sin(roll)*  twist.twist.linear.z;
-  double vz = -sin(pitch)* twist.twist.linear.x + cos(pitch)*sin(roll)* twist.twist.linear.y  + cos(roll)*cos(pitch)* twist.twist.linear.z;
+        double yaw_rate = desired_twist_.angular.z;
+        // Quadrotor input commands
+        double yaw = tf::getYaw(pose.pose.orientation);
+        double T_d     = (9.81 - ddz_c)*params_.mass;
+        double pitch_d =  - 1/9.81  * (  ddx_c*cos(yaw) + ddy_c*sin(yaw) );
+        double roll_d  =    1/9.81  * ( -ddx_c*sin(yaw) + ddy_c*cos(yaw) );
 
-  // Command accelerations 
-  double ddx_c = pid_ddx_.LoopOnce(desired_twist_.linear.x, vx);
-  double ddy_c = pid_ddy_.LoopOnce(desired_twist_.linear.y, vy);
-  double ddz_c = pid_ddz_.LoopOnce(desired_twist_.linear.z, vz);
-  double yaw_rate = desired_twist_.angular.z;
+        // Assemble command message
+        std_msgs::Float32 thrust;
+        geometry_msgs::Vector3Stamped attitude;
 
-  // Quadrotor input commands
-  double T_d     = (params_.gravity - ddz_c)*params_.mass;
-  double roll_d  =  1/params_.gravity  * ddy_c; 
-  double pitch_d = -1/params_.gravity  * ddx_c; 
+        thrust.data = T_d;
+        attitude.vector.x = roll_d ;
+        attitude.vector.y = pitch_d;
+        attitude.vector.z = yaw_rate;
+        attitude.header.frame_id = body_frame_;
 
-  // Assemble command message                 
-  std_msgs::Float32 thrust;
-  geometry_msgs::Vector3Stamped attitude;
-
-  thrust.data = T_d;            
-  attitude.vector.x = roll_d ;                    
-  attitude.vector.y = pitch_d;
-  attitude.vector.z = yaw_rate;
-  attitude.header.frame_id = body_frame_;
-  
-  thrust_pub_.publish(thrust);
-  attitude_pub_.publish(attitude);  
+        thrust_pub_.publish(thrust);
+        attitude_pub_.publish(attitude);
 }
 
 /**
