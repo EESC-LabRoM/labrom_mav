@@ -1,6 +1,6 @@
 /*************************************************************************
-*   Linear plant associate with a PID control law for velocity control (Implemenation)
 *   This file is part of labrom_mav_control
+*   Linear plant associate with a PID control law for velocity control (Implemenation)
 *
 *   labrom_mav_control is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with labrom_mav_control.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
-
+double zero_time;
 // labrom_mav_control libraries
 #include <labrom_mav_control/velocity_linear.h>
 #include <vector>
@@ -26,10 +26,20 @@ namespace linear{
 * Empty constructor
 */
 Controller::Controller(void): pnh_("~"){
+  double fc;
+
   // Adversite and subscribe topics
   attitude_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("cmd_attitude",1);
   thrust_pub_   = nh_.advertise<std_msgs::Float32>("cmd_thrust",1);
   cmdvel_sub_   = nh_.subscribe("cmd_vel",1,&Controller::CmdVelCallback,this);
+  
+  // Parameters
+  pnh_.param<std::string>("world_frame", world_frame_, "/world");
+  pnh_.param<std::string>("body_frame", body_frame_, "/base_link");
+  pnh_.param<int>("loop_rate", loop_rate_, 50);
+  pnh_.getParam("mass", params_.mass);
+  pnh_.param<bool>("use_tf", use_tf_, false);
+  pnh_.param<double>("cutoff_freq", fc, -1.0);
 
   // Controllers parameters from configuration file
   std::vector<double> params;
@@ -41,19 +51,18 @@ Controller::Controller(void): pnh_("~"){
     }
   }
 
-  pnh_.param<std::string>("world_frame", world_frame_, "/world");
-  pnh_.param<std::string>("body_frame", body_frame_, "/base_link");
-  pnh_.param<int>("loop_rate", loop_rate_, 50);
-  pnh_.param<bool>("use_tf", use_tf_, false);
-
   // Loading PID controllers with configuration
   pid_ddx_ = controllers::pid::Simple("PID_ddx", params[0], params[1], params[2],  params[3]);
   pid_ddy_ = controllers::pid::Simple("PID_ddy", params[4], params[5], params[6],  params[7]);
   pid_ddz_ = controllers::pid::Simple("PID_ddz", params[8], params[9], params[10], params[11]);
 
-  // Retrieving vehicle parameters
-  pnh_.getParam("mass", params_.mass);
+  // Twist filter
+  if (fc > 0)
+    alpha_ = 2*M_PI*fc/(2*M_PI*fc + 1.0*loop_rate_);
+  else
+    alpha_ = 1;
 
+        std::cout << "ALPHA: " << alpha_ << std::endl;
   // vehicle parameters
   params_.gravity = 9.81;
 
@@ -132,16 +141,45 @@ void Controller::TFCallback(void){
                           tf::Point(0,0,0),
                           body_frame_,
                           ros::Time(0), 
-                          ros::Duration(0.1),
+                          ros::Duration(0.05),
                           twist.twist );
-
+    // Applying filter
+    FilterTwist(twist.twist);
+    twist.twist = filtered_twist_;
+    std::cout << ros::Time::now().toSec() - zero_time << " " <<
+                 filtered_twist_.linear.x << " " <<
+                 filtered_twist_.linear.y << " " <<
+                 filtered_twist_.linear.z << " " <<
+                 filtered_twist_.angular.x << " " <<
+                 filtered_twist_.angular.y << " " <<
+                 filtered_twist_.angular.z << " " << std::endl;
     // Call method that actually computes/publishes control signals.
-    ComputeActuation(pose, twist);
+    //ComputeActuation(pose, twist);
 
   }catch (tf::TransformException ex){
     ROS_ERROR("[Velocity Controller]%s",ex.what());
     ros::Duration(1.0).sleep();
   }
+}
+
+/**
+ * Exponentially weigthed moving average discrete-time filter for twist.
+ * @param twist unfiltered twist
+ */
+void Controller::FilterTwist(const geometry_msgs::Twist twist) {
+  double beta = 1-alpha_;
+  filtered_twist_.linear.x = alpha_*std::min(std::max(twist.linear.x, MIN_VEL), MAX_VEL) + beta*filtered_twist_
+          .linear.x;
+  filtered_twist_.linear.y = alpha_*std::min(std::max(twist.linear.y, MIN_VEL), MAX_VEL) + beta*filtered_twist_
+          .linear.y;
+  filtered_twist_.linear.z = alpha_*std::min(std::max(twist.linear.z, MIN_VEL), MAX_VEL) + beta*filtered_twist_
+          .linear.z;
+  filtered_twist_.angular.x = alpha_*std::min(std::max(twist.angular.x, MIN_VEL), MAX_VEL) + beta*filtered_twist_
+          .angular.x;
+  filtered_twist_.angular.y = alpha_*std::min(std::max(twist.angular.y, MIN_VEL), MAX_VEL) + beta*filtered_twist_
+          .angular.y;
+  filtered_twist_.angular.z = alpha_*std::min(std::max(twist.angular.z, MIN_VEL), MAX_VEL) + beta*filtered_twist_
+          .angular.z;
 }
 
 /**
@@ -181,6 +219,7 @@ void Controller::ComputeActuation(const geometry_msgs::PoseStamped &pose,const g
 */
 
 void Controller::Spin(void){
+zero_time = ros::Time::now().toSec();
   // Odometry based
   if (!use_tf_) {
     odom_sub_     = nh_.subscribe("odometry",1,&Controller::OdometryCallback,this);

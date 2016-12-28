@@ -2,8 +2,9 @@
   <arg name="world_frame" default="/world" />
   <arg name="body_frame" default="/base_link" />
   <arg name="use_tf" default="true" />
-  <arg name="loop_rate" default="25"/>
+  <arg name="loop_rate" default="40"/>
   <arg name="mass" default="1.2"/>
+  <arg name="cutoff_freq" default="40"/>
 
     <node name="control_manager" pkg="labrom_mav_control" type="velocity_node" output="screen">
       <!-- Remapping topics-->
@@ -16,10 +17,12 @@
       <rosparam command="load" file="$(find labrom_mav_control)/params/vrep.yaml"/>
       <rosparam subst_value="true">
         world_frame: $(arg world_frame)
-        body_frame: $(arg body_frame)
+        body_frame: robot
         use_tf: $(arg use_tf)
         loop_rate: $(arg loop_rate)
         mass: $(arg mass)
+        cutoff_freq: $(arg cutoff_freq)
       </rosparam>
+
     </node>
 </launch>

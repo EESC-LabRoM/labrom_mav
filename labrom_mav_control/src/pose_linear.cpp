@@ -47,7 +47,7 @@ PID::PID(void): pnh_("~"){
 
   pnh_.param<std::string>("world_frame", world_frame_, "/world");
   pnh_.param<std::string>("body_frame" , body_frame_, "/body_link");
-  pnh_.param<int>("loop_rate", loop_rate_, 50);
+  pnh_.param<int>("loop_rate", loop_rate_, 20);
   pnh_.param<bool>("use_tf", use_tf_, false);
 
   // Loading PID controllers with configuration

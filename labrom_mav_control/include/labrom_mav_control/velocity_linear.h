@@ -36,6 +36,8 @@
 
 //! top level namespace
 namespace mav_control{
+#define MAX_VEL 2.0
+#define MIN_VEL -2.0
 //! velocity controllers
 namespace velocity{
 //! Linearized plants
@@ -53,6 +55,8 @@ class Controller{
     void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
     //! TF callback
     void TFCallback(void);
+    //! Filter twist
+    void FilterTwist(const geometry_msgs::Twist twist);
     //! Update vehicle control commands
     void ComputeActuation( const geometry_msgs::PoseStamped &pose, const geometry_msgs::TwistStamped &twist);
     //! ROS loop
@@ -69,7 +73,8 @@ class Controller{
     tf::TransformListener listener_;    //!< TF transformer listener
 
     geometry_msgs::Twist desired_twist_;    //!< Last vel command received (desired)
-
+    geometry_msgs::Twist filtered_twist_;   //!< Filtered twist velocity when using TF
+    
     controllers::pid::Simple pid_ddx_;      //!< body frame velocity x-axis controller
     controllers::pid::Simple pid_ddy_;      //!< body frame velocity y-axis controller
     controllers::pid::Simple pid_ddz_;      //!< body frame velocity z-axis controller
@@ -78,11 +83,12 @@ class Controller{
       double mass;
       double gravity;
     } params_;
-
+    
     bool use_tf_;                   //! set true to use TF or false to use Odometry
     int loop_rate_;                 //! Actuation loop
     std::string body_frame_;        //! body frame (AKA control frame)
     std::string world_frame_;       //! world frame (AKA inertial frame)
+    double alpha_;                  //! smoothin factor for twist filtering when using TF transform
 };
 } // pid namespace
 } // linear namespace

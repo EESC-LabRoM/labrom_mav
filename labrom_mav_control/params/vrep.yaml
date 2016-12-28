@@ -1,12 +1,16 @@
+use_tf: false
+loop_rate: 20
+mass: 1.2
+
 # Velocity controller gains
-velocity/x/kp: 1 
-velocity/x/ki: 0.0
-velocity/x/kd: 0.1
+velocity/x/kp: 1.5
+velocity/x/ki: 0.01
+velocity/x/kd: 0.5
 velocity/x/anti_windup: 0.25
 
-velocity/y/kp: 1
-velocity/y/ki: 0.0
-velocity/y/kd: 0.1
+velocity/y/kp: 1.5
+velocity/y/ki: 0.01
+velocity/y/kd: 0.5
 velocity/y/anti_windup: 0.25
 
 velocity/z/kp: 1.5 
