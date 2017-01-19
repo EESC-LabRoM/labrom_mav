@@ -1,7 +1,7 @@
 <launch>    
   <arg name="world_frame" default="/world" />
   <arg name="body_frame" default="/base_link" />
-  <arg name="use_tf" default="true" />
+  <arg name="use_tf" default="false" />
   <arg name="loop_rate" default="40"/>
   <arg name="mass" default="1.2"/>
   <arg name="cutoff_freq" default="40"/>
