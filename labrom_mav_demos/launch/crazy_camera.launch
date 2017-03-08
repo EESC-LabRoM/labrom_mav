@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="camera" pkg="usb_cam" type="usb_cam_node" output="screen" >
+    <param name="video_device" value="/dev/video1" />
+    <param name="image_width" value="720" />
+    <param name="image_height" value="480" />
+    <param name="pixel_format" value="uyvy" />
+     <param name="framerate" value="30" />
+    <param name="camera_frame_id" value="usb_cam" />
+    <param name="io_method" value="mmap"/>
+    <param name="autofocus" value="false"/>   
+    <param name="camera_info_url" value="file:///home/active/calibration/crazy_camera_usbcam.yaml" />     
+  </node>
+</launch>

@@ -5,22 +5,21 @@ project(labrom_mav_control)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
-  labrom_control
-  nav_msgs
+  labrom_mav_common
   roscpp
-  std_msgs
-  tf
-  trajectory_msgs
+  rospy
 )
+find_package(OpenCV REQUIRED)
 
-find_package(cmake_modules REQUIRED)
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
 ###################################
-catkin_package()
+catkin_package(
+INCLUDE_DIRS include
+LIBRARIES labrom_mav_control
+)
 
 ###########
 ## Build ##
@@ -28,11 +27,12 @@ catkin_package()
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  ${GSTREAMER_INCLUDE_DIRS} 
+  ${EIGEN3_INCLUDE_DIR}  
 )
 
-add_executable(velocity_node src/velocity_linear.cpp)
-target_link_libraries(velocity_node ${catkin_LIBRARIES} )
+add_library(labrom_mav_control
+src/PoseLinear.cpp)
 
-add_executable(pose_node src/pose_linear.cpp)
-target_link_libraries(pose_node ${catkin_LIBRARIES} )
+target_link_libraries(labrom_mav_control ${catkin_LIBRARIES})

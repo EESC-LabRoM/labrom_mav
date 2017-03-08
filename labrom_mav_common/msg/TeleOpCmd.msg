@@ -1,0 +1,9 @@
+bool emergency
+bool hard_land
+bool take_off
+bool soft_land
+bool restart
+bool hover
+bool go2point
+bool track
+bool velocity_control

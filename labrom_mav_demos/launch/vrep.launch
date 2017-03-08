@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="joy_dev" default="/dev/input/js0" />
+ 
+  <group ns="quadrotor">
+  <!-- ############################### LOCALIZATION ################################# --> 
+  <!-- Rectify image -->
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="camera"/>
+  
+  <!-- AprilTags -->
+  <node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
+    <remap from="image_rect" to="camera/image_rect" />
+    <remap from="camera_info" to="camera/camera_info" />
+    <remap from="tag_pose" to="apriltag/pose" />
+    <!-- Enable projected optical measurements for more accurate tag transformations -->
+    <!-- This exists for backwards compatability and should be left true for new setups -->
+    <param name="projected_optics" type="bool" value="true" />
+    <!-- Describe the tags -->
+    <rosparam param="tag_descriptions">[ {id: 0, size: 0.163513}] </rosparam>
+  </node>
+ 
+  <!-- Optical flow -->
+  <node name="optical_flow" type="continuous_homography_node" pkg="labrom_optical_flow" args="/home/active/catkin_ws/src/labrom_mav/labrom_mav_demos/params/vrep_camera_calibration.yaml" output="screen">
+     <!-- Topics -->
+     <remap from="camera/image_raw" to="camera/image_rect"/>
+     <remap from="external/odometry" to="odometry"/>
+     <!-- Parameters -->
+     <rosparam file="$(find labrom_optical_flow)/params/optical_flow.yaml" />
+  </node>
+  
+   <!-- ############################### DATA FUSION ################################# --> 
+   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" output="screen" clear_params="true">
+     <!--  Placeholder for output topic remapping -->
+     <remap from="odometry/filtered" to="ekf/odometry"/>
+     <rosparam command="load" file="$(find labrom_mav_demos)/params/vrep_ekf.yaml" />
+   </node>
+
+ 
+  </group>
+   
+</launch>

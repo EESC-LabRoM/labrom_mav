@@ -1,35 +1,25 @@
-use_tf: false
-loop_rate: 20
-mass: 1.2
+%YAML:1.0
 
-# Velocity controller gains
-velocity/x/kp: 1.5
-velocity/x/ki: 0.01
-velocity/x/kd: 0.5
-velocity/x/anti_windup: 0.25
+pose.x.pid.kp: 0.2
+pose.x.pid.ki: 0.000
+pose.x.pid.kd: 1
+pose.x.pid.minOutput: -1
+pose.x.pid.maxOutput: 1
+pose.x.pid.integratorMin: -50
+pose.x.pid.integratorMax:50    
 
-velocity/y/kp: 1.5
-velocity/y/ki: 0.01
-velocity/y/kd: 0.5
-velocity/y/anti_windup: 0.25
+pose.y.pid.kp: 0.2
+pose.y.pid.ki: 0.000
+pose.y.pid.kd: 1
+pose.y.pid.minOutput: -1
+pose.y.pid.maxOutput: 1
+pose.y.pid.integratorMin: -50
+pose.y.pid.integratorMax: 50
 
-velocity/z/kp: 1.5 
-velocity/z/ki: 0.0
-velocity/z/kd: 0.05 
-velocity/z/anti_windup: 5.0
-
-# Position controller gains 
-pose/x/kp: 0.9
-pose/x/ki: 0.01
-pose/x/kd: 1
-pose/x/anti_windup: 0.5
-
-pose/y/kp: 0.9
-pose/y/ki: 0.01
-pose/y/kd: 1
-pose/y/anti_windup: 0.5
-
-pose/z/kp: 10
-pose/z/ki: 2
-pose/z/kd: 5
-pose/z/anti_windup: 2.0
+pose.z.pid.kp: 10 
+pose.z.pid.ki: 0.001
+pose.z.pid.kd: 10.75
+pose.z.pid.minOutput: -1
+pose.z.pid.maxOutput: 1
+pose.z.pid.integratorMin: -500
+pose.z.pid.integratorMax: 500

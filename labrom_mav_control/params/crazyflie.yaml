@@ -1,0 +1,25 @@
+%YAML:1.0
+
+pose.x.pid.kp: 1.25
+pose.x.pid.ki: 0.001
+pose.x.pid.kd: 1.0
+pose.x.pid.minOutput: -0.5
+pose.x.pid.maxOutput: 0.5
+pose.x.pid.integratorMin: -50
+pose.x.pid.integratorMax:50  
+
+pose.y.pid.kp: 1.25
+pose.y.pid.ki: 0.001
+pose.y.pid.kd: 1.0
+pose.y.pid.minOutput: -0.5
+pose.y.pid.maxOutput: 0.5
+pose.y.pid.integratorMin: -50
+pose.y.pid.integratorMax: 50
+
+pose.z.pid.kp: 5.5
+pose.z.pid.ki: 1
+pose.z.pid.kd: 4.75
+pose.z.pid.minOutput: -1.5
+pose.z.pid.maxOutput: 1.5
+pose.z.pid.integratorMin: -1
+pose.z.pid.integratorMax: 1

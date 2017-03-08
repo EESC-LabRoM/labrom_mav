@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+ 
+  <group ns="crazyflie">
+  <!-- ############################### LOCALIZATION ################################# --> 
+  <!-- AprilTags -->
+  <node pkg="apriltags_ros" type="apriltag_detector_node" name="apriltag_detector" output="screen">
+    <remap from="image_rect" to="/camera/image_mono" />
+    <remap from="camera_info" to="/camera/camera_info" />
+    <remap from="tag_pose" to="apriltag/pose" />
+    <param name="projected_optics" type="bool" value="false" />
+    <!-- Describe the tags -->
+    <rosparam param="tag_descriptions">[ {id: 1, size: 0.05}] </rosparam>
+  </node>
+  
+  
+  </group>     
+</launch>
+

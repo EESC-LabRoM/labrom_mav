@@ -1,0 +1,18 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="loop_rate" default="50.0" />
+  <arg name="mass" default="0.0" />
+  <arg name="take_off_timeout" default="1.0" />
+  <arg name="landing_accel" default="-18.0" />
+  <arg name="control_params" default="" />
+    
+  <node name="mav_manager" type="state_machine_node" pkg="labrom_mav_manager" output="screen">
+    <!-- Parameters -->
+    <param name="loop_rate" value="$(arg loop_rate)" />
+    <param name="mass" value="$(arg mass)" />
+    <param name="take_off_timeout" value="$(arg take_off_timeout)" />    
+    <param name="landing_accel" value="$(arg landing_accel)" />        
+    <param name="control_params" value="$(arg control_params)" />            
+  </node>
+
+</launch>

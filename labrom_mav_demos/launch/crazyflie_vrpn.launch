@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Optitrack hosting machine values -->
+  <arg name="ip" default="10.1.0.102" />
+  <arg name="port" default="3883" />
+  <!-- Antenna --> 
+  <arg name="uri" default="radio://0/80/2M" />
+  <!-- Joystick -->
+  <arg name="joy_dev" default="/dev/input/js0" />
+  <arg name="frame" default="robot" />
+
+  <!-- Crazyflie server (add/remove vehicles and interface with autopilot firmware) -->
+  <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
+  </include>
+
+  <!-- Here goes the configuration of the crazyflie to be launched -->
+    <!-- Crazyflie add (instantiate a vehicle) -->
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri)" />
+      <arg name="tf_prefix" value="crazyflie" />
+      <arg name="enable_logging" value="True" />
+      <arg name="roll_trim" value="0.0"/>
+      <arg name="pitch_trim" value="0.0"/>
+    </include>
+
+    <!-- Run vrpn client -->
+    <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
+      <rosparam subst_value="true">
+      server: $(arg ip)
+      port: 3883
+      update_frequency: 100.0
+      frame_id: world
+      use_server_time: false
+      broadcast_tf: true
+      refresh_tracker_frequency: 1.0
+    </rosparam>
+  </node>
+
+  <!-- VRPN interface-->
+  <node name="vrpn_interface" pkg="labrom_mav_interface" type="vrpn_node">
+    <remap from="pose" to="vrpn_client_node/robot/pose"/>
+    <remap from="odometry" to="crazyflie/odometry"/>
+  </node>
+
+  <group ns="crazyflie">
+  <include file="$(find labrom_mav_manager)/launch/mav_manager.launch">
+      <arg name="mass" value="0.035" />
+      <arg name="take_off_timeout" value="5.0" />
+      <arg name="landing_accel" value="7.6" />
+      <arg name="loop_rate" value="25.0" /> 
+      <arg name="control_params" value="/home/active/catkin_ws/src/labrom_mav/labrom_mav_control/params/crazyflie.yaml" /> 
+  </include>
+
+  </group>
+
+  <!-- Crazyflie interface-->
+  <node name="crazyflie_interface" pkg="labrom_mav_interface" type="crazyflie_node">
+    <remap from="mav_cmd" to="crazyflie/mav_cmd"/>
+    <remap from="cmd_vel" to="crazyflie/cmd_vel"/>   
+  </node>
+   
+  <!-- Joystick -->
+  <node name="joy" pkg="joy" type="joy_node" output="screen">
+    <param name="dev" value="$(arg joy_dev)" />
+  </node>
+ 
+  <node name="joy_interface" pkg="labrom_mav_interface" type="joy_node" output="screen">
+    <remap from="teleop_cmd" to="crazyflie/teleop_cmd"/>
+  </node>
+  
+
+
+
+
+
+  <!-- Run rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" required="true" />
+  
+</launch>
