@@ -12,7 +12,7 @@ StateMachine::StateMachine(std::string name): m_pnh("~"),
   m_joy_sub  = m_nh.subscribe("teleop_cmd", 1, &StateMachine::TeleOpCallback, this);
   m_imu_sub  = m_nh.subscribe("imu", 1, &StateMachine::ImuCallback, this);
   m_cmd_pub  = m_nh.advertise<labrom_mav_common::MavCmd>("mav_cmd",1);
-  m_goal_twist_sub = m_nh.subscribe("cmd_vel", 1, &StateMachine::TwistCallback, this);
+  m_goal_twist_sub = m_nh.subscribe("/active/cmd_vel", 1, &StateMachine::TwistCallback, this);
   // Get parameters 
   std::string filename;
   m_pnh.param("mass", m_mav_params.mass, 0.0);
@@ -233,15 +233,7 @@ void StateMachine::Run(const ros::TimerEvent& e){
       }
       
 
-      m_mav_cmd = m_pose_controller.Run(m_robot_state, m_des_state, dt);
-      
-      std::cout << wp << " " << error << " ";
-      std::cout << m_des_state.pose.position.x << " "<< m_des_state.pose.position.y << " "<< m_des_state.pose.position.z << " "<< m_des_state.pose.euler.yaw << " ";
-      std::cout << m_robot_state.pose.position.x << " "<< m_robot_state.pose.position.y << " "<< m_robot_state.pose.position.z << " "<< m_robot_state.pose.euler.yaw << " ";
-       std::cout << m_mav_cmd.euler.roll * 180 / M_PI << " " << m_mav_cmd.euler.pitch * 180 / M_PI ;   
-      std::cout << std::endl;
-
-    
+      m_mav_cmd = m_pose_controller.Run(m_robot_state, m_des_state, dt);   
 
       if (m_action==DO_HOVER) {
         ROS_INFO("Hover requested!");

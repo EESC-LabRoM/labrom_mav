@@ -68,11 +68,6 @@
     <remap from="teleop_cmd" to="crazyflie/teleop_cmd"/>
   </node>
   
-
-
-
-
-
   <!-- Run rviz -->
   <node name="rviz" pkg="rviz" type="rviz" required="true" />
   
