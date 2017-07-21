@@ -34,7 +34,7 @@ Pelican::Pelican(void): m_pnh("~"){
   float t0 = 0.545;
   float m0 = 1.63;
   float g = 9.81;
-  m_thrust_gain = (t0 * (m0 * g));
+  m_thrust_gain = (t0 / (m0 * g));
 
 };
 
@@ -53,10 +53,14 @@ void Pelican::MavCmdSubscriber(const labrom_mav_common::MavCmd::ConstPtr &msg){
   // Assemble message
   double max_pitch_roll = (M_PI/180)*20.0;
   double max_yaw = (2*M_PI)/5;
+  mav_ctrl.type = 1;
   mav_ctrl.x = std::min(std::max(msg->pitch, -max_pitch_roll), max_pitch_roll);
   mav_ctrl.y = std::min(std::max(msg->roll, -max_pitch_roll), max_pitch_roll);
   mav_ctrl.yaw = std::min(std::max(msg->yaw, -max_yaw), max_yaw);
-  mav_ctrl.z = std::min(std::max((m_thrust_gain * msg->thrust), 0.3), 0.6);
+
+  double thrust = (m_thrust_gain * msg->thrust);
+  mav_ctrl.z = (thrust < 0.1) ? 0 : std::min(std::max(thrust, 0.4), 0.6);
+
 
   m_mav_ctrl_pub.publish(mav_ctrl);
 }
