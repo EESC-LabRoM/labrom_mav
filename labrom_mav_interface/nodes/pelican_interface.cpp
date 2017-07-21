@@ -25,7 +25,7 @@ namespace labrom_mav_interface{
  */
 Pelican::Pelican(void): m_pnh("~"){
   // subscribers
-  m_mav_ctrl_pub   = m_nh.advertise<geometry_msgs::Twist>("control", 1);
+  m_mav_ctrl_pub = m_nh.advertise<asctec_hl_comm::mav_ctrl>("control", 1);
 
   // publishers
   m_mav_cmd_sub = m_nh.subscribe("mav_cmd", 1, &Pelican::MavCmdSubscriber, this);
