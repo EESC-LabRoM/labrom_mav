@@ -18,7 +18,7 @@ catkin_package()
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}    
+  ${EIGEN3_INCLUDE_DIR}
 )
 
 ## Declare a C++ executable
@@ -37,3 +37,5 @@ target_link_libraries(vrpn_node ${catkin_LIBRARIES})
 add_executable(print_node nodes/print.cpp)
 target_link_libraries(print_node ${catkin_LIBRARIES})
 
+add_executable(pelican_node nodes/pelican_interface.cpp)
+target_link_libraries(pelican_node ${catkin_LIBRARIES})
