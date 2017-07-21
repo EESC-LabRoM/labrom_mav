@@ -1,3 +1,30 @@
+
+Skip to content
+This repository
+
+    Pull requests
+    Issues
+    Marketplace
+    Gist
+
+    @romulortr
+
+2
+1
+
+    0
+
+EESC-LabRoM/labrom_mav
+Code
+Issues 0
+Pull requests 0
+Projects 0
+Wiki
+Settings
+labrom_mav/labrom_mav_demos/launch/crazyflie_vrpn.launch
+fbc3dea on 10 Mar
+Rômulo Topics names
+75 lines (63 sloc) 2.54 KB
 <?xml version="1.0"?>
 <launch>
   <!-- Optitrack hosting machine values -->
@@ -72,3 +99,9 @@
   <node name="rviz" pkg="rviz" type="rviz" required="true" />
   
 </launch>
+
+    Contact GitHub API Training Shop Blog About 
+
+    © 2017 GitHub, Inc. Terms Privacy Security Status Help 
+
+
