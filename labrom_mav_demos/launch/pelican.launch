@@ -9,7 +9,7 @@
       <arg name="take_off_timeout" value="3.0" />
       <arg name="landing_accel" value="8.0" />
       <arg name="loop_rate" value="20.0" />
-      <arg name="control_params" value="/home/diegosoler/quad_ws/src/labrom_mav/labrom_mav_control/params/vrep.yaml" />
+      <arg name="control_params" value="/home/odroid/catkin_ws/src/labrom_mav/labrom_mav_control/params/pelican.yaml" />
   </include>
 
 
