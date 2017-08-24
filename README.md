@@ -5,7 +5,7 @@
 ### **Important**: You are welcome to contribute.
 Click on the figure below to see some flights that were performed using this stack:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [![](https://img.youtube.com/vi/v3DzcVIi7Ec/mqdefault.jpg)](https://www.youtube.com/watch?v=v3DzcVIi7Ec) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [![](https://img.youtube.com/vi/z2mk09uS8gQ/mqdefault.jpg)](https://www.youtube.com/watch?v=z2mk09uS8gQ)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [![](https://img.youtube.com/vi/v3DzcVIi7Ec/mqdefault.jpg)](https://www.youtube.com/watch?v=v3DzcVIi7Ec) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [![](https://img.youtube.com/vi/UsRK1a4ga04/mqdefault.jpg)](https://www.youtube.com/watch?v=UsRK1a4ga04)
 
 ### Notes:
 * **labrom_mav_common**: Package that contains base data structure and functions shared by packages within this stack. 
