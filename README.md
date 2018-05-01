@@ -1,3 +1,6 @@
+# [This repo is going to be removed]
+new address: https://bitbucket.org/grupomecatronica/labrom_mav/src/master/
+
 # LabRoM MAV stack
 
 **Summary**: This LabRoM stack contains packages that support micro aerial vehicles (MAVs) basic functionalities such as autonomous take-off, hovering, waypoint following, tracking and landing.
